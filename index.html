@@ -31,6 +31,52 @@
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script>
+GPSTools = {};
+GPSTools.Format = {};
+GPSTools.Format.GPX = function(){
+    return {
+        isValid: function (doc) {
+            // This is not a jQuery object yet.
+            if(!doc.find)
+                return parse($(doc));
+
+            return !!(doc.find('gpx').length);
+        },
+        parse: function (doc) {
+            // This is not a jQuery object yet.
+            if(!doc.find)
+                return parse($(doc));
+
+            var points = [];
+            if(doc.find('trk')) {
+                logging("GPX file with Track");
+                pts = doc.find('trkpt');
+                logging(pts.length + " track points");
+                pts.each(function(i) {
+                var item = $(this),
+                    lat = item.attr('lat'),
+                    lon = item.attr('lon'),
+                    ele = item.find('ele').text(),
+                    time = item.find('time').text();
+                points.push(new GPSTools.Point(lat,lon,ele,time));
+                });
+                logging("Converted " + points.length);
+            }
+            else if(doc.find('rte')) {
+                logging("GPX file with Route");
+            }
+            else if(doc.find('wpt')) {
+                logging("GPX file with Waypoints");
+            }
+        }
+    }
+}();
+GPSTools.Point = function (lat,lon,ele,time) {
+    this.lat = lat;
+    this.lon = lon;
+    this.ele = ele;
+    this.time = time;
+}
   function handleFileSelect(evt) {
     var files = evt.target.files; // FileList object
 
@@ -58,9 +104,9 @@
         return function(e) {
           // Render thumbnail.
           var doc = $($.parseXML( e.target.result ));
-          if(doc.find('gpx')) {
+          if(GPSTools.Format.GPX.isValid(doc)) {
             logging("Found GPX file!");
-            parseGPX(doc);
+            GPSTools.Format.GPX.parse(doc);
           }
           else
             logging("Unrecognised file type");
@@ -73,37 +119,6 @@
   }
   function logging(m) {
     $('#log').append('<li><small>' + (new Date()).toISOString() + "</small>: " + m);
-  }
-  function parseGPX(doc){
-    if(!doc.find)
-      return parseGPX($(doc));
-    var points = [];
-    if(doc.find('trk')) {
-      logging("GPX file with Track");
-      pts = doc.find('trkpt');
-      logging(pts.length + " track points");
-      pts.each(function(i) {
-        var item = $(this),
-            lat = item.attr('lat'),
-            lon = item.attr('lon'),
-            ele = item.find('ele').text(),
-            time = item.find('time').text();
-        points.push(new Point(lat,lon,ele,time));
-      });
-      logging("Converted " + points.length);
-    }
-    else if(doc.find('rte')) {
-      logging("GPX file with Route");
-    }
-    else if(doc.find('wpt')) {
-      logging("GPX file with Waypoints");
-    }
-  }
-  function Point(lat,lon,ele,time) {
-    this.lat = lat;
-    this.lon = lon;
-    this.ele = ele;
-    this.time = time;
   }
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
   $('#log').hide();
