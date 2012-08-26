@@ -1,12 +1,21 @@
+<!DOCTYPE html>
 <html>
 <head>
 <title>GPS Tools</title>
+<link rel="stylesheet" href="./css/bootstrap.min.css" />
+<style>
+  small {
+    color: #9DA0A4;
+  }
+</style>
 </head>
 <body>
-<label for="files">Choose GPS file</label>
-<input type="file" id="files" name="files" />
-<output></output>
-
+<div class="container">
+    <label for="files">Choose GPS file</label>
+    <input type="file" id="files" name="files" />
+    <output id="gps"></output>
+    <ul id="log"></ul>
+</div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script>
   function handleFileSelect(evt) {
@@ -14,15 +23,39 @@
 
     // files is a FileList of File objects. List some properties.
     var output = [];
-    for (var i = 0, f; f = files[i]; i++) {
-      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                  f.size, ' bytes, last modified: ',
-                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-                  '</li>');
-    }
-    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-  }
+    if(files.length > 0) {
+      f = files[0];
+      logging("File selected");
+      logging("Filename: " + escape(f.name));
+      logging("Size (bytes): " + f.size);
+      if(f.size > 1024*1024)
+        logging("Size is quite large, may be rejected");
+      if(f.type) {
+        logging("Type: " + f.type);
+        // We can check a few types that it is definetly not going to be
+        if( /^(image|audio|video)\//.test(f.type) ) {
+          logging("Stopping for invalid type");
+          return
+        }
+      }
+      var reader = new FileReader();
 
+      // Closure to capture the file information.
+      reader.onload = (function(theFile) {
+        return function(e) {
+          // Render thumbnail.
+          var doc = $.parseXML( e.target.result );
+          $('output').text($(doc).text());
+        };
+      })(f);
+
+      // Read in the image file as a data URL.
+      reader.readAsText(f);
+    }
+  }
+  function logging(m) {
+    $('#log').append('<li><small>' + (new Date()).toISOString() + "</small>: " + m);
+  }
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
 </script>
 </body>
