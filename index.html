@@ -14,6 +14,12 @@
     min-height: 50px;
     padding: 10px;
   }
+  #map {
+    height: 400px;
+  }
+  #map img {
+    max-width: initial;
+  }
   #toggle-log {
     cursor: pointer;
   }
@@ -26,10 +32,13 @@
     <input type="file" id="files" name="files" />
     <h2>Output</h2>
     <output id="gps"></output>
+    <h2>Map</h2>
+    <div id="map"></div>
     <h2>Log</h2><small id="toggle-log">Show</small>
     <ul id="log"></ul>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="http://openlayers.org/api/OpenLayers.js"></script>
 <script>
 GPSTools = {};
 GPSTools.Format = {};
@@ -61,6 +70,7 @@ GPSTools.Format.GPX = function(){
                 points.push(new GPSTools.Point(lat,lon,ele,time));
                 });
                 logging("Converted " + points.length);
+                GPSTools.Map.drawLine(points);
             }
             else if(doc.find('rte')) {
                 logging("GPX file with Route");
@@ -77,6 +87,40 @@ GPSTools.Point = function (lat,lon,ele,time) {
     this.ele = ele;
     this.time = time;
 }
+GPSTools.Map = function (){
+    var map,
+        osmLayer,
+        lineLayer;
+    return {
+        create: function () {
+            map = new OpenLayers.Map("map");
+            osmLayer = new OpenLayers.Layer.OSM( "Simple OSM Map");
+            lineLayer = new OpenLayers.Layer.Vector("Line Layer");
+            map.addLayer(osmLayer);
+            map.addLayer(lineLayer);
+        },
+        drawLine: function (points) {
+            var olPoints = [],
+                i,
+                olLine,
+                olBounds,
+                olStyle,
+                olFeature;
+            for(i=0;i<points.length;i++)
+                olPoints.push(new OpenLayers.Geometry.Point(points[i].lon,points[i].lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()));
+            olLine = new OpenLayers.Geometry.LineString(olPoints);
+            olBounds = olLine.getBounds();
+            olStyle = {
+              strokeColor: '#0000ff',
+              strokeOpacity: 0.5,
+              strokeWidth: 5
+            };
+            olFeature = new OpenLayers.Feature.Vector(olLine, null, olStyle);
+            lineLayer.addFeatures([olFeature]);
+            map.zoomToExtent(olBounds);
+        }
+    }
+}();
   function handleFileSelect(evt) {
     var files = evt.target.files; // FileList object
 
@@ -127,6 +171,7 @@ GPSTools.Point = function (lat,lon,ele,time) {
     self = $(this);
     self.text(self.text() == "Show" ? "Hide" : "Show");
   });
+  GPSTools.Map.create();
 </script>
 </body>
 </html>
