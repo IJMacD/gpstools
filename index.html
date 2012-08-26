@@ -7,13 +7,26 @@
   small {
     color: #9DA0A4;
   }
+  #log {
+    border: 2px solid #9DA0A4;
+    list-style: none;
+    margin: 3px;
+    min-height: 50px;
+    padding: 10px;
+  }
+  #toggle-log {
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
 <div class="container">
+    <h2>Input</h2>
     <label for="files">Choose GPS file</label>
     <input type="file" id="files" name="files" />
+    <h2>Output</h2>
     <output id="gps"></output>
+    <h2>Log</h2><small id="toggle-log">Show</small>
     <ul id="log"></ul>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -44,8 +57,13 @@
       reader.onload = (function(theFile) {
         return function(e) {
           // Render thumbnail.
-          var doc = $.parseXML( e.target.result );
-          $('output').text($(doc).text());
+          var doc = $($.parseXML( e.target.result ));
+          if(doc.find('gpx')) {
+            logging("Found GPX file!");
+            parseGPX(doc);
+          }
+          else
+            logging("Unrecognised file type");
         };
       })(f);
 
@@ -56,7 +74,44 @@
   function logging(m) {
     $('#log').append('<li><small>' + (new Date()).toISOString() + "</small>: " + m);
   }
+  function parseGPX(doc){
+    if(!doc.find)
+      return parseGPX($(doc));
+    var points = [];
+    if(doc.find('trk')) {
+      logging("GPX file with Track");
+      pts = doc.find('trkpt');
+      logging(pts.length + " track points");
+      pts.each(function(i) {
+        var item = $(this),
+            lat = item.attr('lat'),
+            lon = item.attr('lon'),
+            ele = item.find('ele').text(),
+            time = item.find('time').text();
+        points.push(new Point(lat,lon,ele,time));
+      });
+      logging("Converted " + points.length);
+    }
+    else if(doc.find('rte')) {
+      logging("GPX file with Route");
+    }
+    else if(doc.find('wpt')) {
+      logging("GPX file with Waypoints");
+    }
+  }
+  function Point(lat,lon,ele,time) {
+    this.lat = lat;
+    this.lon = lon;
+    this.ele = ele;
+    this.time = time;
+  }
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
+  $('#log').hide();
+  $('#toggle-log').click(function(){
+    $('#log').toggle();
+    self = $(this);
+    self.text(self.text() == "Show" ? "Hide" : "Show");
+  });
 </script>
 </body>
 </html>
