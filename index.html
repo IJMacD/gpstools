@@ -69,8 +69,8 @@ GPSTools.Format.GPX = function(){
                     time = item.find('time').text();
                 points.push(new GPSTools.Point(lat,lon,ele,time));
                 });
-                logging("Converted " + points.length);
-                GPSTools.Map.drawLine(points);
+                logging("Loaded " + points.length);
+                return new GPSTools.Track(points);
             }
             else if(doc.find('rte')) {
                 logging("GPX file with Route");
@@ -81,6 +81,57 @@ GPSTools.Format.GPX = function(){
         }
     }
 }();
+GPSTools.Track = function (points) {
+    this.points = points;
+}
+GPSTools.Track.prototype.getStart = function (){
+    if(!this.start){
+        if(this.points && this.points[0])
+            this.start = new Date(this.points[0].time);
+    }
+    return this.start;
+}
+GPSTools.Track.prototype.getEnd = function (){
+    if(!this.end){
+        if(this.points && this.points[this.points.length-1])
+            this.end = new Date(this.points[this.points.length-1].time);
+    }
+    return this.end;
+}
+GPSTools.Track.prototype.getDuration = function (){
+    if(!this.duration)
+        this.duration = this.getEnd() - this.getStart();
+    return this.duration;
+}
+GPSTools.Track.prototype.getDistance = function(){
+    var toRad = function(n) {
+            return n * Math.PI / 180;
+        },
+        toDeg = function(n) {
+            return n * 180 / Math.PI;
+        };
+    if(!this.distance) {
+        var R = 6371, // km
+            dist  = 0,
+            i = 1;
+        for(;i<this.points.length;i++){
+            var p1 = this.points[i-1],
+                p2 = this.points[i],
+                dLat = toRad(p2.lat-p1.lat),
+                dLon = toRad(p2.lon-p1.lon),
+                lat1 = toRad(p1.lat),
+                lat2 = toRad(p2.lat),
+
+                a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2),
+                c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)),
+                d = R * c;
+            dist += d;
+        }
+        this.distance = dist;
+    }
+    return this.distance;
+}
 GPSTools.Point = function (lat,lon,ele,time) {
     this.lat = lat;
     this.lon = lon;
@@ -121,6 +172,36 @@ GPSTools.Map = function (){
         }
     }
 }();
+GPSTools.Util = function(){
+    return {
+        duration: function (time) {
+            if(time < 1000)
+                return time + ' milliseconds';
+            time /= 1000;
+            if(time < 60)
+                return Math.floor(time) + ' seconds';
+            time /= 60;
+            if(time < 60){
+                var m = Math.floor(time),
+                    d = time - m,
+                    s = Math.floor(d * 60);
+                return m + ' minutes ' + s + ' seconds';
+            }
+            time /= 60;
+            if(time < 24){
+                var h = Math.floor(time),
+                    d = time - h,
+                    m = Math.floor(d * 60);
+                return h + ' hours ' + m + ' minutes';
+            }
+            time /= 24;
+            var dy = Math.floor(time),
+                d = time - dy,
+                h = Math.floor(d * 24);
+            return dy + ' days ' + h + ' hours';
+        }
+    }
+}();
   function handleFileSelect(evt) {
     var files = evt.target.files; // FileList object
 
@@ -150,7 +231,11 @@ GPSTools.Map = function (){
           var doc = $($.parseXML( e.target.result ));
           if(GPSTools.Format.GPX.isValid(doc)) {
             logging("Found GPX file!");
-            GPSTools.Format.GPX.parse(doc);
+            var track = GPSTools.Format.GPX.parse(doc);
+            GPSTools.Map.drawLine(track.points);
+            $('output').text('Start: ' + track.getStart() + ' End: ' + track.getEnd() +
+                ' Duration: ' + GPSTools.Util.duration(track.getDuration()) +
+                ' Distance (km): ' + track.getDistance());
           }
           else
             logging("Unrecognised file type");
