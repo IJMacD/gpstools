@@ -134,6 +134,38 @@ GPSTools.Format.GPX = function(){
         }
     }
 }();
+GPSTools.Format.KML = function(){
+    return {
+        isValid: function (doc) {
+            // This is not a jQuery object yet.
+            if(!doc.find)
+                doc = $(doc);
+
+            return !!(doc.find('kml').length);
+        },
+        parse: function (doc) {
+            // This is not a jQuery object yet.
+            if(!doc.find)
+                doc = $(doc);
+
+            var lineString = doc.find('LineString'),
+                c = lineString.find('coordinates').text().trim(),
+                coords = c.split(" "),
+                i = 0,
+                l = coords.length,
+                points = [],
+                lle;
+                logging(l + " track points");
+            for(;i<l;i++) {
+                lle = coords[i].split(",");
+                points.push(new GPSTools.Point(lle[1], lle[0], lle[2]));
+            }
+            logging(points.length + " points loaded");
+            return new GPSTools.Track(points);
+        },
+        generate: function (track) {}
+    }
+}();
 GPSTools.Track = function (points) {
     this.points = points;
 }
@@ -317,6 +349,16 @@ GPSTools.Util = function(){
           if(GPSTools.Format.GPX.isValid(doc)) {
             logging("Found GPX file!");
             var track = GPSTools.Format.GPX.parse(doc);
+          }
+          else if(GPSTools.Format.KML.isValid(doc)) {
+            logging("Found KML file!");
+            var track = GPSTools.Format.KML.parse(doc);
+          }
+          else {
+            logging("Unrecognised file type");
+            return;
+          }
+
             if(track.hasTime())
                 $('output').html('Start: ' + track.getStart() + '<br>End: ' + track.getEnd() +
                     '<br>Duration: ' + GPSTools.Util.duration(track.getDuration()) +
