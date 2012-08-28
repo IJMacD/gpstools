@@ -37,9 +37,10 @@
     <h2>Output</h2>
     <output id="gps"></output>
     <button id="show-map-btn" class="btn" disabled>Show Map</button>
+    <button id="toggle-log" class="btn">Show Log</button>
     <h2>Map</h2>
     <div id="map"></div>
-    <h2>Log</h2><button id="toggle-log" class="btn btn-small">Show</button>
+    <h2>Log</h2>
     <ul id="log"></ul>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -280,7 +281,7 @@ GPSTools.Util = function(){
   $('#toggle-log').click(function(){
     $('#log').toggle();
     self = $(this);
-    self.text(self.text() == "Show" ? "Hide" : "Show");
+    self.text(self.text() == "Show Log" ? "Hide Log" : "Show Log");
   });
 </script>
 </body>
