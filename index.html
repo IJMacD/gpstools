@@ -7,6 +7,9 @@
   output {
     display: block;
   }
+  progress {
+    width: 940px;
+  }
   small {
     color: #9DA0A4;
   }
@@ -42,6 +45,8 @@
     <button id="show-map-btn" class="btn" disabled>Show Map</button>
     <button id="show-ele-btn" class="btn" disabled>Show Elevation</button>
     <button id="toggle-log" class="btn">Show Log</button>
+    <button id="get-ele-btn" class="btn" disabled>Get Elevation</button><br>
+    <progress value="0"></progress>
     <h2>Map</h2>
     <div id="map"></div>
     <h2>Elevation</h2>
@@ -308,6 +313,46 @@ GPSTools.Util = function(){
             else {
                 logging("Track does not have elevation data");
                 $('#show-ele-btn').attr('disabled','');
+                $('#get-ele-btn').off('click').on('click', function(){
+                    $(this).attr('disabled','');
+                    var i = 0,
+                        points = track.points,
+                        l = points.length,
+                        baseURL = "http://ws.geonames.org/srtm3",
+                        geo = {},
+                        lat, lon, index,
+                        progress = $('progress');
+                    progress.attr('max', l);
+                    for(;i<l;i++) {
+                        lat = points[i].lat;
+                        lon = points[i].lon;
+                        index = lat + ":" + lon;
+                        if(!geo[index]){
+                            url = baseURL + "?lat=" + lat + "&lng=" + lon;
+                            $.get(url, function(i,index){
+                                return function(data){
+                                    geo[index] = data;
+                                    points[i].ele = geo[index];
+                                    var val = progress.val() + 1;
+                                    progress.val(val);
+                                    if(val == l) {
+                                        $('#show-ele-btn').removeAttr('disabled');
+                                        progress.val(0);
+                                    }
+                                }
+                            }(i,index));
+                        }
+                        else {
+                            points[i].ele = geo[index];
+                            var val = progress.val() + 1;
+                            progress.val(val);
+                            if(val == l) {
+                                $('#show-ele-btn').removeAttr('disabled');
+                                progress.val(0);
+                            }
+                        }
+                    }
+                }).removeAttr('disabled');
             }
           }
           else
