@@ -30,6 +30,10 @@
   #map img {
     max-width: initial;
   }
+  #map label {
+    display: inline;
+    margin-left: 3px;
+  }
   #toggle-log {
     cursor: pointer;
   }
@@ -252,13 +256,23 @@ GPSTools.Point.prototype.distanceTo = function(){
 GPSTools.Map = function (){
     var map,
         osmLayer,
+        cycleLayer,
         lineLayer;
     return {
         create: function () {
-            map = new OpenLayers.Map("map");
+            map = new OpenLayers.Map("map", {'controls': [
+                new OpenLayers.Control.Navigation(),
+                new OpenLayers.Control.Zoom(),
+                new OpenLayers.Control.LayerSwitcher()
+            ]});
             osmLayer = new OpenLayers.Layer.OSM( "Simple OSM Map");
+            cycleLayer = new OpenLayers.Layer.OSM("OpenCycleMap",
+              ["http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
+               "http://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
+               "http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"]);
             lineLayer = new OpenLayers.Layer.Vector("Line Layer");
             map.addLayer(osmLayer);
+            map.addLayer(cycleLayer);
             map.addLayer(lineLayer);
         },
         drawLine: function (points) {
@@ -407,7 +421,7 @@ GPSTools.Util = function(){
                             url = baseURL + "?lat=" + lat + "&lng=" + lon;
                             $.get(url, function(i,index){
                                 return function(data){
-                                    geo[index] = data;
+                                    geo[index] = Math.max(parseFloat(data),0);
                                     points[i].ele = geo[index];
                                     var val = progress.val() + 1;
                                     progress.val(val);
