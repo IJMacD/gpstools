@@ -45,7 +45,8 @@
     <button id="show-map-btn" class="btn" disabled>Show Map</button>
     <button id="show-ele-btn" class="btn" disabled>Show Elevation</button>
     <button id="toggle-log" class="btn">Show Log</button>
-    <button id="get-ele-btn" class="btn" disabled>Get Elevation</button><br>
+    <button id="get-ele-btn" class="btn" disabled>Get Elevation</button>
+    <button id="gen-gpx-btn" class="btn" disabled>Generate GPX</button><br>
     <progress value="0"></progress>
     <h2>Map</h2>
     <div id="map"></div>
@@ -66,14 +67,14 @@ GPSTools.Format.GPX = function(){
         isValid: function (doc) {
             // This is not a jQuery object yet.
             if(!doc.find)
-                return parse($(doc));
+                doc = $(doc);
 
             return !!(doc.find('gpx').length);
         },
         parse: function (doc) {
             // This is not a jQuery object yet.
             if(!doc.find)
-                return parse($(doc));
+                doc = $(doc);
 
             var points = [];
             if(doc.find('trk')) {
@@ -97,6 +98,39 @@ GPSTools.Format.GPX = function(){
             else if(doc.find('wpt')) {
                 logging("GPX file with Waypoints");
             }
+        },
+        generate: function (track) {
+            var doc = $.parseXML($('#gpx-tmpl').text()),
+                gpx = $(doc).find('gpx'),
+                metadata = gpx.find('metadata'),
+                time = $('<time>', doc),
+                trk = $('<trk>', doc),
+                points = track.points,
+                l = points.length,
+                i = 0,
+                p, trkpt, ele,
+                hasTime = track.hasTime(),
+                hasEle = track.hasElevation();
+            time.text((new Date).toISOString());
+            metadata.append(time);
+            for(;i<l;i++) {
+                p = points[i];
+                trkpt = $('<trkpt>', doc);
+                trkpt.attr({'lat': p.lat, 'lon': p.lon});
+                if(hasEle) {
+                    ele = $('<ele>', doc);
+                    ele.text(p.ele);
+                    trkpt.append(ele);
+                }
+                if(hasTime) {
+                    time = $('<time>', doc);
+                    time.text(p.time);
+                    trkpt.append(time);
+                }
+                trk.append(trkpt);
+            }
+            gpx.append(trk);
+            $('output').text((new XMLSerializer()).serializeToString(doc));
         }
     }
 }();
@@ -104,10 +138,10 @@ GPSTools.Track = function (points) {
     this.points = points;
 }
 GPSTools.Track.prototype.hasTime = function (){
-    return this.points && this.points[0] && this.points[0].time;
+    return !!(this.points && this.points[0] && this.points[0].time);
 }
 GPSTools.Track.prototype.hasElevation = function (){
-    return this.points && this.points[0] && this.points[0].ele;
+    return !!(this.points && this.points[0] && this.points[0].ele);
 }
 GPSTools.Track.prototype.getStart = function (){
     if(!this.start){
@@ -157,9 +191,9 @@ GPSTools.Track.prototype.getElevation = function (){
     return this.elevation;
 }
 GPSTools.Point = function (lat,lon,ele,time) {
-    this.lat = lat;
-    this.lon = lon;
-    this.ele = ele;
+    this.lat = parseFloat(lat);
+    this.lon = parseFloat(lon);
+    this.ele = parseFloat(ele);
     this.time = time;
 }
 GPSTools.Point.prototype.distanceTo = function(){
@@ -354,13 +388,13 @@ GPSTools.Util = function(){
                     }
                 }).removeAttr('disabled');
             }
-          }
-          else
-            logging("Unrecognised file type");
+            $('#gen-gpx-btn').off('click').on('click', function (){
+                GPSTools.Format.GPX.generate(track);
+            }).removeAttr('disabled');
         };
       })(f);
 
-      // Read in the image file as a data URL.
+      // Read in the file as text.
       reader.readAsText(f);
     }
   }
@@ -374,6 +408,9 @@ GPSTools.Util = function(){
     self = $(this);
     self.text(self.text() == "Show Log" ? "Hide Log" : "Show Log");
   });
+</script>
+<script id="gpx-tmpl" type="text/plain">
+<gpx version="1.1" creator="GPSTools" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"><metadata></metadata></gpx>
 </script>
 </body>
 </html>
