@@ -10,6 +10,9 @@
   small {
     color: #9DA0A4;
   }
+  #elevation {
+    display: none;
+  }
   #log {
     border: 2px solid #9DA0A4;
     list-style: none;
@@ -37,14 +40,19 @@
     <h2>Output</h2>
     <output id="gps"></output>
     <button id="show-map-btn" class="btn" disabled>Show Map</button>
+    <button id="show-ele-btn" class="btn" disabled>Show Elevation</button>
     <button id="toggle-log" class="btn">Show Log</button>
     <h2>Map</h2>
     <div id="map"></div>
+    <h2>Elevation</h2>
+    <canvas id="elevation" width="940" height="250">[No canvas support]</canvas>
     <h2>Log</h2>
     <ul id="log"></ul>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script src="http://openlayers.org/api/OpenLayers.js"></script>
+<script src="./js/RGraph.common.core.js"></script>
+<script src="./js/RGraph.line.js"></script>
 <script>
 GPSTools = {};
 GPSTools.Format = {};
@@ -71,7 +79,7 @@ GPSTools.Format.GPX = function(){
                 var item = $(this),
                     lat = item.attr('lat'),
                     lon = item.attr('lon'),
-                    ele = item.find('ele').text(),
+                    ele = parseFloat(item.find('ele').text()),
                     time = item.find('time').text();
                 points.push(new GPSTools.Point(lat,lon,ele,time));
                 });
@@ -93,6 +101,9 @@ GPSTools.Track = function (points) {
 GPSTools.Track.prototype.hasTime = function (){
     return this.points && this.points[0] && this.points[0].time;
 }
+GPSTools.Track.prototype.hasElevation = function (){
+    return this.points && this.points[0] && this.points[0].ele;
+}
 GPSTools.Track.prototype.getStart = function (){
     if(!this.start){
         if(this.points && this.points[0])
@@ -112,12 +123,13 @@ GPSTools.Track.prototype.getDuration = function (){
         this.duration = this.getEnd() - this.getStart();
     return this.duration;
 }
-GPSTools.Track.prototype.getDistance = function(){
+GPSTools.Track.prototype.getDistance = function (){
     if(!this.distance) {
         var dist  = 0,
-            i = 1;
+            i = 1,
+            l = this.points.length;
         logging("Calculating Distance");
-        for(;i<this.points.length;i++){
+        for(;i<l;i++){
             var p1 = this.points[i-1],
                 p2 = this.points[i];
             dist += p1.distanceTo(p2);
@@ -126,6 +138,18 @@ GPSTools.Track.prototype.getDistance = function(){
         this.distance = dist;
     }
     return this.distance;
+}
+GPSTools.Track.prototype.getElevation = function (){
+    if(!this.elevation) {
+        var ele = [],
+            i = 0,
+            l = this.points.length;
+        logging("Collating elevation data");
+        for(;i<l;i++)
+            ele.push(this.points[i].ele);
+        this.elevation = ele;
+    }
+    return this.elevation;
 }
 GPSTools.Point = function (lat,lon,ele,time) {
     this.lat = lat;
@@ -261,8 +285,30 @@ GPSTools.Util = function(){
             else
                 $('output').text('Distance (km): ' + track.getDistance());
             $('#show-map-btn').off('click').click(function(){
-                GPSTools.Map.drawLine(track.points)
+                GPSTools.Map.drawLine(track.points);
             }).removeAttr('disabled');
+            $('#show-ele-btn').off('click').click(function(){
+                $('#elevation').show();
+                var data = track.getElevation(),
+                    line = new RGraph.Line('elevation', data);
+                line.Set('chart.background.barcolor1', 'white');
+                line.Set('chart.background.barcolor2', 'white');
+                line.Set('chart.background.grid.color', 'rgba(238,238,238,1)');
+                line.Set('chart.colors', ['blue']);
+                line.Set('chart.linewidth', 2);
+                line.Set('chart.filled', true);
+                line.Set('chart.hmargin', 5);
+                line.Set('chart.gutter.left', 35);
+                line.Draw();
+            });
+            if(track.hasElevation()) {
+                logging("Track has elevation data");
+                $('#show-ele-btn').removeAttr('disabled');
+            }
+            else {
+                logging("Track does not have elevation data");
+                $('#show-ele-btn').attr('disabled','');
+            }
           }
           else
             logging("Unrecognised file type");
