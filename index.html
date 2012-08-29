@@ -193,9 +193,12 @@ GPSTools.Track.prototype.getEnd = function (){
     }
     return this.end;
 }
+/**
+ * @return Duration in s
+ */
 GPSTools.Track.prototype.getDuration = function (){
     if(!this.duration)
-        this.duration = this.getEnd() - this.getStart();
+        this.duration = (this.getEnd() - this.getStart()) / 1000;
     return this.duration;
 }
 GPSTools.Track.prototype.getDistance = function (){
@@ -226,12 +229,38 @@ GPSTools.Track.prototype.getElevation = function (){
     }
     return this.elevation;
 }
+/**
+ * @return Average speed in (m s^-1)
+ */
+GPSTools.Track.prototype.getAvgSpeed = function () {
+    if(!this.avgSpeed) {
+        this.avgSpeed = this.getDistance() / this.getDuration() * 1000;
+    }
+    return this.avgSpeed;
+}
+/**
+ * @return Maximum speed in (m s^-1)
+ */
+GPSTools.Track.prototype.getMaxSpeed = function () {
+    if(!this.maxSpeed) {
+        var max = 0,
+            i = 1,
+            l = this.points.length;
+        for(;i<l;i++)
+            max = Math.max(this.points[i].speedTo(this.points[i-1]),max);
+        this.maxSpeed = max;
+    }
+    return this.maxSpeed;
+}
 GPSTools.Point = function (lat,lon,ele,time) {
     this.lat = parseFloat(lat);
     this.lon = parseFloat(lon);
     this.ele = parseFloat(ele);
     this.time = time;
 }
+/**
+ * @return Distance in km
+ */
 GPSTools.Point.prototype.distanceTo = function(){
     var R = 6371, // km
         toRad = function(n) {
@@ -253,6 +282,14 @@ GPSTools.Point.prototype.distanceTo = function(){
         return d;
     }
 }();
+/**
+ * @return Speed in (m s^-1)
+ */
+GPSTools.Point.prototype.speedTo = function(point) {
+    var s = this.distanceTo(point) * 1000,
+        t = Math.abs(new Date(this.time) - new Date(point.time)) / 1000;
+    return s / t;
+}
 GPSTools.Map = function (){
     var map,
         osmLayer,
@@ -305,10 +342,13 @@ GPSTools.Map = function (){
 }();
 GPSTools.Util = function(){
     return {
+        /**
+         * @param time Time in seconds
+         */
         duration: function (time) {
-            if(time < 1000)
-                return time + ' milliseconds';
-            time /= 1000;
+            time = Math.abs(time);
+            if(time < 1)
+                return (time*1000) + ' milliseconds';
             if(time < 60)
                 return Math.floor(time) + ' seconds';
             time /= 60;
@@ -330,6 +370,24 @@ GPSTools.Util = function(){
                 d = time - dy,
                 h = Math.floor(d * 24);
             return dy + ' days ' + h + ' hours';
+        },
+        /**
+         * @param s Distance in km
+         */
+        convertToMiles: function (s) {
+            return s * 0.62137119223733;
+        },
+        /**
+         * @param v Speed in (m s^-1)
+         */
+        convertToMPH: function(v) {
+            return v * 2.2369362920544;
+        },
+        /**
+         * @param v Speed in (m s^-1)
+         */
+        convertToKPH: function(v) {
+            return v * 3.6;
         }
     }
 }();
@@ -376,7 +434,12 @@ GPSTools.Util = function(){
             if(track.hasTime())
                 $('output').html('Start: ' + track.getStart() + '<br>End: ' + track.getEnd() +
                     '<br>Duration: ' + GPSTools.Util.duration(track.getDuration()) +
-                    '<br>Distance (km): ' + track.getDistance());
+                    '<br>Distance (km): ' + track.getDistance() +
+                    '<br>Distance (mi): ' + GPSTools.Util.convertToMiles(track.getDistance()) +
+                    '<br>Average Speed (km/h): ' + GPSTools.Util.convertToKPH(track.getAvgSpeed()) +
+                    '<br>Maximum Speed (km/h): ' + GPSTools.Util.convertToKPH(track.getMaxSpeed()) +
+                    '<br>Maximum Speed (mph): ' + GPSTools.Util.convertToMPH(track.getMaxSpeed())
+                );
             else
                 $('output').text('Distance (km): ' + track.getDistance());
             $('#show-map-btn').off('click').click(function(){
