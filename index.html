@@ -52,6 +52,7 @@
     <button id="show-spd-btn" class="btn" disabled>Show Speed</button>
     <button id="toggle-log" class="btn">Show Log</button>
     <button id="get-ele-btn" class="btn" disabled>Get Elevation</button>
+    <button id="gen-spd-btn" class="btn" disabled>Fake Speed</button>
     <button id="gen-gpx-btn" class="btn" disabled>Generate GPX</button><br>
     <progress value="0"></progress>
     <h2>Map</h2>
@@ -462,6 +463,7 @@ GPSTools.Util = function(){
           }
 
             if(track.hasTime())
+            {
                 $('output').html('Start: ' + track.getStart() + '<br>End: ' + track.getEnd() +
                     '<br>Duration: ' + GPSTools.Util.duration(track.getDuration()) +
                     '<br>Distance (km): ' + track.getDistance() +
@@ -471,8 +473,11 @@ GPSTools.Util = function(){
                     '<br>Maximum Speed (mph): ' + GPSTools.Util.convertToMPH(track.getMaxSpeed())
                 );
                 $('#show-spd-btn').removeAttr('disabled');
-            else
+            }
+            else{
                 $('output').text('Distance (km): ' + track.getDistance());
+                $('#gen-spd-btn').removeAttr('disabled');
+            }
             $('#show-map-btn').off('click').click(function(){
                 GPSTools.Map.drawLine(track.points);
             }).removeAttr('disabled');
@@ -503,6 +508,27 @@ GPSTools.Util = function(){
                 line.Set('chart.hmargin', 5);
                 line.Set('chart.gutter.left', 35);
                 line.Draw();
+            });
+            $('#gen-spd-btn').off('click').click(function(){
+                $(this).attr('disabled','');
+                var speed = 10, // m s^-1,
+                    distance = track.getDistance(), // km
+                    duration = (distance / speed) * 1000, // s
+                    end = new Date(),
+                    start = new Date(end - duration*1000),
+                    points = track.points,
+                    i = 1,
+                    l = points.length,
+                    cuml_dist = 0,
+                    time, date;
+                track.points[0].time = start.toString();
+                for(;i<l;i++){
+                    cuml_dist += points[i-1].distanceTo(points[i]); // km
+                    time = cuml_dist / distance * duration; // s
+                    date = new Date(+start + time*1000);
+                    track.points[i].time = date.toISOString();
+                }
+                $('#show-spd-btn').removeAttr('disabled');
             });
             if(track.hasElevation()) {
                 logging("Track has elevation data");
