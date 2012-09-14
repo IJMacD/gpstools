@@ -85,7 +85,7 @@ GPSTools.Format.GPX = function(){
                 doc = $(doc);
 
             var points = [];
-            if(doc.find('trk')) {
+            if(doc.find('trk').length) {
                 logging("GPX file with Track");
                 pts = doc.find('trkpt');
                 logging(pts.length + " track points");
@@ -100,10 +100,22 @@ GPSTools.Format.GPX = function(){
                 logging("Loaded " + points.length);
                 return new GPSTools.Track(points);
             }
-            else if(doc.find('rte')) {
+            else if(doc.find('rte').length) {
                 logging("GPX file with Route");
+                pts = doc.find('rtept');
+                logging(pts.length + " route points");
+                pts.each(function(i) {
+                var item = $(this),
+                    lat = item.attr('lat'),
+                    lon = item.attr('lon'),
+                    ele = parseFloat(item.find('ele').text()),
+                    time = item.find('time').text();
+                points.push(new GPSTools.Point(lat,lon,ele,time));
+                });
+                logging("Loaded " + points.length);
+                return new GPSTools.Track(points);
             }
-            else if(doc.find('wpt')) {
+            else if(doc.find('wpt').length) {
                 logging("GPX file with Waypoints");
             }
         },
