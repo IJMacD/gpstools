@@ -13,7 +13,8 @@
   small {
     color: #9DA0A4;
   }
-  #elevation {
+  #elevation,
+  #speed {
     display: none;
   }
   #log {
@@ -48,6 +49,7 @@
     <output id="gps"></output>
     <button id="show-map-btn" class="btn" disabled>Show Map</button>
     <button id="show-ele-btn" class="btn" disabled>Show Elevation</button>
+    <button id="show-spd-btn" class="btn" disabled>Show Speed</button>
     <button id="toggle-log" class="btn">Show Log</button>
     <button id="get-ele-btn" class="btn" disabled>Get Elevation</button>
     <button id="gen-gpx-btn" class="btn" disabled>Generate GPX</button><br>
@@ -56,6 +58,8 @@
     <div id="map"></div>
     <h2>Elevation</h2>
     <canvas id="elevation" width="940" height="250">[No canvas support]</canvas>
+    <h2>Speed</h2>
+    <canvas id="speed" width="940" height="250">[No canvas support]</canvas>
     <h2>Log</h2>
     <ul id="log"></ul>
 </div>
@@ -228,6 +232,20 @@ GPSTools.Track.prototype.getElevation = function (){
         this.elevation = ele;
     }
     return this.elevation;
+}
+GPSTools.Track.prototype.getSpeed = function (){
+    if(!this.speed) {
+        if (!this.hasTime())
+            throw "No time data asccociated with this track";
+        var spd = [],
+            i = 1,
+            l = this.points.length;
+        logging("Collating speed data");
+        for(;i<l;i++)
+            spd.push(this.points[i].speedTo(this.points[i-1]));
+        this.speed = spd;
+    }
+    return this.speed;
 }
 /**
  * @return Average speed in (m s^-1)
@@ -440,6 +458,7 @@ GPSTools.Util = function(){
                     '<br>Maximum Speed (km/h): ' + GPSTools.Util.convertToKPH(track.getMaxSpeed()) +
                     '<br>Maximum Speed (mph): ' + GPSTools.Util.convertToMPH(track.getMaxSpeed())
                 );
+                $('#show-spd-btn').removeAttr('disabled');
             else
                 $('output').text('Distance (km): ' + track.getDistance());
             $('#show-map-btn').off('click').click(function(){
@@ -455,6 +474,20 @@ GPSTools.Util = function(){
                 line.Set('chart.colors', ['blue']);
                 line.Set('chart.linewidth', 2);
                 line.Set('chart.filled', true);
+                line.Set('chart.hmargin', 5);
+                line.Set('chart.gutter.left', 35);
+                line.Draw();
+            });
+            $('#show-spd-btn').off('click').click(function(){
+                $('#speed').show();
+                var data = track.getSpeed(),
+                    line = new RGraph.Line('speed', data);
+                line.Set('chart.background.barcolor1', 'white');
+                line.Set('chart.background.barcolor2', 'white');
+                line.Set('chart.background.grid.color', 'rgba(238,238,238,1)');
+                line.Set('chart.colors', ['red']);
+                line.Set('chart.linewidth', 2);
+                line.Set('chart.filled', false);
                 line.Set('chart.hmargin', 5);
                 line.Set('chart.gutter.left', 35);
                 line.Draw();
