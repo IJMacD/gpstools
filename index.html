@@ -47,7 +47,6 @@
     <input type="file" id="files" name="files" />
     <h2>Output</h2>
     <output id="gps"></output>
-    <button id="show-spd-btn" class="btn" disabled>Show Speed</button>
     <button id="toggle-log" class="btn">Show Log</button>
     <button id="get-ele-btn" class="btn" disabled>Get Elevation</button>
     <button id="gen-spd-btn" class="btn" disabled>Fake Speed</button>
@@ -501,27 +500,16 @@ GPSTools.Util = function(){
                     '<br>Maximum Speed (km/h): ' + GPSTools.Util.convertToKPH(track.getMaxSpeed()) +
                     '<br>Maximum Speed (mph): ' + GPSTools.Util.convertToMPH(track.getMaxSpeed())
                 );
-                $('#show-spd-btn').removeAttr('disabled');
+                plotSpeed();
             }
             else{
                 $('output').text('Distance (km): ' + track.getDistance());
                 $('#gen-spd-btn').removeAttr('disabled');
             }
             GPSTools.Map.drawLine(track.points);
-            $('#show-spd-btn').off('click').click(function(){
-                $('#speed').show();
-                var data = track.getSpeed(),
-                    line = new RGraph.Line('speed', data);
-                line.Set('chart.background.barcolor1', 'white');
-                line.Set('chart.background.barcolor2', 'white');
-                line.Set('chart.background.grid.color', 'rgba(238,238,238,1)');
-                line.Set('chart.colors', ['red']);
-                line.Set('chart.linewidth', 2);
-                line.Set('chart.filled', false);
-                line.Set('chart.hmargin', 5);
-                line.Set('chart.gutter.left', 35);
-                line.Draw();
-            });
+            function plotSpeed () {
+                GPSTools.Graph.drawLine('speed', track.getSpeed(), 'red');
+            }
             $('#gen-spd-btn').off('click').click(function(){
                 $(this).attr('disabled','');
                 var speed = 10, // m s^-1,
@@ -541,7 +529,7 @@ GPSTools.Util = function(){
                     date = new Date(+start + time*1000);
                     track.points[i].time = date.toISOString();
                 }
-                $('#show-spd-btn').removeAttr('disabled');
+                plotSpeed();
             });
             function plotElevation(){
                 GPSTools.Graph.drawFilled('elevation', track.getElevation(), 'blue');
