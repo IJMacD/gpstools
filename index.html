@@ -47,7 +47,6 @@
     <input type="file" id="files" name="files" />
     <h2>Output</h2>
     <output id="gps"></output>
-    <button id="show-ele-btn" class="btn" disabled>Show Elevation</button>
     <button id="show-spd-btn" class="btn" disabled>Show Speed</button>
     <button id="toggle-log" class="btn">Show Log</button>
     <button id="get-ele-btn" class="btn" disabled>Get Elevation</button>
@@ -371,6 +370,35 @@ GPSTools.Map = function (){
         }
     };
 }();
+GPSTools.Graph = (function(){
+    var drawGraph = function(id, data, options){
+        options = $.extend({
+            color: 'black',
+            filled: false
+        }, options);
+
+        $('#'+id).show();
+        var line = new RGraph.Line(id, data);
+        line.Set('chart.background.barcolor1', 'white');
+        line.Set('chart.background.barcolor2', 'white');
+        line.Set('chart.background.grid.color', 'rgba(238,238,238,1)');
+        line.Set('chart.colors', [options.color]);
+        line.Set('chart.linewidth', 2);
+        line.Set('chart.filled', options.filled);
+        line.Set('chart.hmargin', 5);
+        line.Set('chart.gutter.left', 35);
+        line.Draw();
+    };
+
+    return {
+        drawLine: function(id, data, color){
+            drawGraph(id, data, {color: color});
+        },
+        drawFilled: function(id, data, color){
+            drawGraph(id, data, {color: color, filled: true});
+        }
+    }
+}());
 GPSTools.Util = function(){
     return {
         /**
@@ -480,20 +508,6 @@ GPSTools.Util = function(){
                 $('#gen-spd-btn').removeAttr('disabled');
             }
             GPSTools.Map.drawLine(track.points);
-            $('#show-ele-btn').off('click').click(function(){
-                $('#elevation').show();
-                var data = track.getElevation(),
-                    line = new RGraph.Line('elevation', data);
-                line.Set('chart.background.barcolor1', 'white');
-                line.Set('chart.background.barcolor2', 'white');
-                line.Set('chart.background.grid.color', 'rgba(238,238,238,1)');
-                line.Set('chart.colors', ['blue']);
-                line.Set('chart.linewidth', 2);
-                line.Set('chart.filled', true);
-                line.Set('chart.hmargin', 5);
-                line.Set('chart.gutter.left', 35);
-                line.Draw();
-            });
             $('#show-spd-btn').off('click').click(function(){
                 $('#speed').show();
                 var data = track.getSpeed(),
@@ -529,9 +543,12 @@ GPSTools.Util = function(){
                 }
                 $('#show-spd-btn').removeAttr('disabled');
             });
+            function plotElevation(){
+                GPSTools.Graph.drawFilled('elevation', track.getElevation(), 'blue');
+            }
             if(track.hasElevation()) {
                 logging("Track has elevation data");
-                $('#show-ele-btn').removeAttr('disabled');
+                plotElevation();
             }
             else {
                 logging("Track does not have elevation data");
@@ -552,8 +569,8 @@ GPSTools.Util = function(){
                                 var val = progress.val() + 1;
                                 progress.val(val);
                                 if(val == l) {
-                                    $('#show-ele-btn').removeAttr('disabled');
                                     progress.val(0);
+                                    plotElevation();
                                 }
                             };
                         };
