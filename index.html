@@ -492,14 +492,7 @@ GPSTools.Util = function(){
 
             if(track.hasTime())
             {
-                $('output').html('Start: ' + track.getStart() + '<br>End: ' + track.getEnd() +
-                    '<br>Duration: ' + GPSTools.Util.duration(track.getDuration()) +
-                    '<br>Distance (km): ' + track.getDistance() +
-                    '<br>Distance (mi): ' + GPSTools.Util.convertToMiles(track.getDistance()) +
-                    '<br>Average Speed (km/h): ' + GPSTools.Util.convertToKPH(track.getAvgSpeed()) +
-                    '<br>Maximum Speed (km/h): ' + GPSTools.Util.convertToKPH(track.getMaxSpeed()) +
-                    '<br>Maximum Speed (mph): ' + GPSTools.Util.convertToMPH(track.getMaxSpeed())
-                );
+                showStats();
                 $('#gen-spd-btn').hide();
                 plotSpeed();
             }
@@ -507,12 +500,11 @@ GPSTools.Util = function(){
                 $('output').text('Distance (km): ' + track.getDistance());
                 $('#gen-spd-btn').show().removeAttr('disabled');
             }
+
             GPSTools.Map.drawLine(track.points);
-            function plotSpeed () {
-                GPSTools.Graph.drawLine('speed', track.getSpeed(), 'red');
-            }
+
             $('#gen-spd-btn').off('click').click(function(){
-                $(this).attr('disabled','');
+                $(this).hide().attr('disabled','');
                 var speed = 10, // m s^-1,
                     distance = track.getDistance(), // km
                     duration = (distance / speed) * 1000, // s
@@ -530,11 +522,9 @@ GPSTools.Util = function(){
                     date = new Date(+start + time*1000);
                     track.points[i].time = date.toISOString();
                 }
+                showStats();
                 plotSpeed();
             });
-            function plotElevation(){
-                GPSTools.Graph.drawFilled('elevation', track.getElevation(), 'blue');
-            }
             if(track.hasElevation()) {
                 logging("Track has elevation data");
                 $('#get-ele-btn').hide();
@@ -557,6 +547,7 @@ GPSTools.Util = function(){
                                 var val = progress.val() + 1;
                                 progress.val(val);
                                 if(val == l) {
+                                    btn.hide();
                                     progress.val(0);
                                     plotElevation();
                                 }
@@ -586,6 +577,23 @@ GPSTools.Util = function(){
             $('#gen-gpx-btn').off('click').on('click', function (){
                 GPSTools.Format.GPX.generate(track);
             }).removeAttr('disabled');
+
+            function showStats() {
+                $('output').html('Start: ' + track.getStart() + '<br>End: ' + track.getEnd() +
+                    '<br>Duration: ' + GPSTools.Util.duration(track.getDuration()) +
+                    '<br>Distance (km): ' + track.getDistance() +
+                    '<br>Distance (mi): ' + GPSTools.Util.convertToMiles(track.getDistance()) +
+                    '<br>Average Speed (km/h): ' + GPSTools.Util.convertToKPH(track.getAvgSpeed()) +
+                    '<br>Maximum Speed (km/h): ' + GPSTools.Util.convertToKPH(track.getMaxSpeed()) +
+                    '<br>Maximum Speed (mph): ' + GPSTools.Util.convertToMPH(track.getMaxSpeed())
+                );
+            }
+            function plotSpeed () {
+                GPSTools.Graph.drawLine('speed', track.getSpeed(), 'red');
+            }
+            function plotElevation(){
+                GPSTools.Graph.drawFilled('elevation', track.getElevation(), 'blue');
+            }
         };
       })(f);
 
