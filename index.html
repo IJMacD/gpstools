@@ -301,7 +301,9 @@ GPSTools.Track.prototype.getGradient = function (){
             i = 1,
             l = this.points.length,
             p1, p2, dp,
-            e1, e2, de;
+            e1, e2, de,
+            avg = [], c = 30,
+            f = function(a,b){return a+b};
         logging("Collating gradient data");
         for(;i<l;i++){
             p1 = this.points[i-1];
@@ -310,7 +312,9 @@ GPSTools.Track.prototype.getGradient = function (){
             e1 = p1.ele;
             e2 = p2.ele;
             de = e2 - e1; // m
-            grd.push(de / dp / 10); // %
+            avg[i%c] = de / dp / 10; // %
+            if(i>=c)
+                grd.push(avg.reduce(f)/c);
         }
         this.gradient = grd;
     }
