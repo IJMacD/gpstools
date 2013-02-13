@@ -47,7 +47,6 @@
     <input type="file" id="files" name="files" />
     <h2>Output</h2>
     <output id="gps"></output>
-    <button id="show-map-btn" class="btn" disabled>Show Map</button>
     <button id="show-ele-btn" class="btn" disabled>Show Elevation</button>
     <button id="show-spd-btn" class="btn" disabled>Show Speed</button>
     <button id="toggle-log" class="btn">Show Log</button>
@@ -480,9 +479,7 @@ GPSTools.Util = function(){
                 $('output').text('Distance (km): ' + track.getDistance());
                 $('#gen-spd-btn').removeAttr('disabled');
             }
-            $('#show-map-btn').off('click').click(function(){
-                GPSTools.Map.drawLine(track.points);
-            }).removeAttr('disabled');
+            GPSTools.Map.drawLine(track.points);
             $('#show-ele-btn').off('click').click(function(){
                 $('#elevation').show();
                 var data = track.getElevation(),
