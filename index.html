@@ -57,6 +57,8 @@
     <div id="map"></div>
     <h2>Elevation</h2>
     <canvas id="elevation" width="940" height="250">[No canvas support]</canvas>
+    <h2>Gradient</h2>
+    <canvas id="gradient" width="940" height="250">[No canvas support]</canvas>
     <h2>Speed</h2>
     <canvas id="speed" width="940" height="250">[No canvas support]</canvas>
     <h2>Log</h2>
@@ -291,6 +293,29 @@ GPSTools.Track.prototype.getElevation = function (){
     }
     return this.elevation;
 };
+GPSTools.Track.prototype.getGradient = function (){
+    if(!this.gradient) {
+        if(!this.hasElevation())
+            throw "No Elevation data asccociated with this track";
+        var grd = [],
+            i = 1,
+            l = this.points.length,
+            p1, p2, dp,
+            e1, e2, de;
+        logging("Collating gradient data");
+        for(;i<l;i++){
+            p1 = this.points[i-1];
+            p2 = this.points[i];
+            dp = p1.distanceTo(p2); // km
+            e1 = p1.ele;
+            e2 = p2.ele;
+            de = e2 - e1; // m
+            grd.push(de / dp / 10); // %
+        }
+        this.gradient = grd;
+    }
+    return this.gradient;
+};
 GPSTools.Track.prototype.getSpeed = function (){
     if(!this.speed) {
         if (!this.hasTime())
@@ -433,15 +458,22 @@ GPSTools.Graph = (function(){
         line.Set('chart.filled', options.filled);
         line.Set('chart.hmargin', 5);
         line.Set('chart.gutter.left', 35);
+        if(options.negative)
+            line.Set('chart.xaxispos', 'center');
         line.Draw();
     };
 
     return {
         drawLine: function(id, data, color){
-            drawGraph(id, data, {color: color});
+            if(typeof color != "object")
+                color = {color: color};
+            drawGraph(id, data, color);
         },
         drawFilled: function(id, data, color){
-            drawGraph(id, data, {color: color, filled: true});
+            if(typeof color != "object")
+                color = {color: color};
+            color.filled = true;
+            drawGraph(id, data, color);
         }
     }
 }());
@@ -638,6 +670,7 @@ GPSTools.Util = function(){
                 logging("Track has elevation data");
                 $('#get-ele-btn').hide();
                 plotElevation();
+                plotGradient();
             }
             else {
                 logging("Track does not have elevation data");
@@ -658,6 +691,7 @@ GPSTools.Util = function(){
                                 if(val == l) {
                                     progress.val(0);
                                     plotElevation();
+                                    plotGradient();
                                 }
                             };
                         };
@@ -701,6 +735,9 @@ GPSTools.Util = function(){
             }
             function plotElevation(){
                 GPSTools.Graph.drawFilled('elevation', track.getElevation(), 'blue');
+            }
+            function plotGradient(){
+                GPSTools.Graph.drawLine('gradient', track.getGradient(), {color:'green',negative:true});
             }
         };
       })(f);
