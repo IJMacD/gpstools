@@ -500,11 +500,12 @@ GPSTools.Util = function(){
                     '<br>Maximum Speed (km/h): ' + GPSTools.Util.convertToKPH(track.getMaxSpeed()) +
                     '<br>Maximum Speed (mph): ' + GPSTools.Util.convertToMPH(track.getMaxSpeed())
                 );
+                $('#gen-spd-btn').hide();
                 plotSpeed();
             }
             else{
                 $('output').text('Distance (km): ' + track.getDistance());
-                $('#gen-spd-btn').removeAttr('disabled');
+                $('#gen-spd-btn').show().removeAttr('disabled');
             }
             GPSTools.Map.drawLine(track.points);
             function plotSpeed () {
@@ -536,13 +537,12 @@ GPSTools.Util = function(){
             }
             if(track.hasElevation()) {
                 logging("Track has elevation data");
+                $('#get-ele-btn').hide();
                 plotElevation();
             }
             else {
                 logging("Track does not have elevation data");
-                $('#show-ele-btn').attr('disabled','');
-                $('#get-ele-btn').off('click').on('click', function(){
-                    $(this).attr('disabled','');
+                $('#get-ele-btn').show().off('click').on('click', function(){
                     var i = 0,
                         points = track.points,
                         l = points.length,
@@ -562,6 +562,7 @@ GPSTools.Util = function(){
                                 }
                             };
                         };
+                    $(this).attr('disabled','');
                     progress.attr('max', l);
                     for(;i<l;i++) {
                         lat = points[i].lat;
@@ -576,7 +577,6 @@ GPSTools.Util = function(){
                             var val = progress.val() + 1;
                             progress.val(val);
                             if(val == l) {
-                                $('#show-ele-btn').removeAttr('disabled');
                                 progress.val(0);
                             }
                         }
