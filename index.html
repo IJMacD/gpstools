@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8"/>
 <title>GPS Tools</title>
 <link rel="stylesheet" href="./css/bootstrap.min.css" />
 <style>
@@ -61,10 +62,56 @@
     <h2>Log</h2>
     <ul id="log"></ul>
 </div>
+<div id="speedModal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Define Track Time</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+        <div class="control-group">
+            <label for="start_txt" class="control-label">Start:</label>
+            <div class="controls">
+                <input type="datetime" id="start_txt">
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="end_txt" class="control-label">End:</label>
+            <div class="controls">
+                <input type="datetime" id="end_txt">
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="duration_txt" class="control-label">Duration:</label>
+            <div class="controls">
+                <input type="text" id="duration_txt">
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="distance_lbl" class="control-label">Distance:</label>
+            <div class="controls">
+                <span id="distance_lbl"></span> km
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="speed_lbl" class="control-label">Speed:</label>
+            <div class="controls">
+                <span id="speed_lbl"></span> m s<sup>-1</sup>
+            </div>
+        </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+    <a href="#" class="btn btn-primary">Save changes</a>
+  </div>
+</div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script src="http://openlayers.org/api/OpenLayers.js"></script>
+<script src="./js/bootstrap.min.js"></script>
 <script src="./js/RGraph.common.core.js"></script>
 <script src="./js/RGraph.line.js"></script>
+<script src="./js/juration.js"></script>
 <script>
 var GPSTools = {};
 GPSTools.Format = {};
@@ -504,26 +551,88 @@ GPSTools.Util = function(){
             GPSTools.Map.drawLine(track.points);
 
             $('#gen-spd-btn').off('click').click(function(){
-                $(this).hide().attr('disabled','');
+                $(this).attr('disabled','');
                 var speed = 10, // m s^-1,
                     distance = track.getDistance(), // km
                     duration = (distance / speed) * 1000, // s
                     end = new Date(),
                     start = new Date(end - duration*1000),
-                    points = track.points,
-                    i = 1,
-                    l = points.length,
-                    cuml_dist = 0,
-                    time, date;
-                track.points[0].time = start.toString();
-                for(;i<l;i++){
-                    cuml_dist += points[i-1].distanceTo(points[i]); // km
-                    time = cuml_dist / distance * duration; // s
-                    date = new Date(+start + time*1000);
-                    track.points[i].time = date.toISOString();
-                }
-                showStats();
-                plotSpeed();
+                    modal = $('#speedModal'),
+                    start_txt = modal.find('#start_txt'),
+                    end_txt = modal.find('#end_txt'),
+                    duration_txt = modal.find('#duration_txt'),
+                    distance_lbl = modal.find('#distance_lbl'),
+                    speed_lbl = modal.find('#speed_lbl'),
+                    hold = 'start';
+                start_txt.val(start);
+                end_txt.val(end);
+                duration_txt.val(juration.stringify(duration));
+                distance_lbl.text(distance.toFixed(2));
+                speed_lbl.text(speed);
+                start_txt.change(function(){
+                    start = new Date(start_txt.val());
+                    if(hold == 'duration'){
+                        end = new Date(+start + duration*1000);
+                        end_txt.val(end);
+                    }
+                    else{
+                        duration = (end - start) / 1000;
+                        duration_txt.val(juration.stringify(duration));
+                        speed = (distance / duration) * 1000;
+                        speed_lbl.text(speed.toFixed(1));
+                    }
+                    hold = 'start';
+                });
+                end_txt.change(function(){
+                    end = new Date(end_txt.val());
+                    if(hold == 'duration'){
+                        start = new Date(end - duration*1000);
+                        start_txt.val(start);
+                    }
+                    else{
+                        duration = (end - start) / 1000;
+                        duration_txt.val(juration.stringify(duration));
+                        speed = (distance / duration) * 1000;
+                        speed_lbl.text(speed.toFixed(1));
+                    }
+                    hold = 'end';
+                });
+                duration_txt.change(function(){
+                    duration = juration.parse(duration_txt.val());
+                    if(hold == 'end'){
+                        start = new Date(end - duration*1000);
+                        start_txt.val(start);
+                    }
+                    else{
+                        end = new Date(+start + duration*1000);
+                        end_txt.val(end);
+                    }
+                    speed = (distance / duration) * 1000;
+                    speed_lbl.text(speed.toFixed(1));
+                    hold = 'duration';
+                });
+                modal.modal().find('.btn-primary').click(function(){
+                    modal.modal('hide');
+                    var start = new Date(start_txt.val()),
+                        end = new Date(end_txt.val()),
+                        points = track.points,
+                        duration = (+end - start) / 1000, // s
+                        speed = distance / duration * 1000, // m s^-1,
+                        points = track.points,
+                        i = 1,
+                        l = points.length,
+                        cuml_dist = 0,
+                        time, date;
+                    track.points[0].time = start.toString();
+                    for(;i<l;i++){
+                        cuml_dist += points[i-1].distanceTo(points[i]); // km
+                        time = cuml_dist / distance * duration; // s
+                        date = new Date(+start + time*1000);
+                        track.points[i].time = date.toISOString();
+                    }
+                    showStats();
+                    plotSpeed();
+                });
             });
             if(track.hasElevation()) {
                 logging("Track has elevation data");
@@ -547,7 +656,6 @@ GPSTools.Util = function(){
                                 var val = progress.val() + 1;
                                 progress.val(val);
                                 if(val == l) {
-                                    btn.hide();
                                     progress.val(0);
                                     plotElevation();
                                 }
