@@ -15,6 +15,7 @@
     color: #9DA0A4;
   }
   #elevation,
+  #gradient,
   #speed {
     display: none;
   }
@@ -299,15 +300,14 @@ GPSTools.Track.prototype.getGradient = function (){
         if(!this.hasElevation())
             throw "No Elevation data asccociated with this track";
         var grd = [],
-            i = 1,
             l = this.points.length,
             p1, p2, dp,
             e1, e2, de,
-            avg = [], c = 30,
+            avg = [], c = 10,
             f = function(a,b){return a+b};
         logging("Collating gradient data");
-        for(;i<l;i++){
-            p1 = this.points[i-1];
+        for(i=c;i<l;i++){
+            p1 = this.points[i-c];
             p2 = this.points[i];
             dp = p1.distanceTo(p2); // km
             e1 = p1.ele;
@@ -315,11 +315,27 @@ GPSTools.Track.prototype.getGradient = function (){
             de = e2 - e1; // m
             avg[i%c] = de / dp / 10; // %
             if(i>=c)
-                grd.push(avg.reduce(f)/c);
+                grd[i-1] = (avg.reduce(f)/c);
+        }
+        // fudge
+        for(i=0;i<c-1;i++){
+            grd[i] = grd[c-1];
         }
         this.gradient = grd;
     }
     return this.gradient;
+};
+GPSTools.Track.prototype.getGradientHistogram = function() {
+    var grad = this.getGradient(),
+        hist = {},
+        val;
+    for (var i = grad.length - 1; i >= 0; i--) {
+        val = grad[i].toFixed(1);
+        if(!hist[val])
+            hist[val] = 0
+        hist[val]++;
+    };
+    return hist;
 };
 GPSTools.Track.prototype.getSpeed = function (){
     if(!this.speed) {
@@ -755,7 +771,19 @@ GPSTools.Util = function(){
                 GPSTools.Graph.drawFilled('elevation', track.getElevation(), 'blue');
             }
             function plotGradient(){
-                GPSTools.Graph.drawLine('gradient', track.getGradient(), {color:'green',negative:true});
+                var data = track.getGradientHistogram(),
+                    vals = [],
+                    keys = [],
+                    i, l;
+                for(key in data){
+                    keys.push(key);
+                }
+                l = keys.length;
+                keys.sort(function(a,b){return (a-b);});
+                for(i=0;i<l;i++){
+                    vals.push(data[keys[i]]);
+                }
+                GPSTools.Graph.drawBar('gradient', vals, {color:'green',labels:keys,negative:true});
             }
         };
       })(f);
