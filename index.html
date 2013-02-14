@@ -52,7 +52,7 @@
     <button id="toggle-log" class="btn">Show Log</button>
     <button id="get-ele-btn" class="btn" disabled>Get Elevation</button>
     <button id="gen-spd-btn" class="btn" disabled>Fake Speed</button>
-    <button id="gen-gpx-btn" class="btn" disabled>Generate GPX</button><br>
+    <a id="gen-gpx-btn" class="btn" disabled>Generate GPX</a><br>
     <progress value="0"></progress>
     <h2>Map</h2>
     <div id="map"></div>
@@ -121,6 +121,7 @@ var GPSTools = {};
 GPSTools.Format = {};
 GPSTools.Format.GPX = function(){
     return {
+        mimeType: "application/gpx+xml",
         isValid: function (doc) {
             // This is not a jQuery object yet.
             if(!doc.find)
@@ -200,7 +201,7 @@ GPSTools.Format.GPX = function(){
                 trk.append(trkpt);
             }
             gpx.append(trk);
-            $('output').text((new XMLSerializer()).serializeToString(doc));
+            return (new XMLSerializer()).serializeToString(doc);
         }
     };
 }();
@@ -758,7 +759,13 @@ GPSTools.Util = function(){
                 }).removeAttr('disabled');
             }
             $('#gen-gpx-btn').off('click').on('click', function (){
-                GPSTools.Format.GPX.generate(track);
+                var format = GPSTools.Format.GPX,
+                    ext = 'gpx',
+                    data = format.generate(track),
+                    mime = format.mimeType;
+                $(this)
+                    .attr('download', track.getStart().toISOString()+"."+ext)
+                    .attr('href', "data:"+mime+";base64,"+btoa(data));
             }).removeAttr('disabled');
 
             function showStats() {
