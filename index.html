@@ -113,6 +113,7 @@
 <script src="./js/bootstrap.min.js"></script>
 <script src="./js/RGraph.common.core.js"></script>
 <script src="./js/RGraph.line.js"></script>
+<script src="./js/RGraph.bar.js"></script>
 <script src="./js/juration.js"></script>
 <script>
 var GPSTools = {};
@@ -453,29 +454,42 @@ GPSTools.Graph = (function(){
         }, options);
 
         $('#'+id).show();
-        var line = new RGraph.Line(id, data);
-        line.Set('chart.background.barcolor1', 'white');
-        line.Set('chart.background.barcolor2', 'white');
-        line.Set('chart.background.grid.color', 'rgba(238,238,238,1)');
-        line.Set('chart.colors', [options.color]);
-        line.Set('chart.linewidth', 2);
-        line.Set('chart.filled', options.filled);
-        line.Set('chart.hmargin', 5);
-        line.Set('chart.gutter.left', 35);
+        var graph;
+        if(options.type == "bar")
+            graph = new RGraph.Bar(id, data);
+        else
+            graph = new RGraph.Line(id, data);
+
+        graph.Set('chart.background.barcolor1', 'white');
+        graph.Set('chart.background.barcolor2', 'white');
+        graph.Set('chart.background.grid.color', 'rgba(238,238,238,1)');
+        graph.Set('chart.colors', [options.color]);
+        graph.Set('chart.linewidth', 2);
+        graph.Set('chart.filled', options.filled);
+        graph.Set('chart.hmargin', 5);
+        graph.Set('chart.gutter.left', 35);
         if(options.negative)
-            line.Set('chart.xaxispos', 'center');
-        line.Draw();
+            graph.Set('chart.xaxispos', 'center');
+        if(options.labels)
+            graph.Set('chart.labels', options.labels);
+        graph.Draw();
     };
 
     return {
         drawLine: function(id, data, color){
             if(typeof color != "object")
-                color = {color: color};
+                color = {color: color, type:'line'};
             drawGraph(id, data, color);
         },
         drawFilled: function(id, data, color){
             if(typeof color != "object")
-                color = {color: color};
+                color = {color: color,type:'line'};
+            color.filled = true;
+            drawGraph(id, data, color);
+        },
+        drawBar: function(id, data, color){
+            if(typeof color != "object")
+                color = {color: color,type:'bar'};
             color.filled = true;
             drawGraph(id, data, color);
         }
