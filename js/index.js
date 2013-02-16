@@ -229,8 +229,10 @@
     $('#graphCanvas').off('mousemove').on('mousemove', function(e){
       var x = e.offsetX, pos, frac, index;
       GPSTools.Graph.clear('graphCanvas');
-      plotElevation(track);
-      plotSpeed(track);
+      if(track.hasElevation())
+        plotElevation(track);
+      if(track.hasTime())
+        plotSpeed(track);
       pos = GPSTools.Graph.mark('graphCanvas',x);
       frac = pos.x;
       if(pos.x > 0 && pos.x < 1){
