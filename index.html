@@ -18,16 +18,26 @@
   <button id="gen-spd-btn" class="btn" disabled>Fake Speed</button>
   <a id="gen-gpx-btn" class="btn" disabled>Generate GPX</a><br>
   <progress value="0"></progress>
-  <h2>Map</h2>
-  <div id="map"></div>
-  <h2>Elevation</h2>
-  <canvas id="elevation" width="940" height="250">[No canvas support]</canvas>
-  <h2>Gradient</h2>
-  <canvas id="gradient" width="940" height="250">[No canvas support]</canvas>
-  <h2>Speed</h2>
-  <canvas id="speed" width="940" height="250">[No canvas support]</canvas>
-  <h2>Log</h2>
-  <ul id="log"></ul>
+  <div id="map">
+    <h2>Map</h2>
+    <div id="mapCanvas"></div>
+  </div>
+  <div id="elevation">
+    <h2>Elevation</h2>
+    <canvas id="elevationCanvas" width="940" height="250">[No canvas support]</canvas>
+  </div>
+  <div id="gradient">
+    <h2>Gradient</h2>
+    <canvas id="gradientCanvas" width="940" height="250">[No canvas support]</canvas>
+  </div>
+  <div id="speed">
+    <h2>Speed</h2>
+    <canvas id="speedCanvas" width="940" height="250">[No canvas support]</canvas>
+  </div>
+  <div id="log">
+    <h2>Log</h2>
+    <ul></ul>
+  </div>
 </div>
 <div id="speedModal" class="modal hide fade">
   <div class="modal-header">

@@ -213,10 +213,12 @@ function handleFileSelect(evt) {
             );
           }
           function plotSpeed () {
-            GPSTools.Graph.drawLine('speed', track.getSpeed(), 'red');
+            GPSTools.Graph.drawLine('speedCanvas', track.getSpeed(), 'red');
+            $('#speed').show();
           }
           function plotElevation(){
-            GPSTools.Graph.drawFilled('elevation', track.getElevation(), 'blue');
+            GPSTools.Graph.drawFilled('elevationCanvas', track.getElevation(), 'blue');
+            $('#elevation').show();
           }
           function plotGradient(){
             var data = track.getGradientHistogram(),
@@ -231,7 +233,8 @@ function handleFileSelect(evt) {
             for(i=0;i<l;i++){
               vals.push(data[keys[i]]);
             }
-            GPSTools.Graph.drawBar('gradient', vals, {color:'green',labels:keys,negative:true});
+            GPSTools.Graph.drawBar('gradientCanvas', vals, {color:'green',labels:keys,negative:true});
+            $('#gradient').show();
           }
       };
     })(f);
@@ -241,10 +244,9 @@ function handleFileSelect(evt) {
   }
 }
 function logging(m) {
-  $('#log').append('<li><small>' + (new Date()).toISOString() + "</small>: " + m);
+  $('#log ul').append('<li><small>' + (new Date()).toISOString() + "</small>: " + m);
 }
 document.getElementById('files').addEventListener('change', handleFileSelect, false);
-$('#log').hide();
 $('#toggle-log').click(function(){
   $('#log').toggle();
   var self = $(this);

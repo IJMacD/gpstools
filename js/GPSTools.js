@@ -301,7 +301,7 @@ GPSTools.Map = function (){
       lineLayer;
   return {
     create: function () {
-      map = new OpenLayers.Map("map", {'controls': [
+      map = new OpenLayers.Map("mapCanvas", {'controls': [
           new OpenLayers.Control.Navigation(),
           new OpenLayers.Control.Zoom(),
           new OpenLayers.Control.LayerSwitcher()
