@@ -316,6 +316,13 @@ GPSTools.Map = function (){
       map.addLayer(cycleLayer);
       map.addLayer(lineLayer);
     },
+    clearLine: function() {
+      if(!map){
+        $('#map').show();
+        GPSTools.Map.create();
+      }
+      lineLayer.removeAllFeatures();
+    },
     drawLine: function (points) {
       if(!map){
         $('#map').show();
@@ -352,7 +359,6 @@ GPSTools.Graph = (function(){
     }, options);
 
     $('#'+id).show();
-    logging(JSON.stringify(options));
     var graph;
     if(options.type == "bar")
       graph = new RGraph.Bar(id, data);

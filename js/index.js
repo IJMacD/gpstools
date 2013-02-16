@@ -56,6 +56,7 @@
 
   function displayTrack(track){
 
+    GPSTools.Map.clearLine();
     GPSTools.Map.drawLine(track.points);
 
     if(track.hasTime())
@@ -66,7 +67,7 @@
     }
     else{
       $('output').text('Distance (km): ' + track.getDistance());
-      $('#gen-spd-btn').show().removeAttr('disabled');
+      $('#gen-spd-btn').removeAttr('disabled').show();
       $('#speed').hide();
     }
 
@@ -78,6 +79,7 @@
     }
     else {
       logging("Track does not have elevation data");
+      $('#get-ele-btn').removeAttr('disabled').show();
       $('#elevation, #gradient').hide();
     }
 
@@ -274,6 +276,11 @@
   }
 
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+  $('select').on('change', function(e){
+    var option = $(e.target).find(":selected");
+    displayTrack(option.data('track'));
+  });
 
   $('#toggle-log').click(function(){
     $('#log').toggle();
