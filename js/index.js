@@ -233,7 +233,7 @@ function handleFileSelect(evt) {
             for(i=0;i<l;i++){
               vals.push(data[keys[i]]);
             }
-            GPSTools.Graph.drawBar('gradientCanvas', vals, {color:'green',labels:keys,negative:true});
+            GPSTools.Graph.drawBar('gradientCanvas', vals, {color:'green',labels:keys});
             $('#gradient').show();
           }
       };
