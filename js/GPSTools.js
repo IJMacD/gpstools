@@ -352,6 +352,7 @@ GPSTools.Graph = (function(){
     }, options);
 
     $('#'+id).show();
+    logging(JSON.stringify(options));
     var graph;
     if(options.type == "bar")
       graph = new RGraph.Bar(id, data);
@@ -364,7 +365,7 @@ GPSTools.Graph = (function(){
     graph.Set('chart.colors', [options.color]);
     graph.Set('chart.linewidth', 2);
     graph.Set('chart.filled', options.filled);
-    graph.Set('chart.hmargin', 5);
+    graph.Set('chart.hmargin', 1);
     graph.Set('chart.gutter.left', 35);
     if(options.negative)
       graph.Set('chart.xaxispos', 'center');
@@ -376,18 +377,21 @@ GPSTools.Graph = (function(){
   return {
     drawLine: function(id, data, color){
       if(typeof color != "object")
-        color = {color: color, type:'line'};
+        color = {color: color};
+      color.type = 'line';
       drawGraph(id, data, color);
     },
     drawFilled: function(id, data, color){
       if(typeof color != "object")
-        color = {color: color,type:'line'};
+        color = {color: color};
+      color.type = 'line';
       color.filled = true;
       drawGraph(id, data, color);
     },
     drawBar: function(id, data, color){
       if(typeof color != "object")
-        color = {color: color,type:'bar'};
+        color = {color: color};
+      color.type = 'bar';
       color.filled = true;
       drawGraph(id, data, color);
     }

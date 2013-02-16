@@ -223,17 +223,26 @@ function handleFileSelect(evt) {
           function plotGradient(){
             var data = track.getGradientHistogram(),
                 vals = [],
-                keys = [],
-                i, l;
+                labels = [],
+                min, max,
+                step = 0.1,
+                i, key;
             for(key in data){
-              keys.push(key);
+              if(typeof min == "undefined"){
+                min = key;
+                max = key;
+              }
+              else{
+                min = Math.min(min, key);
+                max = Math.max(max, key);
+              }
             }
-            l = keys.length;
-            keys.sort(function(a,b){return (a-b);});
-            for(i=0;i<l;i++){
-              vals.push(data[keys[i]]);
+            for(i=min;i<=max;i+=step){
+              key = i.toFixed(1);
+              vals.push(data[key] || 0);
+              labels.push((key%1 == 0) ? key : "");
             }
-            GPSTools.Graph.drawBar('gradientCanvas', vals, {color:'green',labels:keys});
+            GPSTools.Graph.drawBar('gradientCanvas', vals, {color:'green',labels:labels});
             $('#gradient').show();
           }
       };
