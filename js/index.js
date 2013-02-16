@@ -226,9 +226,20 @@
         .attr('href', "data:"+mime+";base64,"+btoa(data));
     }).removeAttr('disabled');
 
-    $('graphCanvas').off('hover').on('hover', function(e){
-      var width;
-      //GPSTools.Map.mark();
+    $('#graphCanvas').off('mousemove').on('mousemove', function(e){
+      var x = e.offsetX, pos, frac, index;
+      GPSTools.Graph.clear('graphCanvas');
+      plotElevation(track);
+      plotSpeed(track);
+      pos = GPSTools.Graph.mark('graphCanvas',x);
+      frac = pos.x;
+      if(pos.x > 0 && pos.x < 1){
+        index = Math.floor(pos.x * track.points.length);
+        GPSTools.Map.mark(track.points[index]);
+      }
+      else{
+        GPSTools.Map.unmark();
+      }
     });
   }
 

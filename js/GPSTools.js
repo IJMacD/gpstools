@@ -298,7 +298,8 @@ GPSTools.Map = function (){
   var map,
       osmLayer,
       cycleLayer,
-      lineLayer;
+      lineLayer,
+      marker, markers;
   return {
     create: function () {
       map = new OpenLayers.Map("mapCanvas", {'controls': [
@@ -348,43 +349,67 @@ GPSTools.Map = function (){
       olFeature = new OpenLayers.Feature.Vector(olLine, null, olStyle);
       lineLayer.addFeatures([olFeature]);
       map.zoomToExtent(olBounds);
+    },
+    mark: function(point){
+      var lonlat = new OpenLayers.LonLat(point.lon,point.lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
+      if(!marker){
+        markers = new OpenLayers.Layer.Markers();
+        map.addLayer(markers);
+        var size = new OpenLayers.Size(21,25),
+            offset = new OpenLayers.Pixel(-(size.w/2), -size.h),
+            icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
+        marker = new OpenLayers.Marker(lonlat,icon);
+        markers.addMarker(marker);
+      }else {
+        marker.lonlat = lonlat;
+        marker.display(true);
+        markers.redraw();
+      }
+    },
+    unmark: function(){
+      if(marker){
+        marker.display(false);
+        markers.redraw();
+      }
     }
   };
 }();
 GPSTools.Graph = (function(){
-  var drawGraph = function(id, data, options){
-    options = $.extend({
-      color: 'black',
-      filled: false
-    }, options);
+  var gutterWidth = 35,
+      drawGraph = function(id, data, options){
+        options = $.extend({
+          color: 'black',
+          filled: false
+        }, options);
 
-    $('#'+id).show();
-    var graph;
-    if(options.type == "bar")
-      graph = new RGraph.Bar(id, data);
-    else
-      graph = new RGraph.Line(id, data);
+        $('#'+id).show();
+        var graph;
+        if(options.type == "bar")
+          graph = new RGraph.Bar(id, data);
+        else
+          graph = new RGraph.Line(id, data);
 
-    if(options.overlay){
-      graph.Set('chart.yaxispos', 'right');
-      graph.Set('chart.background.grid.color', 'rgba(0,0,0,0)');
-    }
-    else {
-      graph.Set('chart.background.barcolor1', 'white');
-      graph.Set('chart.background.barcolor2', 'white');
-      graph.Set('chart.background.grid.color', 'rgba(238,238,238,1)');
-    }
-    graph.Set('chart.colors', [options.color]);
-    graph.Set('chart.linewidth', 1);
-    graph.Set('chart.filled', options.filled);
-    graph.Set('chart.hmargin', 1);
-    graph.Set('chart.gutter.left', 35);
-    if(options.negative)
-      graph.Set('chart.xaxispos', 'center');
-    if(options.labels)
-      graph.Set('chart.labels', options.labels);
-    graph.Draw();
-  };
+        if(options.overlay){
+          graph.Set('chart.yaxispos', 'right');
+          graph.Set('chart.background.grid.color', 'rgba(0,0,0,0)');
+        }
+        else {
+          graph.Set('chart.background.barcolor1', 'white');
+          graph.Set('chart.background.barcolor2', 'white');
+          graph.Set('chart.background.grid.color', 'rgba(238,238,238,1)');
+        }
+        graph.Set('chart.colors', [options.color]);
+        graph.Set('chart.linewidth', 1);
+        graph.Set('chart.filled', options.filled);
+        graph.Set('chart.hmargin', 1);
+        graph.Set('chart.gutter.left', gutterWidth);
+        graph.Set('chart.gutter.right', gutterWidth);
+        if(options.negative)
+          graph.Set('chart.xaxispos', 'center');
+        if(options.labels)
+          graph.Set('chart.labels', options.labels);
+        graph.Draw();
+      };
 
   return {
     drawLine: function(id, data, color){
@@ -406,6 +431,25 @@ GPSTools.Graph = (function(){
       color.type = 'bar';
       color.filled = true;
       drawGraph(id, data, color);
+    },
+    clear: function(id){
+      RGraph.Clear($('#'+id)[0]);
+    },
+    mark: function(id,x){
+      var canvas = $('#'+id)[0],
+          ctx = canvas.getContext('2d'),
+          width = canvas.width,
+          height = canvas.height,
+          frac = (x - gutterWidth) / (width - gutterWidth * 2);
+      if(frac > 0 && frac < 1){
+        ctx.strokeWidth = "2";
+        ctx.strokeStyle = "#ff0000";
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      return {x: frac};
     }
   }
 }());
