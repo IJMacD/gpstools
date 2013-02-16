@@ -59,18 +59,6 @@
     GPSTools.Map.clearLine();
     GPSTools.Map.drawLine(track.points);
 
-    if(track.hasTime())
-    {
-      showStats(track);
-      $('#gen-spd-btn').hide();
-      plotSpeed(track);
-    }
-    else{
-      $('output').text('Distance (km): ' + track.getDistance());
-      $('#gen-spd-btn').removeAttr('disabled').show();
-      $('#speed').hide();
-    }
-
     if(track.hasElevation()) {
       logging("Track has elevation data");
       $('#get-ele-btn').hide();
@@ -80,7 +68,18 @@
     else {
       logging("Track does not have elevation data");
       $('#get-ele-btn').removeAttr('disabled').show();
-      $('#elevation, #gradient').hide();
+      $('#graph, #gradient').hide();
+    }
+
+    if(track.hasTime())
+    {
+      showStats(track);
+      $('#gen-spd-btn').hide();
+      plotSpeed(track);
+    }
+    else{
+      $('output').text('Distance (km): ' + track.getDistance());
+      $('#gen-spd-btn').removeAttr('disabled').show();
     }
 
     $('#gen-spd-btn').off('click').click(function(){
@@ -226,6 +225,11 @@
         .attr('download', track.getStart().toISOString()+"."+ext)
         .attr('href', "data:"+mime+";base64,"+btoa(data));
     }).removeAttr('disabled');
+
+    $('graphCanvas').off('hover').on('hover', function(e){
+      var width;
+      //GPSTools.Map.mark();
+    });
   }
 
   function showStats(track) {
@@ -240,13 +244,13 @@
   }
 
   function plotSpeed(track) {
-    GPSTools.Graph.drawLine('speedCanvas', track.getSpeed(), 'red');
-    $('#speed').show();
+    GPSTools.Graph.drawLine('graphCanvas', track.getSpeed(), {color:'red',overlay:true});
+    $('#graph').show();
   }
 
   function plotElevation(track){
-    GPSTools.Graph.drawFilled('elevationCanvas', track.getElevation(), 'blue');
-    $('#elevation').show();
+    GPSTools.Graph.drawFilled('graphCanvas', track.getElevation(), 'blue');
+    $('#graph').show();
   }
 
   function plotGradient(track){

@@ -224,11 +224,11 @@ GPSTools.Track.prototype.getSpeed = function (){
     if (!this.hasTime())
       throw "No time data asccociated with this track";
     var spd = [],
-        i = 1,
+        i = 8,
         l = this.points.length;
     logging("Collating speed data");
     for(;i<l;i++)
-      spd.push(this.points[i].speedTo(this.points[i-1]));
+      spd.push(this.points[i].speedTo(this.points[i-8]));
     this.speed = spd;
   }
   return this.speed;
@@ -365,11 +365,17 @@ GPSTools.Graph = (function(){
     else
       graph = new RGraph.Line(id, data);
 
-    graph.Set('chart.background.barcolor1', 'white');
-    graph.Set('chart.background.barcolor2', 'white');
-    graph.Set('chart.background.grid.color', 'rgba(238,238,238,1)');
+    if(options.overlay){
+      graph.Set('chart.yaxispos', 'right');
+      graph.Set('chart.background.grid.color', 'rgba(0,0,0,0)');
+    }
+    else {
+      graph.Set('chart.background.barcolor1', 'white');
+      graph.Set('chart.background.barcolor2', 'white');
+      graph.Set('chart.background.grid.color', 'rgba(238,238,238,1)');
+    }
     graph.Set('chart.colors', [options.color]);
-    graph.Set('chart.linewidth', 2);
+    graph.Set('chart.linewidth', 1);
     graph.Set('chart.filled', options.filled);
     graph.Set('chart.hmargin', 1);
     graph.Set('chart.gutter.left', 35);
