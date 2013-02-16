@@ -1,3 +1,13 @@
+.container {
+  margin-bottom: 20px;
+}
+select {
+  float: right;
+  width: 35%;
+}
+#output {
+  clear: right;
+}
 output {
   display: block;
 }
