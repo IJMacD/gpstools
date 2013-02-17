@@ -1,5 +1,11 @@
 var GPSTools = (function(){
-  var areMergeable = function(tracks){
+  var cropTrack = function(track, start, end){
+        var points = track.points.slice(start, end),
+            newTrack = new GPSTools.Track(points);
+        newTrack.name = track.name + " (Cropped)";
+        return newTrack;
+      },
+      areMergeable = function(tracks){
         return tracks.length == 2;
       },
       mergeTracks = function(tracks){
@@ -20,6 +26,7 @@ var GPSTools = (function(){
 
   return {
     areMergeable: areMergeable,
+    cropTrack: cropTrack,
     mergeTracks: mergeTracks
   };
 }());

@@ -287,12 +287,7 @@
           i, points = [], newTrack;
 
       if(startIndex > 0 && startIndex < endIndex){
-        for(i = startIndex; i < endIndex; i++){
-          points.push(track.points[i]);
-        }
-
-        newTrack = new GPSTools.Track(points);
-        newTrack.name = track.name + " (Cropped)";
+        newTrack = GPSTools.cropTrack(track, startIndex, endIndex);
 
         clearSelection();
         addTrack(newTrack);
