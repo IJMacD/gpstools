@@ -299,6 +299,7 @@ GPSTools.Map = function (){
       osmLayer,
       cycleLayer,
       lineLayer,
+      bounds,
       marker, markers,
       lineHighlight;
   return {
@@ -318,12 +319,16 @@ GPSTools.Map = function (){
       map.addLayer(cycleLayer);
       map.addLayer(lineLayer);
     },
-    clearLine: function() {
+    clearLine: function(highlight) {
       if(!map){
         $('#map').show();
         GPSTools.Map.create();
       }
-      lineLayer.removeAllFeatures();
+      if(highlight){
+        lineLayer.removeFeatures([lineHighlight]);
+        map.zoomToExtent(bounds);
+      }else
+        lineLayer.removeAllFeatures();
     },
     drawLine: function (points, highlight) {
       if(!map){
@@ -355,6 +360,9 @@ GPSTools.Map = function (){
         if(lineHighlight)
           lineLayer.removeFeatures([lineHighlight]);
         lineHighlight = olFeature;
+      }
+      else{
+        bounds = olBounds;
       }
 
       lineLayer.addFeatures([olFeature]);
@@ -502,7 +510,7 @@ GPSTools.Graph = (function(){
         }
       }
     },
-    cancelSelection: function(id, x){
+    clearSelection: function(id){
       selectionStart = selectionEnd = 0;
     },
     getSelectionStart: function(id){

@@ -226,7 +226,8 @@
         .attr('href', "data:"+mime+";base64,"+btoa(data));
     }).removeAttr('disabled');
 
-    var selecting = false;
+    var selecting = false,
+        mouseDown;
 
     $('#graphCanvas').off('mousemove').on('mousemove', function(e){
       var x = e.offsetX, pos, frac, index;
@@ -252,21 +253,45 @@
 
     $('#graphCanvas').off('mousedown').on('mousedown', function(e){
       GPSTools.Graph.startSelection('graphCanvas',e.offsetX);
+      $('#clr-slt-btn').show();
       selecting = true;
+      mouseDown = {x:e.offsetX,y:e.offsetY};
     });
 
     $('#graphCanvas').off('mouseup mouseout').on('mouseup mouseout', function(e){
       selecting = false;
+
       var start = GPSTools.Graph.getSelectionStart('graphCanvas'),
           end = GPSTools.Graph.getSelectionEnd('graphCanvas'),
           startIndex = Math.floor(start * track.points.length),
           endIndex = Math.floor(end * track.points.length),
           i, points = [];
-      for(i = startIndex; i <= endIndex; i++){
-        points.push(track.points[i]);
+
+      if(startIndex == endIndex){
+        clearSelection();
       }
-      GPSTools.Map.drawLine(points, true);
+      else if(startIndex > 0){
+        for(i = startIndex; i < endIndex; i++){
+          points.push(track.points[i]);
+        }
+
+        GPSTools.Map.drawLine(points, true);
+      }
     });
+
+    $('#clr-slt-btn').off('click').on('click', clearSelection);
+
+    function clearSelection(){
+      GPSTools.Graph.clear('graphCanvas');
+      if(track.hasElevation())
+        plotElevation(track);
+      if(track.hasTime())
+        plotSpeed(track);
+      GPSTools.Map.clearLine(true);
+      GPSTools.Graph.clearSelection();
+      GPSTools.Graph.drawAnnotations('graphCanvas');
+      $(this).hide();
+    }
   }
 
   function showStats(track) {

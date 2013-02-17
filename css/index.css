@@ -40,3 +40,7 @@ small {
   display: inline;
   margin-left: 3px;
 }
+#clr-slt-btn {
+  display: none;
+  float: right;
+}
