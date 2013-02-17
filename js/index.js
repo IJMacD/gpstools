@@ -236,8 +236,8 @@
       if(track.hasTime())
         plotSpeed(track);
       pos = GPSTools.Graph.mark('graphCanvas',x);
-      if(pos.x > 0 && pos.x < 1){
-        index = Math.floor(pos.x * track.points.length);
+      if(pos > 0 && pos < 1){
+        index = Math.floor(pos * track.points.length);
         GPSTools.Map.mark(track.points[index]);
       }
       else{

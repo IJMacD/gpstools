@@ -444,9 +444,8 @@ GPSTools.Graph = (function(){
       var canvas = $('#'+id)[0],
           width = canvas.width,
           height = canvas.height,
-          fracX = (x - gutterWidth) / (width - gutterWidth * 2),
-          fracY = (y - gutterWidth) / (height - gutterWidth * 2);
-      return {x: fracX, y: fracY};
+          fracX = (x - gutterWidth) / (width - gutterWidth * 2);
+      return fracX;
     },
     drawAnnotations: function(id){
       var canvas = $('#'+id)[0],
@@ -469,21 +468,21 @@ GPSTools.Graph = (function(){
     },
     mark: function(id,x){
       var pos = GPSTools.Graph.getPosition(id,x,0);
-      if(pos.x > 0 && pos.x < 1){
+      if(pos > 0 && pos < 1){
         mark = x;
       }
       return pos;
     },
     startSelection: function(id, x){
       var pos = GPSTools.Graph.getPosition(id,x,0);
-      if(pos.x > 0 && pos.x < 1){
+      if(pos > 0 && pos < 1){
         selectionStart = x;
         selectionEnd = x;
       }
     },
     endSelection: function(id, x){
       var pos = GPSTools.Graph.getPosition(id,x,0);
-      if(pos.x > 0 && pos.x < 1){
+      if(pos > 0 && pos < 1){
         if(x < selectionStart){
           selectionStart = x;
         }
