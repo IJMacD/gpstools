@@ -341,7 +341,7 @@ GPSTools.Map = function (){
           olBounds,
           olStyle,
           olFeature;
-      logging("Drawing line" + highlight ? " (highlight)" : "");
+      logging("Drawing line" + (highlight ? " (highlight)" : ""));
       for(i=0;i<points.length;i++)
         olPoints.push(new OpenLayers.Geometry.Point(points[i].lon,points[i].lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()));
       olLine = new OpenLayers.Geometry.LineString(olPoints);
