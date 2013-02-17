@@ -40,6 +40,9 @@ small {
   display: inline;
   margin-left: 3px;
 }
+#mrg-trk-btn {
+  display: none;
+}
 #slt-btns {
   height: 30px;
   margin-top: -50px;

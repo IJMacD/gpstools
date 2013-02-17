@@ -40,13 +40,7 @@
 
           track.name = f.name;
 
-          $('<option>')
-            .attr('selected', '')
-            .text(f.name)
-            .data('track', track)
-            .appendTo('select');
-
-          displayTrack(track);
+          addTrack(track);
         };
       })(f);
 
@@ -298,17 +292,10 @@
         }
 
         newTrack = new GPSTools.Track(points);
-        newTrack.name = track.name + " (Crop)";
-
-        $('<option>')
-          .attr('selected', '')
-          .text(newTrack.name)
-          .data('track', newTrack)
-          .appendTo('select');
+        newTrack.name = track.name + " (Cropped)";
 
         clearSelection();
-
-        displayTrack(newTrack);
+        addTrack(newTrack);
       }
 
     });
@@ -324,6 +311,18 @@
       GPSTools.Graph.drawAnnotations('graphCanvas');
       $('#clr-slt-btn, #crp-slt-btn').hide();
     }
+  }
+
+  function addTrack(track){
+    $('select')[0].selectedIndex = -1;
+
+    $('<option>')
+      .attr('selected', '')
+      .text(track.name)
+      .data('track', track)
+      .appendTo('select');
+
+    displayTrack(track);
   }
 
   function showStats(track) {
@@ -376,8 +375,42 @@
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
   $('select').on('change', function(e){
-    var option = $(e.target).find(":selected");
-    displayTrack(option.data('track'));
+    var options = $(e.target)[0].selectedOptions,
+        tracks = [], i = 0, l = options.length,
+        mergeButton = $('#mrg-trk-btn');
+    if(options.length){
+      displayTrack($(options[0]).data('track'));
+      if(options.length > 1){
+        mergeButton.show();
+        for(;i<l;i++){
+          tracks.push($(options[i]).data('track'));
+        }
+        if(GPSTools.areMergeable(tracks)){
+          mergeButton.removeAttr('disabled');
+        }
+        else {
+          mergeButton.attr('disabled', '');
+        }
+      }
+      else {
+        mergeButton.hide();
+      }
+    }
+    else {
+      mergeButton.hide();
+    }
+  });
+
+  $('#mrg-trk-btn').click(function(e){
+    var options = $('select')[0].selectedOptions,
+        tracks = [], i = 0, l = options.length;
+    if(options.length > 1){
+      for(;i<l;i++){
+        tracks.push($(options[i]).data('track'));
+      }
+      addTrack(GPSTools.mergeTracks(tracks));
+    }
+    $('#mrg-trk-btn').hide();
   });
 
   $('#toggle-log').click(function(){

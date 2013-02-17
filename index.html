@@ -9,7 +9,7 @@
 <body>
 <div class="container">
   <h2>Input</h2>
-  <select></select>
+  <select multiple></select>
   <label for="files">Choose GPS file</label>
   <input type="file" id="files" name="files" />
   <h2 id="output">Output</h2>
@@ -17,7 +17,8 @@
   <button id="toggle-log" class="btn">Show Log</button>
   <button id="get-ele-btn" class="btn" disabled>Get Elevation</button>
   <button id="gen-spd-btn" class="btn" disabled>Fake Speed</button>
-  <a id="gen-gpx-btn" class="btn" disabled>Generate GPX</a><br>
+  <a id="gen-gpx-btn" class="btn" disabled>Generate GPX</a>
+  <button id="mrg-trk-btn" class="btn" disabled>Merge Tracks</button><br>
   <progress value="0"></progress>
   <div id="map">
     <h2>Map</h2>

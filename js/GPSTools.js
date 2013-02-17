@@ -1,4 +1,28 @@
-var GPSTools = {};
+var GPSTools = (function(){
+  var areMergeable = function(tracks){
+        return tracks.length == 2;
+      },
+      mergeTracks = function(tracks){
+        var points, track, name;
+        if(tracks[0].points[0].time <
+          tracks[1].points[0].time){
+          points = tracks[0].points.concat(tracks[1].points);
+          name = tracks[0].name;
+        }
+        else{
+          points = tracks[1].points.concat(tracks[0].points);
+          name = tracks[1].name;
+        }
+        track = new GPSTools.Track(points);
+        track.name = name + " (Merged)";
+        return track;
+      };
+
+  return {
+    areMergeable: areMergeable,
+    mergeTracks: mergeTracks
+  };
+}());
 GPSTools.Format = {};
 GPSTools.Format.GPX = function(){
   return {
