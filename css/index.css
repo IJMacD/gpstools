@@ -40,7 +40,12 @@ small {
   display: inline;
   margin-left: 3px;
 }
+#slt-btns {
+  height: 30px;
+  margin-top: -50px;
+  text-align: right;
+}
+#crp-slt-btn,
 #clr-slt-btn {
   display: none;
-  float: right;
 }

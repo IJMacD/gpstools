@@ -38,6 +38,8 @@
             return;
           }
 
+          track.name = f.name;
+
           $('<option>')
             .attr('selected', '')
             .text(f.name)
@@ -62,6 +64,8 @@
     if(track.hasElevation()) {
       logging("Track has elevation data");
       $('#get-ele-btn').hide();
+      GPSTools.Graph.clear('graphCanvas');
+      GPSTools.Graph.clear('gradientCanvas');
       plotElevation(track);
       plotGradient(track);
     }
@@ -253,7 +257,7 @@
 
     $('#graphCanvas').off('mousedown').on('mousedown', function(e){
       GPSTools.Graph.startSelection('graphCanvas',e.offsetX);
-      $('#clr-slt-btn').show();
+      $('#clr-slt-btn, #crp-slt-btn').show();
       selecting = true;
       mouseDown = {x:e.offsetX,y:e.offsetY};
     });
@@ -281,6 +285,34 @@
 
     $('#clr-slt-btn').off('click').on('click', clearSelection);
 
+    $('#crp-slt-btn').off('click').on('click', function(){
+      var start = GPSTools.Graph.getSelectionStart('graphCanvas'),
+          end = GPSTools.Graph.getSelectionEnd('graphCanvas'),
+          startIndex = Math.floor(start * track.points.length),
+          endIndex = Math.floor(end * track.points.length),
+          i, points = [], newTrack;
+
+      if(startIndex > 0 && startIndex < endIndex){
+        for(i = startIndex; i < endIndex; i++){
+          points.push(track.points[i]);
+        }
+
+        newTrack = new GPSTools.Track(points);
+        newTrack.name = track.name + " (Crop)";
+
+        $('<option>')
+          .attr('selected', '')
+          .text(newTrack.name)
+          .data('track', newTrack)
+          .appendTo('select');
+
+        clearSelection();
+
+        displayTrack(newTrack);
+      }
+
+    });
+
     function clearSelection(){
       GPSTools.Graph.clear('graphCanvas');
       if(track.hasElevation())
@@ -290,7 +322,7 @@
       GPSTools.Map.clearLine(true);
       GPSTools.Graph.clearSelection();
       GPSTools.Graph.drawAnnotations('graphCanvas');
-      $(this).hide();
+      $('#clr-slt-btn, #crp-slt-btn').hide();
     }
   }
 
