@@ -18,9 +18,8 @@ small {
   color: #9DA0A4;
 }
 #map,
-#elevation,
+#graph,
 #gradient,
-#speed,
 #log {
   display: none;
 }

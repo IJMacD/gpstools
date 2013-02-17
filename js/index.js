@@ -226,6 +226,8 @@
         .attr('href', "data:"+mime+";base64,"+btoa(data));
     }).removeAttr('disabled');
 
+    var selecting = false;
+
     $('#graphCanvas').off('mousemove').on('mousemove', function(e){
       var x = e.offsetX, pos, frac, index;
       GPSTools.Graph.clear('graphCanvas');
@@ -234,7 +236,6 @@
       if(track.hasTime())
         plotSpeed(track);
       pos = GPSTools.Graph.mark('graphCanvas',x);
-      frac = pos.x;
       if(pos.x > 0 && pos.x < 1){
         index = Math.floor(pos.x * track.points.length);
         GPSTools.Map.mark(track.points[index]);
@@ -242,6 +243,20 @@
       else{
         GPSTools.Map.unmark();
       }
+
+      if(selecting)
+        GPSTools.Graph.endSelection('graphCanvas',e.offsetX);
+
+      GPSTools.Graph.drawAnnotations('graphCanvas');
+    });
+
+    $('#graphCanvas').off('mousedown').on('mousedown', function(e){
+      GPSTools.Graph.startSelection('graphCanvas',e.offsetX);
+      selecting = true;
+    });
+
+    $('#graphCanvas').off('mouseup mouseout').on('mouseup mouseout', function(e){
+      selecting = false;
     });
   }
 

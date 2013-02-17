@@ -376,6 +376,9 @@ GPSTools.Map = function (){
 }();
 GPSTools.Graph = (function(){
   var gutterWidth = 35,
+      mark,
+      selectionStart,
+      selectionEnd,
       drawGraph = function(id, data, options){
         options = $.extend({
           color: 'black',
@@ -404,6 +407,8 @@ GPSTools.Graph = (function(){
         graph.Set('chart.hmargin', 1);
         graph.Set('chart.gutter.left', gutterWidth);
         graph.Set('chart.gutter.right', gutterWidth);
+        graph.Set('chart.gutter.top', gutterWidth);
+        graph.Set('chart.gutter.bottom', gutterWidth);
         if(options.negative)
           graph.Set('chart.xaxispos', 'center');
         if(options.labels)
@@ -435,21 +440,60 @@ GPSTools.Graph = (function(){
     clear: function(id){
       RGraph.Clear($('#'+id)[0]);
     },
-    mark: function(id,x){
+    getPosition: function(id,x,y){
       var canvas = $('#'+id)[0],
-          ctx = canvas.getContext('2d'),
           width = canvas.width,
           height = canvas.height,
-          frac = (x - gutterWidth) / (width - gutterWidth * 2);
-      if(frac > 0 && frac < 1){
+          fracX = (x - gutterWidth) / (width - gutterWidth * 2),
+          fracY = (y - gutterWidth) / (height - gutterWidth * 2);
+      return {x: fracX, y: fracY};
+    },
+    drawAnnotations: function(id){
+      var canvas = $('#'+id)[0],
+          ctx = canvas.getContext('2d'),
+          height = canvas.height;
+
+      if(mark){
         ctx.strokeWidth = "2";
         ctx.strokeStyle = "#ff0000";
         ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
+        ctx.moveTo(mark, gutterWidth);
+        ctx.lineTo(mark, height - gutterWidth);
         ctx.stroke();
       }
-      return {x: frac};
+
+      if(selectionStart){
+        ctx.fillStyle = "rgba(255,42,42,0.6)";
+        ctx.fillRect(selectionStart,gutterWidth,selectionEnd-selectionStart,height-gutterWidth*2);
+      }
+    },
+    mark: function(id,x){
+      var pos = GPSTools.Graph.getPosition(id,x,0);
+      if(pos.x > 0 && pos.x < 1){
+        mark = x;
+      }
+      return pos;
+    },
+    startSelection: function(id, x){
+      var pos = GPSTools.Graph.getPosition(id,x,0);
+      if(pos.x > 0 && pos.x < 1){
+        selectionStart = x;
+        selectionEnd = x;
+      }
+    },
+    endSelection: function(id, x){
+      var pos = GPSTools.Graph.getPosition(id,x,0);
+      if(pos.x > 0 && pos.x < 1){
+        if(x < selectionStart){
+          selectionStart = x;
+        }
+        else{
+          selectionEnd = x;
+        }
+      }
+    },
+    cancelSelection: function(id, x){
+      selectionStart = selectionEnd = 0;
     }
   }
 }());
