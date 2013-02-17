@@ -299,7 +299,8 @@ GPSTools.Map = function (){
       osmLayer,
       cycleLayer,
       lineLayer,
-      marker, markers;
+      marker, markers,
+      lineHighlight;
   return {
     create: function () {
       map = new OpenLayers.Map("mapCanvas", {'controls': [
@@ -324,7 +325,7 @@ GPSTools.Map = function (){
       }
       lineLayer.removeAllFeatures();
     },
-    drawLine: function (points) {
+    drawLine: function (points, highlight) {
       if(!map){
         $('#map').show();
         GPSTools.Map.create();
@@ -335,19 +336,29 @@ GPSTools.Map = function (){
           olBounds,
           olStyle,
           olFeature;
-      logging("Drawing line");
+      logging("Drawing line" + highlight ? " (highlight)" : "");
       for(i=0;i<points.length;i++)
         olPoints.push(new OpenLayers.Geometry.Point(points[i].lon,points[i].lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()));
       olLine = new OpenLayers.Geometry.LineString(olPoints);
       logging("Conversion of points finished");
       olBounds = olLine.getBounds();
       olStyle = {
-        strokeColor: '#0000ff',
+        strokeColor: highlight ? '#ff0000': '#0000ff',
         strokeOpacity: 0.5,
         strokeWidth: 5
       };
+      // I tried to reuse Vector Feature!
+      // I did I promise, it just displayed buggily
       olFeature = new OpenLayers.Feature.Vector(olLine, null, olStyle);
+
+      if(highlight){
+        if(lineHighlight)
+          lineLayer.removeFeatures([lineHighlight]);
+        lineHighlight = olFeature;
+      }
+
       lineLayer.addFeatures([olFeature]);
+
       map.zoomToExtent(olBounds);
     },
     mark: function(point){
@@ -493,6 +504,12 @@ GPSTools.Graph = (function(){
     },
     cancelSelection: function(id, x){
       selectionStart = selectionEnd = 0;
+    },
+    getSelectionStart: function(id){
+      return GPSTools.Graph.getPosition(id,selectionStart);
+    },
+    getSelectionEnd: function(id){
+      return GPSTools.Graph.getPosition(id,selectionEnd);
     }
   }
 }());

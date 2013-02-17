@@ -257,6 +257,15 @@
 
     $('#graphCanvas').off('mouseup mouseout').on('mouseup mouseout', function(e){
       selecting = false;
+      var start = GPSTools.Graph.getSelectionStart('graphCanvas'),
+          end = GPSTools.Graph.getSelectionEnd('graphCanvas'),
+          startIndex = Math.floor(start * track.points.length),
+          endIndex = Math.floor(end * track.points.length),
+          i, points = [];
+      for(i = startIndex; i <= endIndex; i++){
+        points.push(track.points[i]);
+      }
+      GPSTools.Map.drawLine(points, true);
     });
   }
 
