@@ -308,6 +308,13 @@
     }
   }
 
+  function displayTracks(tracks){
+    GPSTools.Map.clearLine();
+    for(var i = 0, l = tracks.length; i < l; i++){
+      GPSTools.Map.drawLine(tracks[i].points);
+    }
+  }
+
   function addTrack(track){
     $('select')[0].selectedIndex = -1;
 
@@ -374,12 +381,12 @@
         tracks = [], i = 0, l = options.length,
         mergeButton = $('#mrg-trk-btn');
     if(options.length){
-      displayTrack($(options[0]).data('track'));
+      for(;i<l;i++){
+        tracks.push($(options[i]).data('track'));
+      }
+      displayTracks(tracks);
       if(options.length > 1){
         mergeButton.show();
-        for(;i<l;i++){
-          tracks.push($(options[i]).data('track'));
-        }
         if(GPSTools.areMergeable(tracks)){
           mergeButton.removeAttr('disabled');
         }
