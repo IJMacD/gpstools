@@ -225,28 +225,48 @@
     }).removeAttr('disabled');
 
     var selecting = false,
+        mousePos,
+        mouseOver,
         mouseDown;
 
+    function onMouseOver(){
+      var pos, index;
+
+      if(mousePos){
+        GPSTools.Graph.clear('graphCanvas');
+        if(track.hasElevation())
+          plotElevation(track);
+        if(track.hasTime())
+          plotSpeed(track);
+        pos = GPSTools.Graph.mark('graphCanvas',mousePos);
+        if(pos > 0 && pos < 1){
+          index = Math.floor(pos * track.points.length);
+          GPSTools.Map.mark(track.points[index]);
+        }
+        else{
+          GPSTools.Map.unmark();
+        }
+
+        if(selecting)
+          GPSTools.Graph.endSelection('graphCanvas',mousePos);
+
+        GPSTools.Graph.drawAnnotations('graphCanvas');
+
+        webkitRequestAnimationFrame(onMouseOver);
+      }
+    }
+
     $('#graphCanvas').off('mousemove').on('mousemove', function(e){
-      var x = e.offsetX, pos, frac, index;
-      GPSTools.Graph.clear('graphCanvas');
-      if(track.hasElevation())
-        plotElevation(track);
-      if(track.hasTime())
-        plotSpeed(track);
-      pos = GPSTools.Graph.mark('graphCanvas',x);
-      if(pos > 0 && pos < 1){
-        index = Math.floor(pos * track.points.length);
-        GPSTools.Map.mark(track.points[index]);
-      }
-      else{
-        GPSTools.Map.unmark();
-      }
+      mousePos = e.offsetX;
+    });
 
-      if(selecting)
-        GPSTools.Graph.endSelection('graphCanvas',e.offsetX);
+    $('#graphCanvas').off('mouseenter').on('mouseenter', function(e){
+      mousePos = e.offsetX;
+      webkitRequestAnimationFrame(onMouseOver);
+    });
 
-      GPSTools.Graph.drawAnnotations('graphCanvas');
+    $('#graphCanvas').off('mouseleave').on('mouseleave', function(e){
+      mousePos = false;
     });
 
     $('#graphCanvas').off('mousedown').on('mousedown', function(e){
