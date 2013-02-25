@@ -33,6 +33,10 @@ small {
 #mapCanvas {
   height: 400px;
 }
+#mapCanvas:-webkit-full-screen {
+  height: 100%;
+  width: 100%;
+}
 #map img {
   max-width: none;
 }

@@ -326,6 +326,8 @@
       GPSTools.Graph.drawAnnotations('graphCanvas');
       $('#clr-slt-btn, #crp-slt-btn').hide();
     }
+
+    $('#fll-scn-btn').removeAttr('disabled');
   }
 
   function displayTracks(tracks){
@@ -434,6 +436,10 @@
     }
     $('#mrg-trk-btn').hide();
   });
+
+  $('#fll-scn-btn').click(function(){
+    $('#mapCanvas')[0].webkitRequestFullscreen();
+  })
 
   $('#toggle-log').click(function(){
     $('#log').toggle();
