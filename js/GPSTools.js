@@ -464,6 +464,7 @@ GPSTools.Graph = (function(){
         if(options.labels)
           graph.Set('chart.labels', options.labels);
         graph.Draw();
+        RGraph.ObjectRegistry.Clear();
       };
 
   return {
