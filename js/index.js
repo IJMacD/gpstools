@@ -345,10 +345,17 @@
   }
 
   function displayTracks(tracks){
+    var cumlDist = 0, cumlTime = 0;
     GPSTools.Map.clearLine();
     for(var i = 0, l = tracks.length; i < l; i++){
+      cumlDist += tracks[i].getDistance();
+      cumlTime += tracks[i].getDuration();
       GPSTools.Map.drawLine(tracks[i].points);
     }
+    $('output').html('Aggregate Statistics:' +
+      '<br>Duration: ' + juration.stringify(cumlTime) +
+      '<br>Distance (km): ' + cumlDist +
+      '<br>Distance (mi): ' + GPSTools.Util.convertToMiles(cumlDist));
   }
 
   function addTrack(track){
@@ -418,8 +425,8 @@
       for(;i<l;i++){
         tracks.push($(options[i]).data('track'));
       }
-      displayTracks(tracks);
       if(options.length > 1){
+        displayTracks(tracks);
         mergeButton.show();
         if(GPSTools.areMergeable(tracks)){
           mergeButton.removeAttr('disabled');
@@ -429,6 +436,7 @@
         }
       }
       else {
+        displayTrack(tracks[0]);
         mergeButton.hide();
       }
     }
