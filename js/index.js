@@ -2,10 +2,13 @@
   function handleFileSelect(evt) {
     var files = evt.target.files, // FileList object
         i = 0,
-        l = files.length;
+        l = files.length,
+        added = 0,
+        progress = $('progress');
 
     // files is a FileList of File objects. List some properties.
     if(l > 0) {
+      progress.attr('max',l);
       for(;i<l;i++){
         var f = files[i];
         logging("File selected");
@@ -44,6 +47,14 @@
             track.name = theFile.name;
 
             addTrack(track);
+
+            added++;
+            progress.val(added);
+
+            if(added == l){
+              displayTrack(track);
+              progress.val(0);
+            }
           };
         })(f);
 
@@ -348,8 +359,6 @@
       .text(track.name)
       .data('track', track)
       .appendTo('select');
-
-    displayTrack(track);
   }
 
   function showStats(track) {
