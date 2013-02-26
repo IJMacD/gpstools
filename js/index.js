@@ -1,52 +1,55 @@
 (function(GPSTools, $){
   function handleFileSelect(evt) {
-    var files = evt.target.files; // FileList object
+    var files = evt.target.files, // FileList object
+        i = 0,
+        l = files.length;
 
     // files is a FileList of File objects. List some properties.
-    if(files.length > 0) {
-      var f = files[0];
-      logging("File selected");
-      logging("Filename: \"" + f.name + "\"");
-      logging("Size (bytes): " + f.size);
-      if(f.size > 1024*1024)
-        logging("Size is quite large, may be rejected");
-      if(f.type) {
-        logging("Type: " + f.type);
-        // We can check a few types that it is definetly not going to be
-        if( /^(image|audio|video)\//.test(f.type) ) {
-          logging("Stopping for invalid type");
-          return;
-        }
-      }
-      var reader = new FileReader();
-
-      // Closure to capture the file information.
-      reader.onload = (function(theFile) {
-        return function(e) {
-          var doc = $($.parseXML( e.target.result )),
-              track;
-          if(GPSTools.Format.GPX.isValid(doc)) {
-            logging("Found GPX file!");
-            track = GPSTools.Format.GPX.parse(doc);
-          }
-          else if(GPSTools.Format.KML.isValid(doc)) {
-            logging("Found KML file!");
-            track = GPSTools.Format.KML.parse(doc);
-          }
-          else {
-            logging("Unrecognised file type");
+    if(l > 0) {
+      for(;i<l;i++){
+        var f = files[i];
+        logging("File selected");
+        logging("Filename: \"" + f.name + "\"");
+        logging("Size (bytes): " + f.size);
+        if(f.size > 1024*1024)
+          logging("Size is quite large, may be rejected");
+        if(f.type) {
+          logging("Type: " + f.type);
+          // We can check a few types that it is definetly not going to be
+          if( /^(image|audio|video)\//.test(f.type) ) {
+            logging("Stopping for invalid type");
             return;
           }
+        }
+        var reader = new FileReader();
 
-          track.name = f.name;
+        // Closure to capture the file information.
+        reader.onload = (function(theFile) {
+          return function(e) {
+            var doc = $($.parseXML( e.target.result )),
+                track;
+            if(GPSTools.Format.GPX.isValid(doc)) {
+              logging("Found GPX file!");
+              track = GPSTools.Format.GPX.parse(doc);
+            }
+            else if(GPSTools.Format.KML.isValid(doc)) {
+              logging("Found KML file!");
+              track = GPSTools.Format.KML.parse(doc);
+            }
+            else {
+              logging("Unrecognised file type");
+              return;
+            }
 
-          addTrack(track);
-        };
-      })(f);
+            track.name = theFile.name;
 
-      // Read in the file as text.
-      reader.readAsText(f);
+            addTrack(track);
+          };
+        })(f);
 
+        // Read in the file as text.
+        reader.readAsText(f);
+      }
     }
   }
 
