@@ -149,6 +149,38 @@ GPSTools.Format.KML = function(){
     generate: function (track) {}
   };
 }();
+GPSTools.Format.TCX = function(){
+  return {
+    isValid: function (doc) {
+      // This is not a jQuery object yet.
+      if(!doc.find)
+        doc = $(doc);
+
+      return !!(doc.find('TrainingCenterDatabase').length);
+    },
+    parse: function (doc) {
+      // This is not a jQuery object yet.
+      if(!doc.find)
+        doc = $(doc);
+
+      var tracks = doc.find('Trackpoint'),
+          l = tracks.length,
+          points = [];
+      logging(l + " track points");
+      tracks.each(function(i,item){
+          var tp = $(item),
+              time = tp.find('Time').text(),
+              lat = tp.find('LatitudeDegrees').text(),
+              lon = tp.find('LongitudeDegrees').text(),
+              ele = tp.find('AltitudeMeters').text() || 0.1;
+          points.push(new GPSTools.Point(lat, lon, ele, time));
+      });
+      logging(points.length + " points loaded");
+      return new GPSTools.Track(points);
+    },
+    generate: function (track) {}
+  };
+}();
 GPSTools.Track = function (points) {
   this.points = points;
 };
@@ -156,7 +188,7 @@ GPSTools.Track.prototype.hasTime = function (){
   return !!(this.points && this.points[0] && this.points[0].time);
 };
 GPSTools.Track.prototype.hasElevation = function (){
-  return !!(this.points && this.points[0] && this.points[0].ele);
+  return !!(this.points && (this.points[0] && this.points[0].ele || this.points[1] && this.points[1].ele));
 };
 GPSTools.Track.prototype.getStart = function (){
   if(!this.start){

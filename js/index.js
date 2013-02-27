@@ -39,6 +39,10 @@
               logging("Found KML file!");
               track = GPSTools.Format.KML.parse(doc);
             }
+            else if(GPSTools.Format.TCX.isValid(doc)) {
+              logging("Found TCX file!");
+              track = GPSTools.Format.TCX.parse(doc);
+            }
             else {
               logging("Unrecognised file type");
               return;
