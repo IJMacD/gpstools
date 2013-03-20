@@ -370,6 +370,7 @@ GPSTools.Map = function (){
   var map,
       osmLayer,
       cycleLayer,
+      osLayer,
       lineLayer,
       bounds,
       marker, markers,
@@ -386,10 +387,13 @@ GPSTools.Map = function (){
         ["http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
          "http://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
          "http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"]);
+      osLayer = new OpenLayers.Layer.Bing({
+        name: "Ordnance Survey (UK)",
+        key: "AnAvwFeZFUyC15cF3frJiEgWVLsBwn8C3pKsNsfkGsFnk2SE_QD1mMiyMKKRFiz9",
+        type: "ordnanceSurvey"
+      });
       lineLayer = new OpenLayers.Layer.Vector("Line Layer");
-      map.addLayer(osmLayer);
-      map.addLayer(cycleLayer);
-      map.addLayer(lineLayer);
+      map.addLayers([osmLayer,cycleLayer,osLayer,lineLayer]);
     },
     clearLine: function(highlight) {
       if(!map){
