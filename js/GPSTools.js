@@ -58,7 +58,10 @@ GPSTools.Format.GPX = function(){
                   lon = item.attr('lon'),
                   ele = parseFloat(item.find('ele').text()),
                   time = item.find('time').text();
-              points.push(new GPSTools.Point(lat,lon,ele,time));
+              if(isNaN(lat) || isNaN(lon))
+                console.log("lat: "+lat+" lon: "+lon);
+              else
+                points.push(new GPSTools.Point(lat,lon,ele,time));
             });
             logging("Loaded " + points.length);
             return new GPSTools.Track(points);
@@ -141,7 +144,10 @@ GPSTools.Format.KML = function(){
           logging(l + " track points");
       for(;i<l;i++) {
         lle = coords[i].split(",");
-        points.push(new GPSTools.Point(lle[1], lle[0], lle[2]));
+        if(isNaN(lle[1]) || isNaN(lle[0]))
+          console.log("lat: "+lle[1]+" lon: "+lle[1]);
+        else
+          points.push(new GPSTools.Point(lle[1], lle[0], lle[2]));
       }
       logging(points.length + " points loaded");
       return new GPSTools.Track(points);
@@ -173,7 +179,10 @@ GPSTools.Format.TCX = function(){
               lat = tp.find('LatitudeDegrees').text(),
               lon = tp.find('LongitudeDegrees').text(),
               ele = tp.find('AltitudeMeters').text() || 0.1;
-          points.push(new GPSTools.Point(lat, lon, ele, time));
+          if(!lat.length || !lon.length)
+            console.log("Bad Point: " + time);
+          else
+            points.push(new GPSTools.Point(lat, lon, ele, time));
       });
       logging(points.length + " points loaded");
       return new GPSTools.Track(points);
@@ -405,8 +414,12 @@ GPSTools.Map = function (){
           olStyle,
           olFeature;
       logging("Drawing line" + (highlight ? " (highlight)" : ""));
-      for(i=0;i<points.length;i++)
-        olPoints.push(new OpenLayers.Geometry.Point(points[i].lon,points[i].lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()));
+      for(i=0;i<points.length;i++){
+        if(isNaN(points[i].lon))
+          console.log("Bad Point: " + points[i].time);
+        else
+          olPoints.push(new OpenLayers.Geometry.Point(points[i].lon,points[i].lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()));
+      }
       olLine = new OpenLayers.Geometry.LineString(olPoints);
       logging("Conversion of points finished");
       olBounds = olLine.getBounds();
