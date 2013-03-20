@@ -346,6 +346,30 @@
     }
 
     $('#fll-scn-btn').removeAttr('disabled');
+
+    $('#ato-spl-btn').removeAttr('disabled').off('click').on('click', function(){
+      var i = 1,
+          l = track.points.length,
+          p,
+          thisDate,
+          lastDate = new Date(track.points[i].time),
+          trackStart = 0,
+          d, newTrack;
+      progress.attr('max', track.points.length);
+      for (; i < l; i++) {
+        p = track.points[i];
+        thisDate = new Date(p.time);
+        if(lastDate.getDate() != thisDate.getDate())
+        {
+          newTrack = GPSTools.cropTrack(track, trackStart, i);
+          addTrack(newTrack);
+          trackStart = i;
+        }
+        lastDate = thisDate;
+        progress.val(i);
+      }
+      progress.val(0);
+    });
   }
 
   function displayTracks(tracks){
