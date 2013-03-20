@@ -251,9 +251,11 @@
       var format = GPSTools.Format.GPX,
           ext = 'gpx',
           data = format.generate(track),
-          mime = format.mimeType;
+          mime = format.mimeType,
+          name = track.hasTime() ?
+            track.getStart().toISOString() : (new Date()).toISOString();
       $(this)
-        .attr('download', track.getStart().toISOString()+"."+ext)
+        .attr('download', name+"."+ext)
         .attr('href', "data:"+mime+";base64,"+btoa(data));
     }).removeAttr('disabled');
 
