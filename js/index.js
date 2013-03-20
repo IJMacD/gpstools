@@ -1,10 +1,11 @@
 (function(GPSTools, $){
+  var progress;
   function handleFileSelect(evt) {
     var files = evt.target.files, // FileList object
         i = 0,
         l = files.length,
-        added = 0,
-        progress = $('progress');
+        added = 0;
+    progress = $('progress');
 
     // files is a FileList of File objects. List some properties.
     if(l > 0) {
@@ -493,6 +494,48 @@
     $('#log').toggle();
     var self = $(this);
     self.text(self.text() == "Show Log" ? "Hide Log" : "Show Log");
+  });
+
+  $('#strava-import-btn').click(function(){
+    var modal = $('#importModal');
+    modal.modal().find('.btn-primary').click(function(){
+      var ride = parseInt($('#rideid_txt').val()),
+          streams, details,
+          process = function(){
+            var latlng = streams.latlng,
+                time = streams.time,
+                elevation = streams.altitude,
+                l = latlng.length,
+                i = 0,
+                points = [],
+                track, date,
+                startDate = new Date(details.ride.startDate).valueOf();
+            for(;i<l;i++){
+              date = (new Date(startDate + (time[i]*1000))).toISOString();
+              points.push(new GPSTools.Point(latlng[i][0],latlng[i][1],elevation[i],date));
+            }
+            track = new GPSTools.Track(points);
+            track.name = "Strava " + ride;
+            addTrack(track);
+          };
+      if(!ride)
+        return;
+      modal.modal('hide');
+      $.getJSON('proxy.php?url=' + encodeURIComponent('http://app.strava.com/api/v1/streams/'+ride+'?streams[]=latlng,time,altitude'),
+        function(data){
+          streams = data;
+          if(details)
+            process();
+        }
+      );
+      $.getJSON('proxy.php?url=' + encodeURIComponent('http://app.strava.com/api/v1/rides/'+ride),
+        function(data){
+          details = data;
+          if(streams)
+            process();
+        }
+      );
+    });
   });
 
 }(GPSTools, jQuery));
