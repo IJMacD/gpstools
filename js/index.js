@@ -199,6 +199,7 @@
           geo = {},
           lat, lon, index,
           progress = $('progress'),
+          url, callback, delay,
           getCallback = function(i,index){
             return function(data){
               geo[index] = Math.max(parseFloat(data),0);
@@ -219,8 +220,21 @@
         lon = points[i].lon;
         index = lat + ":" + lon;
         if(!geo[index]){
-          var url = baseURL + "?lat=" + lat + "&lng=" + lon;
-          $.get(url, getCallback(i,index));
+          url = baseURL + "?lat=" + lat + "&lng=" + lon;
+          callback = getCallback(i,index);
+          // Batches of 200 every 5 seconds
+          delay = Math.floor(i / 200) * 5000;
+          (function(url, callback){
+            setTimeout(function(){
+              $.get(url, callback)
+                .fail(function(){
+                  $.get(url, callback)
+                    .fail(function(){
+                      callback(0);
+                    });
+                });
+              }, delay);
+          }(url, callback));
         }
         else {
           points[i].ele = geo[index];
