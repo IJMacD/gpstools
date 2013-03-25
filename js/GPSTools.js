@@ -2,7 +2,7 @@ var GPSTools = (function(){
   var cropTrack = function(track, start, end){
         var points = track.points.slice(start, end),
             newTrack = new GPSTools.Track(points);
-        newTrack.name = newTrack.getStart().toISOString() + " (Cropped)";
+        newTrack.name = (track.hasTime() ? track.getStart().toISOString() : track.name) + " (Cropped)";
         return newTrack;
       },
       areMergeable = function(tracks){
@@ -201,14 +201,14 @@ GPSTools.Track.prototype.hasElevation = function (){
 };
 GPSTools.Track.prototype.getStart = function (){
   if(!this.start){
-    if(this.points && this.points[0])
+    if(this.points && this.points[0] && this.points[0].time)
       this.start = new Date(this.points[0].time);
   }
   return this.start;
 };
 GPSTools.Track.prototype.getEnd = function (){
   if(!this.end){
-    if(this.points && this.points[this.points.length-1])
+    if(this.points && this.points[this.points.length-1] && this.points[this.points.length-1].time)
       this.end = new Date(this.points[this.points.length-1].time);
   }
   return this.end;
