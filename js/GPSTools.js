@@ -249,6 +249,19 @@ GPSTools.Track.prototype.getElevation = function (){
   }
   return this.elevation;
 };
+GPSTools.Track.prototype.getHeightGain = function (){
+  var sum = 0,
+      i = 1,
+      l = this.points.length, p, p1;
+  logging("Summing elevation data");
+  for(;i<l;i++) {
+    p = this.points[i];
+    p1 = this.points[i-1];
+    if(p.ele > p1.ele)
+      sum += (p.ele - p1.ele);
+  }
+  return sum;
+};
 GPSTools.Track.prototype.getGradient = function (){
   if(!this.gradient) {
     if(!this.hasElevation())

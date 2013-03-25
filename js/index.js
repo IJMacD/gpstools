@@ -423,6 +423,9 @@
           '<br>Maximum Speed (km/h): ' + GPSTools.Util.convertToKPH(track.getMaxSpeed()) +
           '<br>Maximum Speed (mph): ' + GPSTools.Util.convertToMPH(track.getMaxSpeed());
     }
+    if(track.hasElevation()){
+      out += '<br>Height Gain (m): ' + track.getHeightGain();
+    }
     $('output').html(out);
   }
 
