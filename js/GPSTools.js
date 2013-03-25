@@ -416,13 +416,15 @@ GPSTools.Map = function (){
           olLine,
           olBounds,
           olStyle,
-          olFeature;
+          olFeature,
+          fromProjection = new OpenLayers.Projection("EPSG:4326"),
+          toProjection = map.getProjectionObject();
       logging("Drawing line" + (highlight ? " (highlight)" : ""));
       for(i=0;i<points.length;i++){
-        if(isNaN(points[i].lon))
+        if(isNaN(points[i].lat) || isNaN(points[i].lon))
           console.log("Bad Point: " + points[i].time);
         else
-          olPoints.push(new OpenLayers.Geometry.Point(points[i].lon,points[i].lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()));
+          olPoints.push(new OpenLayers.Geometry.Point(points[i].lon,points[i].lat).transform(fromProjection, toProjection));
       }
       olLine = new OpenLayers.Geometry.LineString(olPoints);
       logging("Conversion of points finished");
