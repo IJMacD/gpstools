@@ -393,7 +393,11 @@ GPSTools.Map = function (){
         type: "ordnanceSurvey"
       });
       lineLayer = new OpenLayers.Layer.Vector("Line Layer");
-      map.addLayers([osmLayer,cycleLayer,osLayer,lineLayer]);
+      //map.addLayers([osmLayer,cycleLayer,osLayer,lineLayer]);
+      map.addLayer(osmLayer);
+      map.addLayer(cycleLayer);
+      //map.addLayer(osLayer);
+      map.addLayer(lineLayer);
     },
     clearLine: function(highlight) {
       if(!map){
