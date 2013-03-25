@@ -71,6 +71,8 @@
 
   function displayTrack(track){
 
+    showStats(track);
+
     GPSTools.Map.clearLine();
     GPSTools.Map.drawLine(track.points);
 
@@ -90,12 +92,10 @@
 
     if(track.hasTime())
     {
-      showStats(track);
       $('#gen-spd-btn').hide();
       plotSpeed(track);
     }
     else{
-      $('output').text('Distance (km): ' + track.getDistance());
       $('#gen-spd-btn').removeAttr('disabled').show();
     }
 
@@ -414,14 +414,16 @@
   }
 
   function showStats(track) {
-    $('output').html('Start: ' + track.getStart() + '<br>End: ' + track.getEnd() +
-      '<br>Duration: ' + GPSTools.Util.duration(track.getDuration()) +
-      '<br>Distance (km): ' + track.getDistance() +
-      '<br>Distance (mi): ' + GPSTools.Util.convertToMiles(track.getDistance()) +
-      '<br>Average Speed (km/h): ' + GPSTools.Util.convertToKPH(track.getAvgSpeed()) +
-      '<br>Maximum Speed (km/h): ' + GPSTools.Util.convertToKPH(track.getMaxSpeed()) +
-      '<br>Maximum Speed (mph): ' + GPSTools.Util.convertToMPH(track.getMaxSpeed())
-    );
+    var out = 'Distance (km): ' + track.getDistance() +
+          '<br>Distance (mi): ' + GPSTools.Util.convertToMiles(track.getDistance());
+    if(track.hasTime()){
+      out += '<br>Start: ' + track.getStart() + '<br>End: ' + track.getEnd() +
+          '<br>Duration: ' + GPSTools.Util.duration(track.getDuration()) +
+          '<br>Average Speed (km/h): ' + GPSTools.Util.convertToKPH(track.getAvgSpeed()) +
+          '<br>Maximum Speed (km/h): ' + GPSTools.Util.convertToKPH(track.getMaxSpeed()) +
+          '<br>Maximum Speed (mph): ' + GPSTools.Util.convertToMPH(track.getMaxSpeed());
+    }
+    $('output').html(out);
   }
 
   function plotSpeed(track) {
