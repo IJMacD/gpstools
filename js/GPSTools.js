@@ -385,6 +385,9 @@ GPSTools.Map = function (){
       cycleLayer,
       osLayer,
       lineLayer,
+      drawLayer,
+      drawControl,
+      drawCallback,
       bounds,
       marker, markers,
       lineHighlight;
@@ -406,11 +409,75 @@ GPSTools.Map = function (){
         type: "ordnanceSurvey"
       });
       lineLayer = new OpenLayers.Layer.Vector("Line Layer");
+      var myStyles = new OpenLayers.StyleMap({
+          "default": new OpenLayers.Style({
+              fillColor: "#ffcc66",
+              strokeColor: "#99ff33",
+              strokeOpacity: 0.5,
+              strokeWidth: 5,
+              graphicZIndex: 1
+          }),
+          "temporary": new OpenLayers.Style({
+              fillColor: "#66ccff",
+              strokeColor: "#3399ff",
+              strokeOpacity: 0.5,
+              strokeWidth: 5,
+              graphicZIndex: 2
+          })
+      });
+      drawLayer = new OpenLayers.Layer.Vector("Draw Layer", {styleMap: myStyles});
+      drawControl = new OpenLayers.Control.DrawFeature(drawLayer, OpenLayers.Handler.Path);
+      drawControl.events.register('featureadded', null, function(){
+        if(typeof drawCallback == "function"){
+          var feature = drawLayer.features[0],
+              points = feature.geometry.components,
+              fromProjection = map.getProjectionObject(),
+              toProjection = new OpenLayers.Projection("EPSG:4326"),
+              i=0, l=points.length,
+              gPoints = [], point, track;
+          drawLayer.destroyFeatures([feature]);
+          for(;i<l;i++){
+            point = points[i].transform(fromProjection, toProjection);
+            gPoints.push(new GPSTools.Point(point.y, point.x));
+          }
+          track = new GPSTools.Track(gPoints);
+          track.name = track.getDistance().toFixed(2) + " km Track";
+          drawCallback(track);
+        }
+        drawControl.deactivate();
+      });
+      map.addControl(drawControl);
       //map.addLayers([osmLayer,cycleLayer,osLayer,lineLayer]);
       map.addLayer(osmLayer);
       map.addLayer(cycleLayer);
-      //map.addLayer(osLayer);
+      map.addLayer(osLayer);
       map.addLayer(lineLayer);
+      map.addLayer(drawLayer);
+
+      OpenLayers.Event.observe(document, "keydown", function(evt) {
+          var handled = false;
+          switch (evt.keyCode) {
+              case 90: // z
+                  if (evt.metaKey || evt.ctrlKey) {
+                      drawControl.undo();
+                      handled = true;
+                  }
+                  break;
+              case 89: // y
+                  if (evt.metaKey || evt.ctrlKey) {
+                      drawControl.redo();
+                      handled = true;
+                  }
+                  break;
+              case 27: // esc
+                  drawControl.cancel();
+                  handled = true;
+                  break;
+          }
+          if (handled) {
+              OpenLayers.Event.stop(evt);
+          }
+      });
     },
     clearLine: function(highlight) {
       if(!map){
@@ -471,7 +538,7 @@ GPSTools.Map = function (){
     mark: function(point){
       var lonlat = new OpenLayers.LonLat(point.lon,point.lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
       if(!marker){
-        markers = new OpenLayers.Layer.Markers();
+        markers = new OpenLayers.Layer.Markers("Marker");
         map.addLayer(markers);
         var size = new OpenLayers.Size(21,25),
             offset = new OpenLayers.Pixel(-(size.w/2), -size.h),
@@ -489,6 +556,14 @@ GPSTools.Map = function (){
         marker.display(false);
         markers.redraw();
       }
+    },
+    createLine: function(callback){
+      if(!map){
+        $('#map').show();
+        GPSTools.Map.create();
+      }
+      drawControl.activate();
+      drawCallback = callback;
     }
   };
 }();

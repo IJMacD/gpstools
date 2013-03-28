@@ -559,6 +559,16 @@
     });
   });
 
+  var drawTrackButton = $('#drw-trk-btn');
+  drawTrackButton.click(function(){
+    drawTrackButton.attr('disabled', true);
+    GPSTools.Map.createLine(function(track){
+      addTrack(track);
+      displayTrack(track);
+      drawTrackButton.removeAttr('disabled');
+    });
+  })
+
 }(GPSTools, jQuery));
 
 function logging(m) {
