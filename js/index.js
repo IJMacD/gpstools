@@ -396,7 +396,7 @@
     GPSTools.Map.clearLine();
     for(var i = 0, l = tracks.length; i < l; i++){
       cumlDist += tracks[i].getDistance();
-      cumlTime += tracks[i].getDuration();
+      cumlTime += tracks[i].getDuration() || 0;
       GPSTools.Map.drawLine(tracks[i].points);
     }
     $('output').html('Aggregate Statistics:' +
