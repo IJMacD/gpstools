@@ -103,6 +103,14 @@
     if(track.hasTime())
     {
       $('#gen-spd-btn').hide();
+      var startDate = track.getStart(),
+          endDate = track.getEnd();
+      if(startDate.getDate() != endDate.getDate()){
+        $('#ato-spl-btn').show().removeAttr('disabled');
+      }
+      else {
+        $('#ato-spl-btn').hide();
+      }
       plotSpeed(track);
     }
     else{
