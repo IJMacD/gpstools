@@ -53,6 +53,10 @@ small {
 #mrg-trk-btn {
   display: none;
 }
+#export-grp {
+  display: inline-block;
+  vertical-align: middle;
+}
 #slt-btns {
   height: 30px;
   margin-top: -50px;

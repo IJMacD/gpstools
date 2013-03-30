@@ -20,7 +20,15 @@
   <div id="track-detail">
     <button id="get-ele-btn" class="btn" disabled>Get Elevation</button>
     <button id="gen-spd-btn" class="btn" disabled>Fake Speed</button>
-    <a id="gen-gpx-btn" class="btn" disabled>Generate GPX</a>
+    <div class="btn-group" id="export-grp">
+      <a id="gen-gpx-btn" class="btn" disabled>Export GPX</a>
+      <button class="btn dropdown-toggle" data-toggle="dropdown" disabled>
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a href="#">Export GPX</a>
+      </ul>
+    </div>
     <button id="mrg-trk-btn" class="btn" disabled>Merge Tracks</button>
     <button id="ato-spl-btn" class="btn" disabled>Autosplit</button>
     <button id="fll-scn-btn" class="btn" disabled>Fullscreen Map</button><br>
