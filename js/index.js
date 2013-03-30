@@ -593,7 +593,7 @@
                   points.push(new GPSTools.Point(latlng[i][0],latlng[i][1],elevation[i],date));
                 }
                 track = new GPSTools.Track(points);
-                track.name = "Strava " + stravaRideId;
+                track.name = rideDetails.name;
                 addTrack(track);
                 displayTrack(track);
               }
