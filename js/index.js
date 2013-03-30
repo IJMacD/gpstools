@@ -1,8 +1,16 @@
 (function(GPSTools, $){
+
   var progress;
+
   $(function(){
     progress = $('progress');
+
+    $('#open-file-btn').click(function(){
+      $('#files').click();
+    });
   });
+
+
   function handleFileSelect(evt) {
     var files = evt.target.files, // FileList object
         i = 0,

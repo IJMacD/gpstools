@@ -1,9 +1,15 @@
 .container {
   margin-bottom: 20px;
 }
+#files {
+  display: none;
+}
 select {
-  float: right;
-  width: 35%;
+  border: none;
+  width: 100%;
+}
+select:focus {
+  outline: none;
 }
 #output {
   clear: right;
