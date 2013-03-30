@@ -56,3 +56,13 @@ small {
 #clr-slt-btn {
   display: none;
 }
+.loading {
+  display: none;
+}
+p.controls {
+  padding-top: 5px;
+  margin-bottom: 5px;
+}
+#strava-ride-details {
+  display: none;
+}

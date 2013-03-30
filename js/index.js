@@ -1,11 +1,13 @@
 (function(GPSTools, $){
   var progress;
+  $(function(){
+    progress = $('progress');
+  });
   function handleFileSelect(evt) {
     var files = evt.target.files, // FileList object
         i = 0,
         l = files.length,
         added = 0;
-    progress = $('progress');
 
     // files is a FileList of File objects. List some properties.
     if(l > 0) {
@@ -519,47 +521,104 @@
     self.text(self.text() == "Show Log" ? "Hide Log" : "Show Log");
   });
 
-  $('#strava-import-btn').click(function(){
-    var modal = $('#importModal');
-    modal.modal().find('.btn-primary').click(function(){
-      var ride = parseInt($('#rideid_txt').val()),
-          streams, details,
-          process = function(){
-            var latlng = streams.latlng,
-                time = streams.time,
-                elevation = streams.altitude,
-                l = latlng.length,
-                i = 0,
-                points = [],
-                track, date,
-                startDate = new Date(details.ride.startDate).valueOf();
-            for(;i<l;i++){
-              date = (new Date(startDate + (time[i]*1000))).toISOString();
-              points.push(new GPSTools.Point(latlng[i][0],latlng[i][1],elevation[i],date));
+  // Strava Closure
+  (function(){
+    var stravaRideDetails,
+        stravaRideIdTxt = $('#rideid_txt'),
+        stravaImportBtn = $('#strava-import-btn'),
+        stravaRideDetailsDiv = $('#strava-ride-details'),
+        stravaRideNameTxt = $('#strava-name'),
+        stravaRideDistanceTxt = $('#strava-distance'),
+        stravaRideDurationTxt = $('#strava-duration'),
+        stravaRideAthleteTxt = $('#strava-athlete'),
+        stravaLoading = $('#strava-loading'),
+        stravaModal = $('#importModal'),
+        stravaLoadRideBtn = stravaModal.find('.btn-primary'),
+        stravaRideId;
+    stravaRideIdTxt.on('keyup change', function(){
+      var val = stravaRideIdTxt.val(),
+          pattern = /\d+$/,
+          result = pattern.exec(val);
+      if(result && result[0]){
+        stravaRideId = result[0];
+        stravaLoading.show();
+
+        $.getJSON('proxy.php?url=' + encodeURIComponent('http://app.strava.com/api/v1/rides/'+stravaRideId),
+          function(data){
+            stravaLoading.hide();
+            if(data.ride){
+              rideDetails = data.ride;
+              stravaRideNameTxt.text(data.ride.name);
+              stravaRideDistanceTxt.text((data.ride.distance/1000).toFixed(1) + " km");
+              stravaRideDurationTxt.text(juration.stringify(data.ride.elapsedTime));
+              stravaRideAthleteTxt.text(data.ride.athlete.name);
+              stravaRideDetailsDiv.show();
+              stravaLoadRideBtn.removeAttr('disabled');
             }
-            track = new GPSTools.Track(points);
-            track.name = "Strava " + ride;
-            addTrack(track);
-          };
-      if(!ride)
-        return;
-      modal.modal('hide');
-      $.getJSON('proxy.php?url=' + encodeURIComponent('http://app.strava.com/api/v1/streams/'+ride+'?streams[]=latlng,time,altitude'),
-        function(data){
-          streams = data;
-          if(details)
-            process();
-        }
-      );
-      $.getJSON('proxy.php?url=' + encodeURIComponent('http://app.strava.com/api/v1/rides/'+ride),
-        function(data){
-          details = data;
-          if(streams)
-            process();
-        }
-      );
+            else if (data.error){
+              stravaRideDetailsDiv.hide();
+              stravaLoading.hide();
+              alert(data.error);
+            }
+          }
+        ).error(function(){
+          stravaRideDetailsDiv.hide();
+          stravaLoading.hide();
+          alert("Other Error!");
+        });
+      }
     });
-  });
+
+    stravaImportBtn.click(function(){
+      stravaModal.modal();
+      stravaLoadRideBtn.click(function(){
+        resetModal();
+        if(!stravaRideId)
+          return;
+        var pp = pseudoProgress(10);
+        $.getJSON('proxy.php?url=' + encodeURIComponent('http://app.strava.com/api/v1/streams/'+stravaRideId+'?streams[]=latlng,time,altitude'),
+          function(data){
+            if(data.latlng){
+              if(rideDetails){
+                var latlng = data.latlng,
+                    time = data.time,
+                    elevation = data.altitude,
+                    l = latlng.length,
+                    i = 0,
+                    points = [],
+                    track, date,
+                    startDate = new Date(rideDetails.startDate).valueOf();
+                for(;i<l;i++){
+                  date = (new Date(startDate + (time[i]*1000))).toISOString();
+                  points.push(new GPSTools.Point(latlng[i][0],latlng[i][1],elevation[i],date));
+                }
+                track = new GPSTools.Track(points);
+                track.name = "Strava " + stravaRideId;
+                addTrack(track);
+                displayTrack(track);
+              }
+            }
+            else if (data.error){
+              resetModal();
+              alert(data.error);
+            }
+            pp.complete();
+          }
+        ).error(function(){
+          resetModal();
+          pp.complete();
+          alert("Other Error!");
+        });
+      });
+    });
+
+    function resetModal(){
+      stravaModal.modal('hide');
+      stravaLoading.hide();
+      stravaLoadRideBtn.attr('disabled', true);
+      stravaRideDetailsDiv.hide();
+    }
+  }());
 
   var drawTrackButton = $('#drw-trk-btn');
   drawTrackButton.click(function(){
@@ -569,7 +628,29 @@
       displayTrack(track);
       drawTrackButton.removeAttr('disabled');
     });
-  })
+  });
+
+  function pseudoProgress(duration){
+    var max = duration * 1000,// duration in seconds
+        interval = 100,       // interval in milliseconds
+        val = 0,
+        update = function(){
+          val += interval;
+          if(val > max){
+            val = max;
+            clearInterval(timer);
+          }
+          progress.val(val);
+        },
+        timer = setInterval(update, interval);
+    progress.attr('max', max);
+    return {
+      complete: function(){
+        clearInterval(timer);
+        progress.val(0);
+      }
+    }
+  }
 
 }(GPSTools, jQuery));
 
