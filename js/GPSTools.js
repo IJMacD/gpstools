@@ -2,7 +2,7 @@ var GPSTools = (function(){
   var cropTrack = function(track, start, end){
         var points = track.points.slice(start, end),
             newTrack = new GPSTools.Track(points);
-        newTrack.name = (track.hasTime() ? track.getStart().toISOString() : track.name) + " (Cropped)";
+        newTrack.name = (newTrack.hasTime() ? newTrack.getStart().toISOString() : track.name) + " (Cropped)";
         return newTrack;
       },
       areMergeable = function(tracks){

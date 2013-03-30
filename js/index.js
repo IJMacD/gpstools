@@ -350,6 +350,7 @@
 
         clearSelection();
         addTrack(newTrack);
+        displayTrack(newTrack);
       }
 
     });
