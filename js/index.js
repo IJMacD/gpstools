@@ -421,6 +421,7 @@
       cumlTime += tracks[i].getDuration() || 0;
       GPSTools.Map.drawLine(tracks[i].points);
     }
+    GPSTools.Map.zoomToExtent();
     $('output').html('Aggregate Statistics:' +
       '<br>Duration: ' + juration.stringify(cumlTime) +
       '<br>Distance (km): ' + cumlDist +

@@ -564,6 +564,10 @@ GPSTools.Map = function (){
       }
       drawControl.activate();
       drawCallback = callback;
+    },
+    zoomToExtent: function(){
+      var bounds = lineLayer.getDataExtent();
+      map.zoomToExtent(bounds);
     }
   };
 }();
