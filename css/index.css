@@ -4,12 +4,30 @@
 #files {
   display: none;
 }
+#tracks-list {
+  border: 3px dashed transparent;
+}
 select {
   border: none;
   width: 100%;
 }
 select:focus {
   outline: none;
+}
+#tracks-list.drop-target {
+  border-color: #3333ff;
+  position: relative;
+}
+#tracks-list.drop-target:after {
+  background: white;
+  border-radius: 5px;
+  color: #999;
+  content: "Drop Files Here";
+  left: 50%;
+  padding: 5px;
+  position: absolute;
+  text-align: center;
+  top: 50%;
 }
 #output {
   clear: right;

@@ -12,11 +12,14 @@
 
 
   function handleFileSelect(evt) {
-    var files = evt.target.files, // FileList object
-        i = 0,
+    var files = evt.target.files; // FileList object
+    loadFiles(files);
+  }
+
+  function loadFiles(files){
+    var i = 0,
         l = files.length,
         added = 0;
-
     // files is a FileList of File objects. List some properties.
     if(l > 0) {
       progress.attr('max',l);
@@ -645,6 +648,24 @@
       displayTrack(track);
       drawTrackButton.removeAttr('disabled');
     });
+  });
+
+  var trackList = $('#tracks-list'),
+      dragHover = function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        console.log(e.type);
+        if(e.type == "dragover")
+          trackList.addClass('drop-target');
+        else
+          trackList.removeClass('drop-target');
+      };
+  $(document).on('dragover', dragHover);
+
+  trackList.on('drop', function(e){
+    dragHover(e);
+    var files = e.originalEvent.dataTransfer.files;
+    loadFiles(files);
   });
 
   function pseudoProgress(duration){
