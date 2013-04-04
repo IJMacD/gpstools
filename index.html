@@ -7,17 +7,12 @@
 <link rel="stylesheet" href="./css/index.css">
 </head>
 <body>
-<div class="container">
+<div id="action-bar">
   <h1>GPSTools</h1>
-  <div id="tracks-list">
-    <input type="file" id="files" name="files" multiple />
-    <button id="open-file-btn" class="btn">Open Files</button>
-    <button id="strava-import-btn" class="btn">Strava Import</button>
-    <button id="drw-trk-btn" class="btn">Draw Track</button>
-    <select multiple></select>
-  </div>
-  <output id="gps"></output>
-  <div id="track-detail">
+  <button id="open-file-btn" class="btn">Open Files</button>
+  <button id="strava-import-btn" class="btn">Strava Import</button>
+  <button id="drw-trk-btn" class="btn">Draw Track</button>
+  <div id="cab">
     <button id="get-ele-btn" class="btn" disabled>Get Elevation</button>
     <button id="gen-spd-btn" class="btn" disabled>Fake Speed</button>
     <div class="btn-group" id="export-grp">
@@ -31,24 +26,31 @@
     </div>
     <button id="mrg-trk-btn" class="btn" disabled>Merge Tracks</button>
     <button id="ato-spl-btn" class="btn" disabled>Autosplit</button>
-    <button id="fll-scn-btn" class="btn" disabled>Fullscreen Map</button><br>
-    <progress value="0"></progress>
-    <div id="map">
-      <h2>Map</h2>
-      <div id="mapCanvas"></div>
+    <button id="fll-scn-btn" class="btn" disabled>Fullscreen Map</button>
+  </div>
+  <progress value="0"></progress>
+</div>
+<div id="tracks-list">
+  <input type="file" id="files" name="files" multiple />
+  <select id="tracks" multiple></select>
+</div>
+<div id="track-detail">
+  <output id="gps"></output>
+  <div id="map">
+    <h2>Map</h2>
+    <div id="mapCanvas"></div>
+  </div>
+  <div id="graph">
+    <h2>Elevation / Speed</h2>
+    <div id="slt-btns">
+      <button id="crp-slt-btn" class="btn">Crop Track</button>
+      <button id="clr-slt-btn" class="btn">Clear Selection</button>
     </div>
-    <div id="graph">
-      <h2>Elevation / Speed</h2>
-      <div id="slt-btns">
-        <button id="crp-slt-btn" class="btn">Crop Track</button>
-        <button id="clr-slt-btn" class="btn">Clear Selection</button>
-      </div>
-      <canvas id="graphCanvas" width="940" height="250">[No canvas support]</canvas>
-    </div>
-    <div id="gradient">
-      <h2>Gradient Distribution</h2>
-      <canvas id="gradientCanvas" width="940" height="250">[No canvas support]</canvas>
-    </div>
+    <canvas id="graphCanvas" width="940" height="250">[No canvas support]</canvas>
+  </div>
+  <div id="gradient">
+    <h2>Gradient Distribution</h2>
+    <canvas id="gradientCanvas" width="940" height="250">[No canvas support]</canvas>
   </div>
 </div>
 <div id="speedModal" class="modal hide fade">

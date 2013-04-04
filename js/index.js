@@ -109,7 +109,7 @@
       var startDate = track.getStart(),
           endDate = track.getEnd();
       if(startDate.getDate() != endDate.getDate()){
-        $('#ato-spl-btn').show().removeAttr('disabled');
+        $('#ato-spl-btn').removeAttr('disabled').show();
       }
       else {
         $('#ato-spl-btn').hide();
@@ -266,7 +266,7 @@
           }
         }
       }
-    }).removeAttr('disabled');
+    }).removeAttr('disabled').show();
 
     $('#gen-gpx-btn').off('click').on('click', function (){
       var format = GPSTools.Format.GPX,
@@ -279,6 +279,7 @@
         .attr('download', name+"."+ext)
         .attr('href', "data:"+mime+";base64,"+btoa(data));
     }).removeAttr('disabled');
+    $('#export-group').css('display', 'inline-block');
 
     var selecting = false,
         mousePos,
@@ -386,9 +387,9 @@
       $('#clr-slt-btn, #crp-slt-btn').hide();
     }
 
-    $('#fll-scn-btn').removeAttr('disabled');
+    $('#fll-scn-btn').removeAttr('disabled').show();
 
-    $('#ato-spl-btn').removeAttr('disabled').off('click').on('click', function(){
+    $('#ato-spl-btn').removeAttr('disabled').show().off('click').on('click', function(){
       var i = 1,
           l = track.points.length,
           p,

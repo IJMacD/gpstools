@@ -1,17 +1,80 @@
-.container {
-  margin-bottom: 20px;
+html,
+body {
+  height: 100%;
+}
+body {
+  background:
+    linear-gradient(27deg, #151515 2px, transparent 2px) 0 2px,
+    linear-gradient(207deg, #151515 2px, transparent 2px) 4px 0px,
+    linear-gradient(27deg, #222 2px, transparent 2px) 0px 4px,
+    linear-gradient(207deg, #222 2px, transparent 2px) 4px 2px,
+    linear-gradient(90deg, #1b1b1b 4px, transparent 4px),
+    linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
+  background-color: #131313;
+  background-size: 8px 8px;
+  background-attachment: fixed;
+}
+#action-bar {
+  background-color: hsla(20,100%,50%,.94);
+  box-shadow: 0 1px 2px black;
+}
+#action-bar h1 {
+  color: white;
+  display: inline;
+  font-size: 1.5em;
+  margin: 0;
+  padding: 0 15px;
+  text-shadow: 1px 1px 2px black;
+  vertical-align: middle;
+}
+#cab {
+  border-left: 1px solid rgba(255,255,255,0.6);
+  display: inline-block;
+  height: 30px;
+  margin-left: 5px;
+  padding-left: 10px;
+}
+#cab > button,
+#export-grp {
+  display: none;
 }
 #files {
   display: none;
 }
 #tracks-list {
   border: 3px dashed transparent;
+  box-sizing: border-box;
+  display: inline-block;
+  height: 94%;
+  padding: 5px;
+  vertical-align: top;
+  width: 30%;
 }
-select {
+#track-detail {
+  box-sizing: border-box;
+  display: inline-block;
+  height: 94%;
+  overflow-x: hidden;
+  padding: 8px;
+  vertical-align: top;
+  width: 69%;
+}
+h1,
+h2,
+h3,
+h4 {
+  color: white;
+  text-shadow: 2px 2px 5px black;
+}
+#tracks {
+  background: transparent;
   border: none;
+  color: white;
+  height: 98%;
+  margin: 10px 0;
   width: 100%;
 }
-select:focus {
+#tracks:focus {
   outline: none;
 }
 #tracks-list.drop-target {
@@ -19,24 +82,28 @@ select:focus {
   position: relative;
 }
 #tracks-list.drop-target:after {
-  background: white;
   border-radius: 5px;
-  color: #999;
+  color: rgba(64,64,255,0.8);
   content: "Drop Files Here";
-  left: 50%;
+  font-size: 2em;
+  font-weight: bold;
+  line-height: 30px;
   padding: 5px;
   position: absolute;
   text-align: center;
+  text-shadow: 2px 2px 5px black;
   top: 50%;
+  width: 100%;
 }
 #output {
   clear: right;
 }
 output {
+  color: white;
   display: block;
 }
 progress {
-  width: 100%;
+  width: 30%;
 }
 small {
   color: #9DA0A4;
@@ -72,7 +139,6 @@ small {
   display: none;
 }
 #export-grp {
-  display: inline-block;
   vertical-align: middle;
 }
 #slt-btns {
