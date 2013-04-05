@@ -411,7 +411,6 @@ GPSTools.Map = function (){
         key: "AnAvwFeZFUyC15cF3frJiEgWVLsBwn8C3pKsNsfkGsFnk2SE_QD1mMiyMKKRFiz9",
         type: "ordnanceSurvey"
       });
-      lineLayer = new OpenLayers.Layer.Vector("Line Layer");
       var myStyles = new OpenLayers.StyleMap({
           "default": new OpenLayers.Style({
               fillColor: "#ffcc66",
@@ -427,6 +426,10 @@ GPSTools.Map = function (){
               strokeWidth: 5,
               graphicZIndex: 2
           })
+      });
+      lineLayer = new OpenLayers.Layer.Vector("Line Layer", {
+        styleMap: myStyles,
+        renderers: ["Canvas", "SVG", "VML"]
       });
       drawLayer = new OpenLayers.Layer.Vector("Draw Layer", {styleMap: myStyles});
       drawControl = new OpenLayers.Control.DrawFeature(drawLayer, OpenLayers.Handler.Path);
@@ -571,6 +574,29 @@ GPSTools.Map = function (){
     zoomToExtent: function(){
       var bounds = lineLayer.getDataExtent();
       map.zoomToExtent(bounds);
+    },
+    getLineThumb: function(dw,dh){
+      if(!lineLayer.renderer.canvas)
+        return;
+      dw = dw || 40;
+      dh = dh || 40;
+      var sctx = lineLayer.renderer.canvas,
+          scanvas = sctx.canvas,
+          dcanvas = document.createElement('canvas'),
+          dctx = dcanvas.getContext('2d'),
+          sr = scanvas.height/scanvas.width,
+          dr = dh/dw,
+          sw = (sr < 1) ? scanvas.height / dr : scanvas.width,
+          sh = (sr < 1) ? scanvas.height : dr * scanvas.width,
+          sx = (sr < 1) ? (scanvas.width - sw) / 2 : 0,
+          sy = (sr < 1) ? 0 : (scanvas.height - sh) / 2,
+          dx = 0, dy = 0;
+      dcanvas.width = dw;
+      dcanvas.height = dh;
+      dctx.fillStyle = "white";
+      dctx.fillRect(dx,dy,dw,dh);
+      dctx.drawImage(scanvas, sx, sy, sw, sh, dx, dy, dw, dh);
+      return dcanvas.toDataURL();
     }
   };
 }();
