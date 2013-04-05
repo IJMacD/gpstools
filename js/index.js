@@ -1,9 +1,11 @@
 (function(GPSTools, $){
 
-  var progress;
+  var progress,
+      titleLabel;
 
   $(function(){
     progress = $('progress');
+    titleLabel = $('#track-title');
 
     $('#open-file-btn').click(function(){
       $('#files').click();
@@ -62,7 +64,7 @@
               return;
             }
 
-            track.name = theFile.name;
+            track.setName(theFile.name);
 
             addTrack(track);
 
@@ -83,6 +85,8 @@
   }
 
   function displayTrack(track){
+
+    titleLabel.text(track.name);
 
     showStats(track);
 

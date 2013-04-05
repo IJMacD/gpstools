@@ -193,6 +193,9 @@ GPSTools.Format.TCX = function(){
 GPSTools.Track = function (points) {
   this.points = points;
 };
+GPSTools.Track.prototype.setName = function(name) {
+  this.name = name.replace(/_/g, " ").replace(/\.[a-z]{3,4}$/,"");
+}
 GPSTools.Track.prototype.hasTime = function (){
   return !!(this.points && this.points[0] && this.points[0].time);
 };
