@@ -105,6 +105,7 @@ output {
   display: block;
 }
 progress {
+  display: none;
   width: 30%;
 }
 small {

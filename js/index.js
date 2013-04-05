@@ -22,7 +22,7 @@
         added = 0;
     // files is a FileList of File objects. List some properties.
     if(l > 0) {
-      progress.attr('max',l);
+      setProgress(0,l);
       for(;i<l;i++){
         var f = files[i];
         logging("File selected");
@@ -67,11 +67,11 @@
             addTrack(track);
 
             added++;
-            progress.val(added);
+            setProgress(added);
 
             if(added == l){
               displayTrack(track);
-              progress.val(0);
+              resetProgress();
             }
           };
         })(f);
@@ -219,23 +219,20 @@
           baseURL = "http://ws.geonames.org/srtm3",
           geo = {},
           lat, lon, index,
-          progress = $('progress'),
           url, callback, delay,
           getCallback = function(i,index){
             return function(data){
               geo[index] = Math.max(parseFloat(data),0);
               points[i].ele = geo[index];
-              var val = progress.val() + 1;
-              progress.val(val);
-              if(val == l) {
-                progress.val(0);
+              if(incrementProgress()) {
+                resetProgress(0);
                 plotElevation(track);
                 plotGradient(track);
               }
             };
           };
       $(this).attr('disabled','');
-      progress.attr('max', l);
+      setProgress(0, l);
       for(;i<l;i++) {
         lat = points[i].lat;
         lon = points[i].lon;
@@ -259,10 +256,8 @@
         }
         else {
           points[i].ele = geo[index];
-          var val = progress.val() + 1;
-          progress.val(val);
-          if(val == l) {
-            progress.val(0);
+          if(incrementProgress()) {
+            resetProgress();
           }
         }
       }
@@ -397,7 +392,7 @@
           lastDate = new Date(track.points[i].time),
           trackStart = 0,
           d, newTrack;
-      progress.attr('max', track.points.length);
+      setProgress(0, track.points.length);
       for (; i < l; i++) {
         p = track.points[i];
         thisDate = new Date(p.time);
@@ -408,9 +403,9 @@
           trackStart = i;
         }
         lastDate = thisDate;
-        progress.val(i);
+        setProgress(i);
       }
-      progress.val(0);
+      resetProgress();
     });
   }
 
@@ -670,6 +665,27 @@
     loadFiles(files);
   });
 
+  function setProgress(val, max){
+    if (typeof max != "undefined"){
+      progress.attr('max', max);
+    }
+    else {
+      max = progress.attr('max');
+    }
+    progress.val(val);
+    progress.show();
+    return val == max;
+  }
+
+  function resetProgress(){
+    progress.val(0);
+    progress.hide();
+  }
+
+  function incrementProgress(){
+    return setProgress(progress.val() + 1);
+  }
+
   function pseudoProgress(duration){
     var max = duration * 1000,// duration in seconds
         interval = 100,       // interval in milliseconds
@@ -680,14 +696,14 @@
             val = max;
             clearInterval(timer);
           }
-          progress.val(val);
+          setProgress(val);
         },
         timer = setInterval(update, interval);
-    progress.attr('max', max);
+    setProgress(0, max);
     return {
       complete: function(){
         clearInterval(timer);
-        progress.val(0);
+        resetProgress();
       }
     }
   }
