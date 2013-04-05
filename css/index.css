@@ -16,7 +16,10 @@ body {
 }
 #action-bar {
   background-color: hsla(20,100%,50%,.94);
-  box-shadow: 0 1px 2px black;
+  box-shadow: 0 2px 4px black;
+  position: fixed;
+  width: 100%;
+  z-index: 1005;
 }
 #action-bar h1 {
   color: white;
@@ -31,6 +34,7 @@ body {
   border-left: 1px solid rgba(255,255,255,0.6);
   display: inline-block;
   height: 30px;
+  line-height: 30px;
   margin-left: 5px;
   padding-left: 10px;
 }
@@ -43,21 +47,21 @@ body {
 }
 #tracks-list {
   border: 3px dashed transparent;
+  bottom: 0;
   box-sizing: border-box;
   display: inline-block;
-  height: 94%;
-  padding: 5px;
+  position: fixed;
+  top: 40px;
   vertical-align: top;
   width: 30%;
 }
 #track-detail {
   box-sizing: border-box;
   display: inline-block;
-  height: 94%;
+  margin-left: 30%;
   overflow-x: hidden;
-  padding: 8px;
   vertical-align: top;
-  width: 69%;
+  width: 70%;
 }
 h1,
 h2,
@@ -70,8 +74,7 @@ h4 {
   background: transparent;
   border: none;
   color: white;
-  height: 98%;
-  margin: 10px 0;
+  height: 100%;
   width: 100%;
 }
 #tracks:focus {
@@ -79,7 +82,6 @@ h4 {
 }
 #tracks-list.drop-target {
   border-color: #3333ff;
-  position: relative;
 }
 #tracks-list.drop-target:after {
   border-radius: 5px;
@@ -122,7 +124,7 @@ small {
   padding: 10px;
 }
 #mapCanvas {
-  height: 400px;
+  height: 450px;
 }
 #mapCanvas:-webkit-full-screen {
   height: 100%;
@@ -159,4 +161,10 @@ p.controls {
 }
 #strava-ride-details {
   display: none;
+}
+#mapCanvas .olControlZoom {
+  top: 48px;
+}
+#mapCanvas .olControlLayerSwitcher {
+  top: 65px;
 }
