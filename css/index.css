@@ -50,8 +50,13 @@ body {
   bottom: 0;
   box-sizing: border-box;
   display: inline-block;
+  overflow-x: hidden;
+  overflow-y: auto;
   position: fixed;
   top: 40px;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
   vertical-align: top;
   width: 30%;
 }
@@ -63,6 +68,21 @@ body {
   vertical-align: top;
   width: 70%;
 }
+.track {
+  background-repeat: no-repeat;
+  cursor: pointer;
+  height: 64px;
+  margin-top: 3px;
+  padding: 4px 4px 4px 64px;
+}
+.track-name {
+  color: white;
+  font-size: 1.2em;
+  text-shadow: 1px 1px 2px black;
+}
+.track.selected {
+  outline: 3px solid orange;
+}
 h1,
 h2,
 h3,
@@ -70,23 +90,13 @@ h4 {
   color: white;
   text-shadow: 2px 2px 5px black;
 }
-#tracks {
-  background: transparent;
-  border: none;
-  color: white;
-  height: 100%;
-  width: 100%;
-}
-#tracks:focus {
-  outline: none;
-}
 #tracks-list.drop-target {
   border-color: #3333ff;
 }
 #tracks-list.drop-target:after {
   border-radius: 5px;
   color: rgba(64,64,255,0.8);
-  content: "Drop Files Here";
+  content: "+ Drop Files Here";
   font-size: 2em;
   font-weight: bold;
   line-height: 30px;
@@ -94,7 +104,7 @@ h4 {
   position: absolute;
   text-align: center;
   text-shadow: 2px 2px 5px black;
-  top: 50%;
+  top: 30%;
   width: 100%;
 }
 #output {

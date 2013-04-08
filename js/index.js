@@ -1,14 +1,64 @@
 (function(GPSTools, $){
 
   var progress,
+      trackList,
       titleLabel;
 
   $(function(){
     progress = $('progress');
+    trackList = $('#tracks-list');
     titleLabel = $('#track-title');
 
     $('#open-file-btn').click(function(){
       $('#files').click();
+    });
+
+    var firstSelected = 0;
+    trackList.on('click', '.track', function(e){
+      var selected = $(e.currentTarget),
+          index = trackList.find('.track').index(selected),
+          tracks = [], i = 0, l,
+          mergeButton = $('#mrg-trk-btn');
+
+      if(e.ctrlKey){
+        firstSelected = index;
+        selected.addClass('selected');
+        trackList.find('.selected').each(function(i,item){
+          tracks.push($(item).data('track'));
+        });
+      }
+      else if(e.shiftKey){
+        trackList.find('.selected').removeClass('selected');
+        trackList.find('.track').each(function(i,item){
+          if((index <= i && i <= firstSelected) ||
+            (firstSelected <= i && i <= index)){
+            item = $(item);
+            item.addClass('selected');
+            tracks.push(item.data('track'));
+          }
+        });
+      }
+      else {
+        trackList.find('.selected').removeClass('selected');
+        firstSelected = index;
+        selected.addClass('selected');
+        tracks.push(selected.data('track'));
+      }
+
+      if(tracks.length > 1){
+        displayTracks(tracks);
+        mergeButton.show();
+        if(GPSTools.areMergeable(tracks)){
+          mergeButton.removeAttr('disabled');
+        }
+        else {
+          mergeButton.attr('disabled', '');
+        }
+      }
+      else if(tracks.length == 1) {
+        displayTrack(tracks[0]);
+        mergeButton.hide();
+      }
     });
   });
 
@@ -429,13 +479,17 @@
   }
 
   function addTrack(track){
-    $('select')[0].selectedIndex = -1;
+    trackList.find('.selected').removeClass('selected');
 
-    $('<option>')
-      .attr('selected', '')
-      .text(track.name)
+    $('<div>')
+      .addClass('track')
+      .addClass('selected')
+      //.css('background-image', track.getThumb())
+      .append($('<p>')
+        .addClass('track-name')
+        .text(track.name))
       .data('track', track)
-      .appendTo('select');
+      .appendTo(trackList);
   }
 
   function showStats(track) {
@@ -491,34 +545,6 @@
   }
 
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
-
-  $('select').on('change', function(e){
-    var options = $(e.target)[0].selectedOptions,
-        tracks = [], i = 0, l = options.length,
-        mergeButton = $('#mrg-trk-btn');
-    if(options.length){
-      for(;i<l;i++){
-        tracks.push($(options[i]).data('track'));
-      }
-      if(options.length > 1){
-        displayTracks(tracks);
-        mergeButton.show();
-        if(GPSTools.areMergeable(tracks)){
-          mergeButton.removeAttr('disabled');
-        }
-        else {
-          mergeButton.attr('disabled', '');
-        }
-      }
-      else {
-        displayTrack(tracks[0]);
-        mergeButton.hide();
-      }
-    }
-    else {
-      mergeButton.hide();
-    }
-  });
 
   $('#mrg-trk-btn').click(function(e){
     var options = $('select')[0].selectedOptions,
