@@ -484,7 +484,7 @@
     $('<div>')
       .addClass('track')
       .addClass('selected')
-      //.css('background-image', track.getThumb())
+      .css('background-image', 'url('+track.getThumb(64)+')')
       .append($('<p>')
         .addClass('track-name')
         .text(track.name))

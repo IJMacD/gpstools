@@ -15,7 +15,7 @@ body {
   background-attachment: fixed;
 }
 #action-bar {
-  background-color: hsla(20,100%,50%,.94);
+  background-color: hsla(20,100%,50%,.9);
   box-shadow: 0 2px 4px black;
   position: fixed;
   width: 100%;
@@ -72,16 +72,18 @@ body {
   background-repeat: no-repeat;
   cursor: pointer;
   height: 64px;
-  margin-top: 3px;
-  padding: 4px 4px 4px 64px;
+  margin: 5px;
+  padding: 0 0 0 64px;
 }
 .track-name {
   color: white;
   font-size: 1.2em;
+  margin: 0;
+  padding: 4px;
   text-shadow: 1px 1px 2px black;
 }
 .track.selected {
-  outline: 3px solid orange;
+  box-shadow: 0 0 5px 4px orange;
 }
 h1,
 h2,

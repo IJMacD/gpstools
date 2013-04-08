@@ -344,6 +344,16 @@ GPSTools.Track.prototype.getMaxSpeed = function () {
   }
   return this.maxSpeed;
 };
+// This could be better implemented without corrupting the state of the main map
+// but currently it is expected to only be called at times when the main map
+// will be in a state of transition e.g.
+GPSTools.Track.prototype.getThumb = function(size) {
+  GPSTools.Map.clearLine();
+  GPSTools.Map.drawLine(this.points);
+  var thumb = GPSTools.Map.getLineThumb(size);
+  GPSTools.Map.clearLine();
+  return thumb;
+};
 GPSTools.Point = function (lat,lon,ele,time) {
   this.lat = parseFloat(lat);
   this.lon = parseFloat(lon);
@@ -579,17 +589,19 @@ GPSTools.Map = function (){
       if(!lineLayer.renderer.canvas)
         return;
       dw = dw || 40;
-      dh = dh || 40;
+      dh = dh || dw;
       var sctx = lineLayer.renderer.canvas,
           scanvas = sctx.canvas,
           dcanvas = document.createElement('canvas'),
           dctx = dcanvas.getContext('2d'),
-          sr = scanvas.height/scanvas.width,
+          sch = scanvas.height,
+          scw = scanvas.width,
+          sr = sch/scw,
           dr = dh/dw,
-          sw = (sr < 1) ? scanvas.height / dr : scanvas.width,
-          sh = (sr < 1) ? scanvas.height : dr * scanvas.width,
-          sx = (sr < 1) ? (scanvas.width - sw) / 2 : 0,
-          sy = (sr < 1) ? 0 : (scanvas.height - sh) / 2,
+          sw = (sr < 1) ? sch / dr : scw,
+          sh = (sr < 1) ? sch : dr * scw,
+          sx = (sr < 1) ? (scw - sw) / 2 : 0,
+          sy = (sr < 1) ? 0 : (sch - sh) / 2,
           dx = 0, dy = 0;
       dcanvas.width = dw;
       dcanvas.height = dh;
