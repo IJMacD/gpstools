@@ -88,9 +88,24 @@ body {
 .track span {
   color: white;
   margin-left: 4px;
+  padding-left: 18px;
+  position: relative;
 }
-.track i {
-  margin-right: 4px;
+.track-dist::after,
+.track-time::after {
+  background-image: url(../img/glyphicons-halflings-white.png);
+  content: "";
+  height: 14px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 14px;
+}
+.track-dist::after {
+  background-position: -24px -72px;
+}
+.track-time::after {
+  background-position: -48px -24px;
 }
 h1,
 h2,

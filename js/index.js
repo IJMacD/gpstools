@@ -487,20 +487,20 @@
       .css('background-image', 'url('+track.getThumb(64)+')')
       .append($('<p>')
         .addClass('track-name')
-        .text(track.name))
+        .text(track.name)
+      )
       .append($('<span>')
+        .addClass('track-dist')
         .text(track.getDistance().toFixed() + " km")
-        .prepend($('<i>')
-          .addClass('icon-map-marker icon-white')))
+      )
       .data('track', track)
       .appendTo(trackList);
 
     if(track.hasTime()){
       trackItem.append($('<span>')
+        .addClass('track-time')
         .text(juration.stringify(track.getDuration()))
-        .prepend($('<i>')
-          .addClass('icon-time icon-white'))
-        );
+      );
     }
   }
 
