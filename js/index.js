@@ -677,22 +677,23 @@
     });
   });
 
-  var trackList = $('#tracks-list'),
-      dragHover = function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        console.log(e.type);
-        if(e.type == "dragover")
-          trackList.addClass('drop-target');
-        else
-          trackList.removeClass('drop-target');
-      };
-  $(document).on('dragover', dragHover);
+  $(function(){
+    var dragHover = function(e){
+          e.stopPropagation();
+          e.preventDefault();
+          if(e.type == "dragover")
+            trackList.addClass('drop-target');
+          else
+            trackList.removeClass('drop-target');
+        };
+    $(document).on('dragover', dragHover);
+    $(document).on('dragleave', dragHover);
 
-  trackList.on('drop', function(e){
-    dragHover(e);
-    var files = e.originalEvent.dataTransfer.files;
-    loadFiles(files);
+    trackList.on('drop', function(e){
+      dragHover(e);
+      var files = e.originalEvent.dataTransfer.files;
+      loadFiles(files);
+    });
   });
 
   function setProgress(val, max){
