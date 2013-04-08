@@ -481,15 +481,27 @@
   function addTrack(track){
     trackList.find('.selected').removeClass('selected');
 
-    $('<div>')
+    var trackItem = $('<div>')
       .addClass('track')
       .addClass('selected')
       .css('background-image', 'url('+track.getThumb(64)+')')
       .append($('<p>')
         .addClass('track-name')
         .text(track.name))
+      .append($('<span>')
+        .text(track.getDistance().toFixed() + " km")
+        .prepend($('<i>')
+          .addClass('icon-map-marker icon-white')))
       .data('track', track)
       .appendTo(trackList);
+
+    if(track.hasTime()){
+      trackItem.append($('<span>')
+        .text(juration.stringify(track.getDuration()))
+        .prepend($('<i>')
+          .addClass('icon-time icon-white'))
+        );
+    }
   }
 
   function showStats(track) {

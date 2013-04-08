@@ -75,6 +75,9 @@ body {
   margin: 5px;
   padding: 0 0 0 64px;
 }
+.track.selected {
+  box-shadow: 0 0 5px 4px orange;
+}
 .track-name {
   color: white;
   font-size: 1.2em;
@@ -82,8 +85,12 @@ body {
   padding: 4px;
   text-shadow: 1px 1px 2px black;
 }
-.track.selected {
-  box-shadow: 0 0 5px 4px orange;
+.track span {
+  color: white;
+  margin-left: 4px;
+}
+.track i {
+  margin-right: 4px;
 }
 h1,
 h2,
