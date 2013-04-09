@@ -349,7 +349,7 @@ GPSTools.Track.prototype.getMaxSpeed = function () {
 // will be in a state of transition e.g.
 GPSTools.Track.prototype.getThumb = function(size) {
   GPSTools.Map.clearLine();
-  GPSTools.Map.drawLine(this.points);
+  GPSTools.Map.drawLine(this.points, {opacity:1,width:7});
   var thumb = GPSTools.Map.getLineThumb(size);
   GPSTools.Map.clearLine();
   return thumb;
@@ -506,10 +506,14 @@ GPSTools.Map = function (){
       }else
         lineLayer.removeAllFeatures();
     },
-    drawLine: function (points, highlight) {
+    // Used to be function (Points[] points, bool highlight)
+    drawLine: function (points, options) {
       if(!map){
         $('#map').show();
         GPSTools.Map.create();
+      }
+      if(typeof options != "object"){
+        options = {highlight: !!options};
       }
       var olPoints = [],
           i,
@@ -519,7 +523,7 @@ GPSTools.Map = function (){
           olFeature,
           fromProjection = new OpenLayers.Projection("EPSG:4326"),
           toProjection = map.getProjectionObject();
-      logging("Drawing line" + (highlight ? " (highlight)" : ""));
+      logging("Drawing line" + (options.highlight ? " (highlight)" : ""));
       for(i=0;i<points.length;i++){
         if(isNaN(points[i].lat) || isNaN(points[i].lon))
           console.log("Bad Point: " + points[i].time);
@@ -530,15 +534,15 @@ GPSTools.Map = function (){
       logging("Conversion of points finished");
       olBounds = olLine.getBounds();
       olStyle = {
-        strokeColor: highlight ? '#ff0000': '#0000ff',
-        strokeOpacity: 0.5,
-        strokeWidth: 5
+        strokeColor: options.color || (options.highlight ? '#ff0000': '#0000ff'),
+        strokeOpacity: options.opacity || 0.5,
+        strokeWidth: options.width || 5
       };
       // I tried to reuse Vector Feature!
       // I did I promise, it just displayed buggily
       olFeature = new OpenLayers.Feature.Vector(olLine, null, olStyle);
 
-      if(highlight){
+      if(options.highlight){
         if(lineHighlight)
           lineLayer.removeFeatures([lineHighlight]);
         lineHighlight = olFeature;
