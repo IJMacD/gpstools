@@ -46,6 +46,7 @@ body {
   display: none;
 }
 #tracks-list {
+  background: rgba(0,0,0,0.9);
   border: 3px dashed transparent;
   bottom: 0;
   box-sizing: border-box;
@@ -59,20 +60,20 @@ body {
   -webkit-user-select: none;
   vertical-align: top;
   width: 30%;
+  z-index: 2000;
 }
 #track-detail {
   box-sizing: border-box;
   display: inline-block;
   margin-left: 30%;
-  overflow-x: hidden;
   vertical-align: top;
   width: 70%;
 }
 .track {
   background-repeat: no-repeat;
   cursor: pointer;
-  height: 64px;
   margin: 5px;
+  min-height: 64px;
   padding: 0 0 0 64px;
 }
 .track.selected {
@@ -158,6 +159,11 @@ small {
   min-height: 50px;
   padding: 10px;
 }
+#map {
+  /* 100% / 70% = 1.4285714 */
+  margin-left: -42.85714%;
+  width: 142.85714%;
+}
 #mapCanvas {
   height: 450px;
 }
@@ -198,6 +204,7 @@ p.controls {
   display: none;
 }
 #mapCanvas .olControlZoom {
+  left: 30%;
   top: 48px;
 }
 #mapCanvas .olControlLayerSwitcher {
