@@ -22,7 +22,7 @@
 
       if(e.ctrlKey){
         firstSelected = index;
-        selected.addClass('selected');
+        selected.toggleClass('selected');
         trackList.find('.selected').each(function(i,item){
           tracks.push($(item).data('track'));
         });
