@@ -11,7 +11,16 @@
   <h1>GPSTools</h1>
   <button id="open-file-btn" class="btn">Open Files</button>
   <button id="strava-import-btn" class="btn">Strava Import</button>
-  <button id="drw-trk-btn" class="btn">Draw Track</button>
+  <div class="btn-group" id="new-trk-grp">
+    <button class="btn dropdown-toggle" data-toggle="dropdown">
+      New Track
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a href="#" id="drw-trk-btn">Draw Track</a>
+      <li><a href="#" id="spr-trk-btn">Super Track</a>
+    </ul>
+  </div>
   <div id="cab">
     <button id="get-ele-btn" class="btn" disabled>Get Elevation</button>
     <button id="gen-spd-btn" class="btn" disabled>Fake Speed</button>

@@ -60,7 +60,7 @@ body,
   -webkit-user-select: none;
   vertical-align: top;
   width: 30%;
-  z-index: 2000;
+  z-index: 1000;
 }
 #tracks-list:not(:empty) {
   background: rgba(0,0,0,0.9);
@@ -206,6 +206,10 @@ small {
   display: none;
 }
 #export-grp {
+  vertical-align: middle;
+}
+#new-trk-grp {
+  display: inline-block;
   vertical-align: middle;
 }
 #slt-btns {

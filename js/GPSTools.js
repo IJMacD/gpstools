@@ -349,7 +349,7 @@ GPSTools.Track.prototype.getMaxSpeed = function () {
 // will be in a state of transition e.g.
 GPSTools.Track.prototype.getThumb = function(size) {
   GPSTools.Map.clearLine();
-  GPSTools.Map.drawLine(this.points, {opacity:1,width:7});
+  GPSTools.Map.drawLine(this.points, {opacity:1,width:10});
   var thumb = GPSTools.Map.getLineThumb(size);
   GPSTools.Map.clearLine();
   return thumb;
@@ -406,11 +406,13 @@ GPSTools.Map = function (){
       lineHighlight;
   return {
     create: function () {
-      map = new OpenLayers.Map("mapCanvas", {'controls': [
+      map = new OpenLayers.Map("mapCanvas", {
+        'controls': [
           new OpenLayers.Control.Navigation(),
           new OpenLayers.Control.Zoom(),
           new OpenLayers.Control.LayerSwitcher()
-      ]});
+        ]
+      });
       osmLayer = new OpenLayers.Layer.OSM( "Simple OSM Map");
       cycleLayer = new OpenLayers.Layer.OSM("OpenCycleMap",
         ["http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
@@ -469,6 +471,8 @@ GPSTools.Map = function (){
       map.addLayer(osLayer);
       map.addLayer(lineLayer);
       map.addLayer(drawLayer);
+
+      map.zoomToMaxExtent();
 
       OpenLayers.Event.observe(document, "keydown", function(evt) {
           var handled = false;
@@ -609,7 +613,7 @@ GPSTools.Map = function (){
           dx = 0, dy = 0;
       dcanvas.width = dw;
       dcanvas.height = dh;
-      dctx.fillStyle = "white";
+      dctx.fillStyle = "rgba(255,255,255,0.1)";
       dctx.fillRect(dx,dy,dw,dh);
       dctx.drawImage(scanvas, sx, sy, sw, sh, dx, dy, dw, dh);
       return dcanvas.toDataURL();
