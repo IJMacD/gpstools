@@ -13,6 +13,14 @@
       $('#files').click();
     });
 
+    var detail = $('#details').click(function(){
+      var body = $('body'),
+          toScroll = body.scrollTop() ? 0 : detail.offset().top;
+      body.animate({
+        scrollTop: toScroll
+      }, 2000);
+    });
+
     var firstSelected = 0;
     trackList.on('click', '.track', function(e){
       var selected = $(e.currentTarget),
