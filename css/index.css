@@ -229,7 +229,12 @@ p.controls {
 }
 #mapCanvas .olControlZoom {
   left: 30%;
-  top: 48px;
+  margin: 8px 0 0 8px;
+  top: 40px;
+}
+#mapCanvas:-webkit-full-screen .olControlZoom {
+  left: 0;
+  top: 0;
 }
 #mapCanvas .olControlLayerSwitcher {
   top: 65px;
