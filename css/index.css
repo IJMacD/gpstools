@@ -2,7 +2,8 @@ html,
 body {
   height: 100%;
 }
-body {
+body,
+#details {
   background:
     linear-gradient(27deg, #151515 2px, transparent 2px) 0 2px,
     linear-gradient(207deg, #151515 2px, transparent 2px) 4px 0px,
@@ -46,7 +47,6 @@ body {
   display: none;
 }
 #tracks-list {
-  background: rgba(0,0,0,0.9);
   border: 3px dashed transparent;
   bottom: 0;
   box-sizing: border-box;
@@ -62,10 +62,15 @@ body {
   width: 30%;
   z-index: 2000;
 }
+#tracks-list:not(:empty) {
+  background: rgba(0,0,0,0.9);
+}
 #track-detail {
   box-sizing: border-box;
   display: inline-block;
+  height: 100%;
   margin-left: 30%;
+  position: relative;
   vertical-align: top;
   width: 70%;
 }
@@ -107,6 +112,23 @@ body {
 }
 .track-time::after {
   background-position: -48px -24px;
+}
+#summary {
+  background: rgba(0,0,0,0.8);
+  max-width: 450px;
+  padding: 5px;
+  position: absolute;
+  right: 0;
+  top: 40px;
+  z-index: 1000;
+}
+#details {
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 90%;
+  z-index: 1000;
 }
 h1,
 h2,
@@ -160,12 +182,14 @@ small {
   padding: 10px;
 }
 #map {
-  /* 100% / 70% = 1.4285714 */
-  margin-left: -42.85714%;
-  width: 142.85714%;
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
 }
 #mapCanvas {
-  height: 450px;
+  height: 100%;
 }
 #mapCanvas:-webkit-full-screen {
   height: 100%;
@@ -209,4 +233,13 @@ p.controls {
 }
 #mapCanvas .olControlLayerSwitcher {
   top: 65px;
+}
+#speedModal,
+#importModal {
+  z-index: 3000;
+}
+#speedModal h3,
+#importModal h3 {
+  color: #333;
+  text-shadow: none;
 }
