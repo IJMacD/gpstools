@@ -84,6 +84,9 @@ body,
 .track.selected {
   box-shadow: 0 0 5px 4px orange;
 }
+.track.hover-over {
+  box-shadow: 0 0 5px 4px blue;
+}
 .track-name {
   color: white;
   font-size: 1.2em;

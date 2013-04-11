@@ -492,6 +492,7 @@
     var trackItem = $('<div>')
       .addClass('track')
       .addClass('selected')
+      .attr('draggable', true)
       .css('background-image', 'url('+track.getThumb(64)+')')
       .append($('<p>')
         .addClass('track-name')
@@ -698,21 +699,69 @@
   });
 
   $(function(){
+
+    var draggingElement = null;
+
     var dragHover = function(e){
           e.stopPropagation();
           e.preventDefault();
-          if(e.type == "dragover")
-            trackList.addClass('drop-target');
-          else
-            trackList.removeClass('drop-target');
+
+          // Handle File dragging
+          if(e.originalEvent.dataTransfer.types){
+            if(e.type == "dragover"){
+              trackList.addClass('drop-target');
+            }
+            else {
+              trackList.removeClass('drop-target');
+            }
+          }
+          // Handle Track dragging
+          else {
+            if(e.type == "dragover"){
+              $(e.originalEvent.target).closest('.track').addClass('hover-over');
+            }
+            else {
+              $(e.originalEvent.target).closest('.track').removeClass('hover-over');
+            }
+          }
         };
     $(document).on('dragover', dragHover);
     $(document).on('dragleave', dragHover);
 
     trackList.on('drop', function(e){
+      console.log('drop');
       dragHover(e);
       var files = e.originalEvent.dataTransfer.files;
-      loadFiles(files);
+      if(files.length){
+        loadFiles(files);
+      }
+      else {
+        var droppedElement = $(e.originalEvent.target);
+        if(droppedElement.is(trackList)){
+          trackList.append(draggingElement);
+        }
+        else{
+          droppedElement = droppedElement.closest('.track');
+          if(!droppedElement.is(draggingElement)){
+            if(droppedElement.index() < $(draggingElement).index()){
+              $(draggingElement).insertBefore(droppedElement);
+            }
+            else{
+              $(draggingElement).insertAfter(droppedElement);
+            }
+          }
+        }
+      }
+    });
+
+    $(document).on('dragstart', '.track', function(e){
+      draggingElement = $(e.currentTarget);
+      $(this).css('opacity', 0.5);
+      console.log("dragstart");
+    }).on('dragend', '.track', function(e){
+      draggingElement = null;
+      $(this).css('opacity', 1);
+      console.log("dragend");
     });
   });
 
