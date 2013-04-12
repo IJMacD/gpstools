@@ -14,12 +14,14 @@
       $('#files').click();
     });
 
-    var detail = $('#details').click(function(){
-      var body = $('body'),
-          toScroll = body.scrollTop() ? 0 : detail.offset().top;
-      body.animate({
-        scrollTop: toScroll
-      }, 2000);
+    var detail = $('#details').click(function(e){
+      if(detail.is(e.target)){
+        var body = $('body'),
+            toScroll = body.scrollTop() ? 0 : detail.offset().top;
+        body.animate({
+          scrollTop: toScroll
+        }, 2000);
+      }
     });
 
     var firstSelected = 0;
@@ -35,9 +37,6 @@
         selected.toggleClass('selected');
         trackList.find('.selected').each(function(i,item){
           var track = $(item).data('track');
-          if(i == 0){
-            currentTrack = track;
-          }
           tracks.push(track);
         });
       }
@@ -56,8 +55,8 @@
         trackList.find('.selected').removeClass('selected');
         firstSelected = index;
         selected.addClass('selected');
-        currentTrack = selected.data('track');
-        tracks.push(currentTrack);
+        track = selected.data("track");
+        tracks.push(track);
       }
 
       if(tracks.length > 1){
@@ -81,11 +80,9 @@
     });
 
     titleLabel.on("input", function(){
-      var selectedListItems = trackList.find('.selected'),
-          newName = titleLabel.text();
-      if(selectedListItems.length == 1){
-        selectedListItems.data("track").name = newName;
-        selectedListItems.children('p').text(newName);
+      var newName = titleLabel.text();
+      if(currentTrack){
+        currentTrack.setName(newName);
       }
     });
   });
@@ -164,9 +161,18 @@
 
   function displayTrack(track){
 
+    if(currentTrack)
+      currentTrack.events.off('change.gpstools-detail');
+    currentTrack = track;
+
     titleLabel.text(track.name);
 
     showStats(track);
+    track.events.on('change.gpstools-detail', (function(track){
+      return function(e){
+        showStats(track);
+      };
+    }(track)));
 
     GPSTools.Map.clearLine();
     GPSTools.Map.drawLine(track.points);
@@ -206,91 +212,7 @@
 
     $('#gen-spd-btn').off('click').click(function(){
       $(this).attr('disabled','');
-      var speed = 10, // m s^-1,
-          distance = track.getDistance(), // km
-          duration = (distance / speed) * 1000, // s
-          end = new Date(),
-          start = new Date(end - duration*1000),
-          modal = $('#speedModal'),
-          start_txt = modal.find('#start_txt'),
-          end_txt = modal.find('#end_txt'),
-          duration_txt = modal.find('#duration_txt'),
-          distance_lbl = modal.find('#distance_lbl'),
-          speed_lbl = modal.find('#speed_lbl'),
-          hold = 'start';
-      start_txt.val(start);
-      end_txt.val(end);
-      duration_txt.val(juration.stringify(duration));
-      distance_lbl.text(distance.toFixed(2));
-      speed_lbl.text(speed);
-      start_txt.change(function(){
-        start = new Date(start_txt.val());
-        if(hold == 'duration'){
-          end = new Date(+start + duration*1000);
-          end_txt.val(end);
-        }
-        else{
-          duration = (end - start) / 1000;
-          duration_txt.val(juration.stringify(duration));
-          speed = (distance / duration) * 1000;
-          speed_lbl.text(speed.toFixed(1));
-        }
-        hold = 'start';
-      });
-      end_txt.change(function(){
-        end = new Date(end_txt.val());
-        if(hold == 'duration'){
-          start = new Date(end - duration*1000);
-          start_txt.val(start);
-        }
-        else{
-          duration = (end - start) / 1000;
-          duration_txt.val(juration.stringify(duration));
-          speed = (distance / duration) * 1000;
-          speed_lbl.text(speed.toFixed(1));
-        }
-        hold = 'end';
-      });
-      duration_txt.change(function(){
-        duration = juration.parse(duration_txt.val());
-        if(hold == 'end'){
-          start = new Date(end - duration*1000);
-          start_txt.val(start);
-        }
-        else{
-          end = new Date(+start + duration*1000);
-          end_txt.val(end);
-        }
-        speed = (distance / duration) * 1000;
-        speed_lbl.text(speed.toFixed(1));
-        hold = 'duration';
-      });
-      modal.modal().find('.btn-primary').click(function(){
-        modal.modal('hide');
-        var start = new Date(start_txt.val()),
-            end = new Date(end_txt.val()),
-            points = track.points,
-            duration = (+end - start) / 1000, // s
-            speed = distance / duration * 1000, // m s^-1,
-            points = track.points,
-            i = 1,
-            l = points.length,
-            cuml_dist = 0,
-            time, date,
-            grad = track.getGradient(),
-            histSum = 0, hist = track.getGradientHistogram(),
-            histAvg;
-        for(key in hist){
-          histSum += key * hist[key];
-        }
-        histAvg = histSum / (distance * 10);
-        track.points[0].time = start.toISOString();
-        for(;i<l;i++){
-          cuml_dist += points[i-1].distanceTo(points[i]); // km
-          time = cuml_dist / distance * duration + (grad[i-1] - histAvg)*0.5; // s
-          date = new Date(+start + time*1000);
-          track.points[i].time = date.toISOString();
-        }
+      generateSpeed(track, function(){
         showStats(track);
         plotSpeed(track);
       });
@@ -511,6 +433,10 @@
 
   function displaySuperTrack(track){
 
+    if(currentTrack)
+      currentTrack.events.off('change.gpstools-detail');
+    currentTrack = track;
+
     titleLabel.text(track.name);
 
     GPSTools.Map.clearLine();
@@ -520,6 +446,12 @@
     GPSTools.Map.zoomToExtent();
     showStats(track);
 
+    track.events.on('change.gpstools-detail', (function(track){
+      return function(e){
+        showStats(track);
+      }
+    }(track)));
+
     $('#graph, #gradient').hide();
     var breakdownBody = $('#super-breakdown tbody'),
         i = 0,
@@ -527,18 +459,64 @@
         subTrack,
         row,
         subTrackStart,
-        subTrackEnd;
+        subTrackEnd,
+        subNameCell;
     breakdownBody.empty();
     for(;i<l;i++){
       subTrack = track.tracks[i];
       row = $('<tr>');
       row.append($('<td>').text(i+1));
-      row.append($('<td>').text(subTrack.name));
-      row.append($('<td>').text(subTrack.getDistance().toFixed(2)));
-      row.append($('<td>').text(formatDate(subTrack.getStart(), "HH:i:s")));
-      row.append($('<td>').text(formatDate(subTrack.getEnd(), "HH:i:s")));
-      row.append($('<td>').text(juration.stringify(subTrack.getDuration())));
+      subNameCell = $('<td>')
+        .attr('contenteditable', true);
+      subNameCell.on("input", (function(subNameCell, track){
+          return function(){
+            track.setName(subNameCell.text());
+          }
+        }(subNameCell, subTrack))
+      );
+      row.append(subNameCell);
+      row.append($('<td>'));
+      row.append($('<td>'));
+      row.append($('<td>'));
+      row.append($('<td>'));
+      row.append($('<td>').append(
+        $('<button>').addClass('btn btn-small').append(
+          $('<i>').addClass('icon-time')
+        ).on('click', (function(track){
+          return function(e){
+            generateSpeed(track);
+          };
+        }(subTrack)))
+      ));
+
+      populateRow(row, subTrack);
+
       breakdownBody.append(row);
+
+      // small? (temporary) MEMORY LEAK:
+      subTrack.events.on('change.gpstools-detail', {row: row, track: subTrack}, function(e){
+        populateRow(e.data.row, e.data.track);
+      });
+
+      function populateRow(row, track){
+        row.find('td').each(function(i,item){
+          var text;
+          switch (i){
+            case 1:
+              text = track.name; break;
+            case 2:
+              text = track.getDistance().toFixed(2); break;
+            case 3:
+              text = formatDate(track.getStart(), "HH:i:s"); break;
+            case 4:
+              text = formatDate(track.getEnd(), "HH:i:s"); break;
+            case 5:
+              text = juration.stringify(track.getDuration()); break;
+          }
+          if(text)
+            $(item).text(text);
+        })
+      }
     }
     $('#super-breakdown').show();
   }
@@ -547,7 +525,8 @@
     trackList.find('.selected').removeClass('selected');
 
     var targetList,
-        trackItem;
+        trackItem,
+        trackTime;
 
     if(currentTrack instanceof GPSTools.SuperTrack) {
 
@@ -556,7 +535,6 @@
       $('.track').each(function(i,item){
         var $item = $(item);
         if(currentTrack == $item.data("track")) {
-          $item.css('background-image', 'url('+currentTrack.getThumb(64)+')');
           targetList = $item.find('.sub-tracks');
           return false;
         }
@@ -570,31 +548,42 @@
       .addClass('track')
       .addClass('selected')
       .attr('draggable', true)
-      .css('background-image', 'url('+track.getThumb(64)+')')
       .append($('<p>')
         .addClass('track-name')
-        .text(track.name)
       )
       .append($('<span>')
         .addClass('track-dist')
-        .text(track.getDistance().toFixed() + " km")
       )
       .data('track', track)
       .appendTo(targetList);
 
-    if(track.hasTime()){
-      trackItem.append($('<span>')
-        .addClass('track-time')
-        .text(juration.stringify(track.getDuration()))
-      );
-    }
+    trackTime = $('<span>')
+      .addClass('track-time')
+      .appendTo(trackItem)
+      .toggle(track.hasTime());
+
     if(track instanceof GPSTools.SuperTrack){
       trackItem.append($('<div>')
         .addClass('sub-tracks')
       );
     }
 
-    currentTrack = track;
+    function populateListItem(listItem, track){
+      listItem.css('background-image', 'url('+track.getThumb(64)+')');
+      listItem.children('.track-name').text(track.name);
+      listItem.children('.track-dist').text(track.getDistance().toFixed() + " km");
+      listItem.children('.track-time')
+        .text(juration.stringify(track.getDuration()))
+        .toggle(track.hasTime());
+    }
+
+    populateListItem(trackItem, track);
+
+    track.events.on('change', {listItem: trackItem, track: track}, function(e){
+      var listItem = e.data.listItem,
+          track = e.data.track;
+      populateListItem(listItem, track);
+    });
   }
 
   function updateListing(superTrackElement){
@@ -654,6 +643,100 @@
     }
     GPSTools.Graph.drawBar('gradientCanvas', vals, {color:'green',labels:labels});
     $('#gradient').show();
+  }
+
+  function generateSpeed(track, callback){
+
+    var speed = 10, // m s^-1,
+        distance = track.getDistance(), // km
+        duration = (distance / speed) * 1000, // s
+        end = new Date(),
+        start = new Date(end - duration*1000),
+        modal = $('#speedModal'),
+        start_txt = modal.find('#start_txt'),
+        end_txt = modal.find('#end_txt'),
+        duration_txt = modal.find('#duration_txt'),
+        distance_lbl = modal.find('#distance_lbl'),
+        speed_lbl = modal.find('#speed_lbl'),
+        hold = 'start';
+    start_txt.val(start);
+    end_txt.val(end);
+    duration_txt.val(juration.stringify(duration));
+    distance_lbl.text(distance.toFixed(2));
+    speed_lbl.text(speed);
+    start_txt.change(function(){
+      start = new Date(start_txt.val());
+      if(hold == 'duration'){
+        end = new Date(+start + duration*1000);
+        end_txt.val(end);
+      }
+      else{
+        duration = (end - start) / 1000;
+        duration_txt.val(juration.stringify(duration));
+        speed = (distance / duration) * 1000;
+        speed_lbl.text(speed.toFixed(1));
+      }
+      hold = 'start';
+    });
+    end_txt.change(function(){
+      end = new Date(end_txt.val());
+      if(hold == 'duration'){
+        start = new Date(end - duration*1000);
+        start_txt.val(start);
+      }
+      else{
+        duration = (end - start) / 1000;
+        duration_txt.val(juration.stringify(duration));
+        speed = (distance / duration) * 1000;
+        speed_lbl.text(speed.toFixed(1));
+      }
+      hold = 'end';
+    });
+    duration_txt.change(function(){
+      duration = juration.parse(duration_txt.val());
+      if(hold == 'end'){
+        start = new Date(end - duration*1000);
+        start_txt.val(start);
+      }
+      else{
+        end = new Date(+start + duration*1000);
+        end_txt.val(end);
+      }
+      speed = (distance / duration) * 1000;
+      speed_lbl.text(speed.toFixed(1));
+      hold = 'duration';
+    });
+    modal.modal().find('.btn-primary').click(function(){
+      modal.modal('hide');
+      var start = new Date(start_txt.val()),
+          end = new Date(end_txt.val()),
+          points = track.points,
+          duration = (+end - start) / 1000, // s
+          speed = distance / duration * 1000, // m s^-1,
+          points = track.points,
+          i = 1,
+          l = points.length,
+          cuml_dist = 0,
+          time, date,
+          grad = track.getGradient(),
+          histSum = 0, hist = track.getGradientHistogram(),
+          histAvg;
+      for(key in hist){
+        histSum += key * hist[key];
+      }
+      histAvg = histSum / (distance * 10);
+      track.points[0].time = start.toISOString();
+      for(;i<l;i++){
+        cuml_dist += points[i-1].distanceTo(points[i]); // km
+        time = cuml_dist / distance * duration + (grad[i-1] - histAvg)*0.5; // s
+        date = new Date(+start + time*1000);
+        track.points[i].time = date.toISOString();
+      }
+      track.events.trigger('changetime');
+
+      if(typeof callback == "function")
+        callback();
+    });
   }
 
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
@@ -814,11 +897,16 @@
           }
           // Handle Track dragging
           else {
+            var target = $(e.originalEvent.target);
+            if(!target.is('.sub-tracks'))
+              target = target.closest('.track');
+            else
+              console.log(target);
             if(e.type == "dragover"){
-              $(e.originalEvent.target).closest('.track').addClass('hover-over');
+              target.addClass('hover-over');
             }
             else {
-              $(e.originalEvent.target).closest('.track').removeClass('hover-over');
+              target.removeClass('hover-over');
             }
           }
         };
@@ -856,7 +944,6 @@
 
           if(oldSuperTrackElement.length){
             oldSuperTrack.removeTrack(draggingTrack);
-            updateListing(oldSuperTrackElement);
           }
         }
         else if(droppedElement.is('.sub-tracks')){
@@ -871,10 +958,7 @@
           if(oldSubTrackList.length){
             // Remove track from old super track
             oldSuperTrack.removeTrack(draggingTrack);
-            updateListing(oldSuperTrackElement);
           }
-          if(newSubTrackList.length)
-            updateListing(newSuperTrackElement);
         }
         else if(!droppedTrackElement.is(draggingElement)){
 
@@ -884,10 +968,6 @@
           if(newSubTrackList.length){
             newSuperTrack.addTrack(draggingTrack);
           }
-          if(oldSubTrackList.length)
-            updateListing(oldSuperTrackElement);
-          if(newSubTrackList.length)
-            updateListing(newSuperTrackElement);
 
           if(droppedTrackElement.index() < draggingTrackElement.index()){
             draggingTrackElement.insertBefore(droppedTrackElement);

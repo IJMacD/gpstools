@@ -192,9 +192,43 @@ GPSTools.Format.TCX = function(){
 }();
 GPSTools.Track = function (points) {
   this.points = points || [];
+  var events = this.events = $({}),
+      suspendChangeEvent = false,
+      that = this;
+  events.on('changename', function(){
+    if(!suspendChangeEvent)
+      events.trigger('change');
+  });
+  events.on('changepoints', function(){
+
+    that.distance = 0;
+    that.elevation = 0;
+    that.gradient = 0;
+
+    var sce = suspendChangeEvent;
+    suspendChangeEvent = true;
+    events.trigger('changetime');
+    suspendChangeEvent = sce;
+
+    if(!suspendChangeEvent)
+      events.trigger('change');
+  });
+  events.on('changetime', function(){
+
+    that.start = null;
+    that.end = null;
+    that.speed = 0;
+    that.avgSpeed = 0;
+    that.maxSpeed = 0;
+    that.duration = 0;
+
+    if(!suspendChangeEvent)
+      events.trigger('change');
+  });
 };
 GPSTools.Track.prototype.setName = function(name) {
   this.name = name.replace(/_/g, " ").replace(/\.[a-z]{3,4}$/,"");
+  this.events.trigger('changename');
 }
 GPSTools.Track.prototype.hasTime = function (){
   return !!(this.points && this.points[0] && this.points[0].time);
@@ -359,23 +393,40 @@ GPSTools.Track.prototype.getThumb = function(size) {
 GPSTools.SuperTrack = function(tracks){
   this.name = "Super Track";
   this.tracks = (tracks instanceof Array) ? tracks : [];
+  var that = this;
   // TODO: sortTracks
+  this.events.on('changesubtracks', function(){
+    that.distance = 0;
+    that.duration = 0;
+    that.events.trigger('change');
+  });
 }
 GPSTools.SuperTrack.prototype = (new GPSTools.Track());
 GPSTools.SuperTrack.prototype.addTrack = function(track){
   if(track instanceof GPSTools.Track){
     this.tracks.push(track);
     this.distance = this.duration = 0;
+    var ev = this.events;
+    if(!this.subTrackRingback){
+      this.subTrackRingback = function(){
+        ev.trigger('changesubtracks');
+      }
+    }
+    track.events.on('change', this.subTrackRingback);
+    ev.trigger('changesubtracks');
   }
   else
     console.error("Tried to add a non track: "+track);
 }
 GPSTools.SuperTrack.prototype.removeTrack = function(track){
   var i = 0,
-      l = this.tracks.length;
+      l = this.tracks.length,
+      ev = this.events;
   for(;i<l;i++){
     if(this.tracks[i] == track){
       this.tracks.splice(i,1);
+      track.events.off('change', this.subTrackRingback);
+      this.events.trigger('changesubtracks');
       break;
     }
   }
