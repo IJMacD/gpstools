@@ -116,6 +116,9 @@ body,
 .track-time::after {
   background-position: -48px -24px;
 }
+.sub-tracks {
+  min-height: 20px;
+}
 #summary {
   background: rgba(0,0,0,0.8);
   max-width: 450px;
@@ -132,6 +135,14 @@ body,
   right: 0;
   top: 90%;
   z-index: 1000;
+}
+#super-breakdown {
+  color: white;
+  display: none;
+  text-shadow: 2px 2px 5px black;
+}
+#super-breakdown table {
+  margin: 10px;
 }
 h1,
 h2,

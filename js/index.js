@@ -2,7 +2,8 @@
 
   var progress,
       trackList,
-      titleLabel;
+      titleLabel,
+      currentTrack;
 
   $(function(){
     progress = $('progress');
@@ -23,16 +24,21 @@
 
     var firstSelected = 0;
     trackList.on('click', '.track', function(e){
+      e.stopPropagation();
       var selected = $(e.currentTarget),
           index = trackList.find('.track').index(selected),
-          tracks = [], i = 0, l,
+          tracks = [], i = 0, l, track,
           mergeButton = $('#mrg-trk-btn');
 
       if(e.ctrlKey){
         firstSelected = index;
         selected.toggleClass('selected');
         trackList.find('.selected').each(function(i,item){
-          tracks.push($(item).data('track'));
+          var track = $(item).data('track');
+          if(i == 0){
+            currentTrack = track;
+          }
+          tracks.push(track);
         });
       }
       else if(e.shiftKey){
@@ -50,7 +56,8 @@
         trackList.find('.selected').removeClass('selected');
         firstSelected = index;
         selected.addClass('selected');
-        tracks.push(selected.data('track'));
+        currentTrack = selected.data('track');
+        tracks.push(currentTrack);
       }
 
       if(tracks.length > 1){
@@ -64,8 +71,21 @@
         }
       }
       else if(tracks.length == 1) {
-        displayTrack(tracks[0]);
+        if(tracks[0] instanceof GPSTools.SuperTrack) {
+          displaySuperTrack(tracks[0]);
+        }else {
+          displayTrack(tracks[0]);
+        }
         mergeButton.hide();
+      }
+    });
+
+    titleLabel.on("input", function(){
+      var selectedListItems = trackList.find('.selected'),
+          newName = titleLabel.text();
+      if(selectedListItems.length == 1){
+        selectedListItems.data("track").name = newName;
+        selectedListItems.children('p').text(newName);
       }
     });
   });
@@ -150,6 +170,8 @@
 
     GPSTools.Map.clearLine();
     GPSTools.Map.drawLine(track.points);
+
+    $('#super-breakdown').hide();
 
     if(track.hasElevation()) {
       logging("Track has elevation data");
@@ -470,6 +492,7 @@
       resetProgress();
     });
   }
+  // endFunction: displayTrack()
 
   function displayTracks(tracks){
     var cumlDist = 0, cumlTime = 0;
@@ -486,10 +509,64 @@
       '<br>Distance (mi): ' + GPSTools.Util.convertToMiles(cumlDist));
   }
 
+  function displaySuperTrack(track){
+
+    titleLabel.text(track.name);
+
+    GPSTools.Map.clearLine();
+    for(var i = 0, l = track.tracks.length; i < l; i++){
+      GPSTools.Map.drawLine(track.tracks[i].points);
+    }
+    GPSTools.Map.zoomToExtent();
+    showStats(track);
+
+    $('#graph, #gradient').hide();
+    var breakdownBody = $('#super-breakdown tbody'),
+        i = 0,
+        l = track.tracks.length,
+        subTrack,
+        row,
+        subTrackStart,
+        subTrackEnd;
+    breakdownBody.empty();
+    for(;i<l;i++){
+      subTrack = track.tracks[i];
+      row = $('<tr>');
+      row.append($('<td>').text(i+1));
+      row.append($('<td>').text(subTrack.name));
+      row.append($('<td>').text(subTrack.getDistance().toFixed(2)));
+      row.append($('<td>').text(formatDate(subTrack.getStart(), "HH:i:s")));
+      row.append($('<td>').text(formatDate(subTrack.getEnd(), "HH:i:s")));
+      row.append($('<td>').text(juration.stringify(subTrack.getDuration())));
+      breakdownBody.append(row);
+    }
+    $('#super-breakdown').show();
+  }
+
   function addTrack(track){
     trackList.find('.selected').removeClass('selected');
 
-    var trackItem = $('<div>')
+    var targetList,
+        trackItem;
+
+    if(currentTrack instanceof GPSTools.SuperTrack) {
+
+      currentTrack.addTrack(track);
+
+      $('.track').each(function(i,item){
+        var $item = $(item);
+        if(currentTrack == $item.data("track")) {
+          $item.css('background-image', 'url('+currentTrack.getThumb(64)+')');
+          targetList = $item.find('.sub-tracks');
+          return false;
+        }
+      });
+    }
+    else {
+      targetList = trackList;
+    }
+
+    trackItem = $('<div>')
       .addClass('track')
       .addClass('selected')
       .attr('draggable', true)
@@ -503,7 +580,7 @@
         .text(track.getDistance().toFixed() + " km")
       )
       .data('track', track)
-      .appendTo(trackList);
+      .appendTo(targetList);
 
     if(track.hasTime()){
       trackItem.append($('<span>')
@@ -511,6 +588,20 @@
         .text(juration.stringify(track.getDuration()))
       );
     }
+    if(track instanceof GPSTools.SuperTrack){
+      trackItem.append($('<div>')
+        .addClass('sub-tracks')
+      );
+    }
+
+    currentTrack = track;
+  }
+
+  function updateListing(superTrackElement){
+    var superTrack = superTrackElement.data("track");
+    superTrackElement.css('background-image', "url("+superTrack.getThumb(64)+")");
+    superTrackElement.children('.track-dist').text(superTrack.getDistance());
+    superTrackElement.children('.track-time').text(superTrack.getDuration());
   }
 
   function showStats(track) {
@@ -698,6 +789,12 @@
     });
   });
 
+  var superTrackButton = $('#spr-trk-btn');
+  superTrackButton.click(function(){
+    superTrack = new GPSTools.SuperTrack();
+    addTrack(superTrack);
+  });
+
   $(function(){
 
     var draggingElement = null;
@@ -736,32 +833,84 @@
         loadFiles(files);
       }
       else {
-        var droppedElement = $(e.originalEvent.target);
+        draggingElement = $(draggingElement);
+        var draggingTrackElement = draggingElement.closest('.track'),
+            draggingTrack = draggingElement.data("track"),
+
+            droppedElement = $(e.originalEvent.target),
+            droppedTrackElement = droppedElement.closest('.track'),
+            droppedTrack = droppedTrackElement.data("track"),
+
+            newSubTrackList = droppedElement.closest('.sub-tracks'),
+            newSuperTrackElement = newSubTrackList.closest('.track'),
+            newSuperTrack = newSuperTrackElement.data("track"),
+
+            oldSubTrackList = draggingElement.closest('.sub-tracks'),
+            oldSuperTrackElement = oldSubTrackList.closest('.track'),
+            oldSuperTrack = oldSuperTrackElement.data("track");
+
+        // Has been dropped on the empty space at the bottom of the trackList
         if(droppedElement.is(trackList)){
+
           trackList.append(draggingElement);
+
+          if(oldSuperTrackElement.length){
+            oldSuperTrack.removeTrack(draggingTrack);
+            updateListing(oldSuperTrackElement);
+          }
         }
-        else{
-          droppedElement = droppedElement.closest('.track');
-          if(!droppedElement.is(draggingElement)){
-            if(droppedElement.index() < $(draggingElement).index()){
-              $(draggingElement).insertBefore(droppedElement);
-            }
-            else{
-              $(draggingElement).insertAfter(droppedElement);
-            }
+        else if(droppedElement.is('.sub-tracks')){
+
+          droppedTrack = droppedTrackElement.data("track");
+
+          // Add HTML
+          droppedElement.append(draggingElement);
+          // Add track to new supertrack
+          droppedTrack.addTrack(draggingTrack);
+          // Refresh both (possible) super track elements
+          if(oldSubTrackList.length){
+            // Remove track from old super track
+            oldSuperTrack.removeTrack(draggingTrack);
+            updateListing(oldSuperTrackElement);
+          }
+          if(newSubTrackList.length)
+            updateListing(newSuperTrackElement);
+        }
+        else if(!droppedTrackElement.is(draggingElement)){
+
+          if(oldSubTrackList.length){
+            oldSuperTrack.removeTrack(draggingTrack);
+          }
+          if(newSubTrackList.length){
+            newSuperTrack.addTrack(draggingTrack);
+          }
+          if(oldSubTrackList.length)
+            updateListing(oldSuperTrackElement);
+          if(newSubTrackList.length)
+            updateListing(newSuperTrackElement);
+
+          if(droppedTrackElement.index() < draggingTrackElement.index()){
+            draggingTrackElement.insertBefore(droppedTrackElement);
+          }
+          else{
+            draggingTrackElement.insertAfter(droppedTrackElement);
           }
         }
       }
+      console.log('drop END');
     });
 
     $(document).on('dragstart', '.track', function(e){
-      draggingElement = $(e.currentTarget);
-      $(this).css('opacity', 0.5);
       console.log("dragstart");
+      e.stopPropagation();
+      draggingElement = e.currentTarget;
+      $(this).css('opacity', 0.5);
+      console.log("dragstart END");
     }).on('dragend', '.track', function(e){
+      console.log("dragend");
       draggingElement = null;
       $(this).css('opacity', 1);
-      console.log("dragend");
+      console.log("dragend END");
     });
   });
 
@@ -813,3 +962,34 @@
 function logging(m) {
   $('#log ul').append('<li><small>' + (new Date()).toISOString() + "</small>: " + m);
 }
+
+function formatDate(date, format){
+  if(typeof date == "undefined")
+    date = new Date();
+  if(typeof format == "undefined")
+    format = "iso";
+  switch(format){
+    case "Y-m-d":
+      return date.getFullYear() + "-"
+        + (date.getMonth() + 1) + "-"
+        + date.getDate();
+    case "H:i":
+      return date.getHours() + ":"
+        + pad(date.getMinutes());
+    case "H:i:s":
+      return date.getHours() + ":"
+        + pad(date.getMinutes()) + ":"
+        + pad(date.getSeconds());
+    case "HH:i":
+      return pad(date.getHours()) + ":"
+        + pad(date.getMinutes());
+    case "HH:i:s":
+      return pad(date.getHours()) + ":"
+        + pad(date.getMinutes()) + ":"
+        + pad(date.getSeconds());
+    case "iso":
+    default:
+      return date.toISOString();
+  }
+}
+function pad(n){return n<10?"0"+n:n}
