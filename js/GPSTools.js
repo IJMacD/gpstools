@@ -395,6 +395,12 @@ GPSTools.SuperTrack = function(tracks){
   this.tracks = (tracks instanceof Array) ? tracks : [];
   var that = this;
   // TODO: sortTracks
+  this.events.on('addsubtrack', function(){
+    that.events.trigger('changesubtracks');
+  });
+  this.events.on('removesubtrack', function(){
+    that.events.trigger('changesubtracks');
+  });
   this.events.on('changesubtracks', function(){
     that.distance = 0;
     that.duration = 0;
@@ -413,7 +419,9 @@ GPSTools.SuperTrack.prototype.addTrack = function(track){
       }
     }
     track.events.on('change', this.subTrackRingback);
-    ev.trigger('changesubtracks');
+    var event = $.Event('addsubtrack');
+    event.newTrack = track;
+    ev.trigger(event);
   }
   else
     console.error("Tried to add a non track: "+track);
@@ -426,7 +434,7 @@ GPSTools.SuperTrack.prototype.removeTrack = function(track){
     if(this.tracks[i] == track){
       this.tracks.splice(i,1);
       track.events.off('change', this.subTrackRingback);
-      this.events.trigger('changesubtracks');
+      this.events.trigger('removesubtrack');
       break;
     }
   }

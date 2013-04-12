@@ -456,47 +456,54 @@
     var breakdownBody = $('#super-breakdown tbody'),
         i = 0,
         l = track.tracks.length,
-        subTrack,
-        row,
-        subTrackStart,
-        subTrackEnd,
-        subNameCell;
+        subTrack;
+
     breakdownBody.empty();
+
     for(;i<l;i++){
       subTrack = track.tracks[i];
-      row = $('<tr>');
-      row.append($('<td>').text(i+1));
-      subNameCell = $('<td>')
-        .attr('contenteditable', true);
-      subNameCell.on("input", (function(subNameCell, track){
-          return function(){
-            track.setName(subNameCell.text());
-          }
-        }(subNameCell, subTrack))
-      );
-      row.append(subNameCell);
-      row.append($('<td>'));
-      row.append($('<td>'));
-      row.append($('<td>'));
-      row.append($('<td>'));
-      row.append($('<td>').append(
-        $('<button>').addClass('btn btn-small').append(
-          $('<i>').addClass('icon-time')
-        ).on('click', (function(track){
-          return function(e){
-            generateSpeed(track);
-          };
-        }(subTrack)))
-      ));
 
-      populateRow(row, subTrack);
+      addRow(breakdownBody, subTrack);
 
-      breakdownBody.append(row);
+      function addRow(table, track){
+        var row = $('<tr>'),
+            subNameCell;
 
-      // small? (temporary) MEMORY LEAK:
-      subTrack.events.on('change.gpstools-detail', {row: row, track: subTrack}, function(e){
-        populateRow(e.data.row, e.data.track);
-      });
+        row.append($('<td>').text(i+1));
+        subNameCell = $('<td>')
+          .attr('contenteditable', true);
+        subNameCell.on("input", (function(subNameCell, track){
+            return function(){
+              track.setName(subNameCell.text());
+            }
+          }(subNameCell, track))
+        );
+        row.append(subNameCell);
+
+        row.append($('<td>'));
+        row.append($('<td>'));
+        row.append($('<td>'));
+        row.append($('<td>'));
+
+        row.append($('<td>').append(
+          $('<button>').addClass('btn btn-small').append(
+            $('<i>').addClass('icon-time')
+          ).on('click', (function(track){
+            return function(e){
+              generateSpeed(track);
+            };
+          }(track)))
+        ));
+
+        populateRow(row, track);
+
+        // small? (temporary) MEMORY LEAK:
+        track.events.on('change.gpstools-detail', {row: row, track: track}, function(e){
+          populateRow(e.data.row, e.data.track);
+        });
+
+        table.append(row);
+      }
 
       function populateRow(row, track){
         row.find('td').each(function(i,item){
@@ -518,6 +525,11 @@
         })
       }
     }
+
+    track.events.on('addsubtrack.gpstools-detail', function(e){
+      addRow(breakdownBody, e.newTrack);
+    });
+
     $('#super-breakdown').show();
   }
 
