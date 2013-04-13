@@ -162,7 +162,7 @@
   function displayTrack(track){
 
     if(currentTrack)
-      currentTrack.events.off('change.gpstools-detail');
+      currentTrack.events.off('.gpstools-detail');
     currentTrack = track;
 
     titleLabel.text(track.name);
@@ -434,21 +434,29 @@
   function displaySuperTrack(track){
 
     if(currentTrack)
-      currentTrack.events.off('change.gpstools-detail');
+      currentTrack.events.off('.gpstools-detail');
     currentTrack = track;
 
     titleLabel.text(track.name);
 
-    GPSTools.Map.clearLine();
-    for(var i = 0, l = track.tracks.length; i < l; i++){
-      GPSTools.Map.drawLine(track.tracks[i].points);
+    function drawMap(track){
+      GPSTools.Map.clearLine();
+      for(var i = 0, l = track.tracks.length; i < l; i++){
+        GPSTools.Map.drawLine(track.tracks[i].points);
+      }
+      if(l)
+        GPSTools.Map.zoomToExtent();
+      else
+        GPSTools.Map.zoomToMaxExtent();
     }
-    GPSTools.Map.zoomToExtent();
+
     showStats(track);
+    drawMap(track);
 
     track.events.on('change.gpstools-detail', (function(track){
       return function(e){
         showStats(track);
+        drawMap(track);
       }
     }(track)));
 
@@ -463,71 +471,84 @@
     for(;i<l;i++){
       subTrack = track.tracks[i];
 
-      addRow(breakdownBody, subTrack);
+      addRow(breakdownBody, i, subTrack);
+    }
 
-      function addRow(table, track){
-        var row = $('<tr>'),
-            subNameCell;
+    function addRow(table, i, track){
+      var row = $('<tr>'),
+          subNameCell;
 
-        row.append($('<td>').text(i+1));
-        subNameCell = $('<td>')
-          .attr('contenteditable', true);
-        subNameCell.on("input", (function(subNameCell, track){
-            return function(){
-              track.setName(subNameCell.text());
-            }
-          }(subNameCell, track))
-        );
-        row.append(subNameCell);
-
-        row.append($('<td>'));
-        row.append($('<td>'));
-        row.append($('<td>'));
-        row.append($('<td>'));
-
-        row.append($('<td>').append(
-          $('<button>').addClass('btn btn-small').append(
-            $('<i>').addClass('icon-time')
-          ).on('click', (function(track){
-            return function(e){
-              generateSpeed(track);
-            };
-          }(track)))
-        ));
-
-        populateRow(row, track);
-
-        // small? (temporary) MEMORY LEAK:
-        track.events.on('change.gpstools-detail', {row: row, track: track}, function(e){
-          populateRow(e.data.row, e.data.track);
-        });
-
-        table.append(row);
-      }
-
-      function populateRow(row, track){
-        row.find('td').each(function(i,item){
-          var text;
-          switch (i){
-            case 1:
-              text = track.name; break;
-            case 2:
-              text = track.getDistance().toFixed(2); break;
-            case 3:
-              text = formatDate(track.getStart(), "HH:i:s"); break;
-            case 4:
-              text = formatDate(track.getEnd(), "HH:i:s"); break;
-            case 5:
-              text = juration.stringify(track.getDuration()); break;
+      row.append($('<td>').text(i+1));
+      subNameCell = $('<td>')
+        .attr('contenteditable', true);
+      subNameCell.on("input", (function(subNameCell, track){
+          return function(){
+            track.setName(subNameCell.text());
           }
-          if(text)
-            $(item).text(text);
-        })
-      }
+        }(subNameCell, track))
+      );
+      row.append(subNameCell);
+
+      row.append($('<td>'));
+      row.append($('<td>'));
+      row.append($('<td>'));
+      row.append($('<td>'));
+
+      row.append($('<td>').append(
+        $('<button>').addClass('btn btn-small').append(
+          $('<i>').addClass('icon-time')
+        ).on('click', (function(track){
+          return function(e){
+            generateSpeed(track);
+          };
+        }(track)))
+      ));
+
+      populateRow(row, track);
+
+      row.data("track", track);
+
+      // small? (temporary) MEMORY LEAK:
+      track.events.on('change.gpstools-detail', {row: row, track: track}, function(e){
+        populateRow(e.data.row, e.data.track);
+      });
+
+      table.append(row);
+    }
+
+    function populateRow(row, track){
+      row.find('td').each(function(i,item){
+        var text;
+        switch (i){
+          case 1:
+            text = track.name; break;
+          case 2:
+            text = track.getDistance().toFixed(2); break;
+          case 3:
+            text = formatDate(track.getStart(), "HH:i:s"); break;
+          case 4:
+            text = formatDate(track.getEnd(), "HH:i:s"); break;
+          case 5:
+            text = juration.stringify(track.getDuration()); break;
+        }
+        if(text)
+          $(item).text(text);
+      });
     }
 
     track.events.on('addsubtrack.gpstools-detail', function(e){
-      addRow(breakdownBody, e.newTrack);
+      addRow(breakdownBody, breakdownBody.find('tr').length, e.newTrack);
+    });
+
+    track.events.on('removesubtrack.gpstools-detail', function(e){
+      breakdownBody.find('tr').each(function(i,item){
+        var $item = $(item),
+            track  = $item.data("track");
+        if(track == e.oldTrack){
+          $item.remove();
+          return false;
+        }
+      });
     });
 
     $('#super-breakdown').show();
@@ -895,38 +916,35 @@
     var draggingElement = null;
 
     var dragHover = function(e){
-          e.stopPropagation();
-          e.preventDefault();
+      e.stopPropagation();
+      e.preventDefault();
 
-          // Handle File dragging
-          if(e.originalEvent.dataTransfer.types){
-            if(e.type == "dragover"){
-              trackList.addClass('drop-target');
-            }
-            else {
-              trackList.removeClass('drop-target');
-            }
-          }
-          // Handle Track dragging
-          else {
-            var target = $(e.originalEvent.target);
-            if(!target.is('.sub-tracks'))
-              target = target.closest('.track');
-            else
-              console.log(target);
-            if(e.type == "dragover"){
-              target.addClass('hover-over');
-            }
-            else {
-              target.removeClass('hover-over');
-            }
-          }
-        };
+      // Handle File dragging
+      if(e.originalEvent.dataTransfer.types){
+        if(e.type == "dragover"){
+          trackList.addClass('drop-target');
+        }
+        else {
+          trackList.removeClass('drop-target');
+        }
+      }
+      // Handle Track dragging
+      else {
+        var target = $(e.originalEvent.target);
+        if(!target.is('.sub-tracks'))
+          target = target.closest('.track');
+        if(e.type == "dragover"){
+          target.addClass('hover-over');
+        }
+        else {
+          target.removeClass('hover-over');
+        }
+      }
+    };
     $(document).on('dragover', dragHover);
     $(document).on('dragleave', dragHover);
 
     trackList.on('drop', function(e){
-      console.log('drop');
       dragHover(e);
       var files = e.originalEvent.dataTransfer.files;
       if(files.length){
@@ -989,20 +1007,15 @@
           }
         }
       }
-      console.log('drop END');
     });
 
     $(document).on('dragstart', '.track', function(e){
-      console.log("dragstart");
       e.stopPropagation();
       draggingElement = e.currentTarget;
       $(this).css('opacity', 0.5);
-      console.log("dragstart END");
     }).on('dragend', '.track', function(e){
-      console.log("dragend");
       draggingElement = null;
       $(this).css('opacity', 1);
-      console.log("dragend END");
     });
   });
 

@@ -256,7 +256,8 @@ GPSTools.Track.prototype.getEnd = function (){
 GPSTools.Track.prototype.getDuration = function (){
   if(!this.duration){
     this.duration = 0;
-    this.duration = (this.getEnd() - this.getStart()) / 1000;
+    if(this.hasTime())
+      this.duration = (this.getEnd() - this.getStart()) / 1000;
   }
   return this.duration;
 };
@@ -434,7 +435,9 @@ GPSTools.SuperTrack.prototype.removeTrack = function(track){
     if(this.tracks[i] == track){
       this.tracks.splice(i,1);
       track.events.off('change', this.subTrackRingback);
-      this.events.trigger('removesubtrack');
+      var event = $.Event('removesubtrack');
+      event.oldTrack = track;
+      ev.trigger(event);
       break;
     }
   }
@@ -504,7 +507,8 @@ GPSTools.SuperTrack.prototype.getThumb = function(size) {
   for(;i<l;i++){
     GPSTools.Map.drawLine(this.tracks[i].points, {opacity:1,width:10});
   }
-  GPSTools.Map.zoomToExtent();
+  if(l)
+    GPSTools.Map.zoomToExtent();
   thumb = GPSTools.Map.getLineThumb(size);
   GPSTools.Map.clearLine();
   return thumb;
@@ -747,6 +751,9 @@ GPSTools.Map = function (){
     zoomToExtent: function(){
       var bounds = lineLayer.getDataExtent();
       map.zoomToExtent(bounds);
+    },
+    zoomToMaxExtent: function(){
+      map.zoomToMaxExtent();
     },
     getLineThumb: function(dw,dh){
       if(!lineLayer.renderer.canvas)
