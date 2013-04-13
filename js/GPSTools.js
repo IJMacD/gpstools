@@ -402,9 +402,11 @@ GPSTools.SuperTrack = function(tracks){
   this.events.on('removesubtrack', function(){
     that.events.trigger('changesubtracks');
   });
-  this.events.on('changesubtracks', function(){
+  this.events.on('changesubtracks', function(e){
     that.distance = 0;
     that.duration = 0;
+    if(!e.originalEvent || e.originalEvent.type == "changepoints")
+      that.thumb = null;
     that.events.trigger('change');
   });
 }
@@ -415,11 +417,13 @@ GPSTools.SuperTrack.prototype.addTrack = function(track){
     this.distance = this.duration = 0;
     var ev = this.events;
     if(!this.subTrackRingback){
-      this.subTrackRingback = function(){
-        ev.trigger('changesubtracks');
+      this.subTrackRingback = function(e){
+        var event = $.Event('changesubtracks');
+        event.originalEvent = e;
+        ev.trigger(event);
       }
     }
-    track.events.on('change', this.subTrackRingback);
+    track.events.on('change changepoints', this.subTrackRingback);
     var event = $.Event('addsubtrack');
     event.newTrack = track;
     ev.trigger(event);
@@ -500,18 +504,20 @@ GPSTools.SuperTrack.prototype.getSpeed = function (){};
 GPSTools.SuperTrack.prototype.getAvgSpeed = function () {};
 GPSTools.SuperTrack.prototype.getMaxSpeed = function () {};
 GPSTools.SuperTrack.prototype.getThumb = function(size) {
-  GPSTools.Map.clearLine();
-  var i = 0,
-      l = this.tracks.length,
-      thumb;
-  for(;i<l;i++){
-    GPSTools.Map.drawLine(this.tracks[i].points, {opacity:1,width:10});
+  if(!this.thumb){
+    GPSTools.Map.clearLine();
+    var i = 0,
+        l = this.tracks.length,
+        thumb;
+    for(;i<l;i++){
+      GPSTools.Map.drawLine(this.tracks[i].points, {opacity:1,width:10});
+    }
+    if(l)
+      GPSTools.Map.zoomToExtent();
+    this.thumb = GPSTools.Map.getLineThumb(size);
+    GPSTools.Map.clearLine();
   }
-  if(l)
-    GPSTools.Map.zoomToExtent();
-  thumb = GPSTools.Map.getLineThumb(size);
-  GPSTools.Map.clearLine();
-  return thumb;
+  return this.thumb;
 };
 GPSTools.Point = function (lat,lon,ele,time) {
   this.lat = parseFloat(lat);
