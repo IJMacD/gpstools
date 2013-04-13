@@ -915,6 +915,7 @@
   superTrackButton.click(function(){
     superTrack = new GPSTools.SuperTrack();
     addTrack(superTrack);
+    displaySuperTrack(superTrack);
   });
 
   $(function(){
