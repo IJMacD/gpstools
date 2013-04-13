@@ -453,6 +453,12 @@
     showStats(track);
     drawMap(track);
 
+    track.events.on('changepoints.gpstools-detail', (function(track){
+      return function(e){
+        showStats(track);
+        drawMap(track);
+      }
+    }(track)));
     track.events.on('change.gpstools-detail', (function(track){
       return function(e){
         showStats(track);
