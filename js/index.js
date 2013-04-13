@@ -270,17 +270,12 @@
     }).removeAttr('disabled').show();
 
     $('#gen-gpx-btn').off('click').on('click', function (){
-      var format = GPSTools.Format.GPX,
-          ext = 'gpx',
-          data = format.generate(track),
-          mime = format.mimeType,
-          name = track.hasTime() ?
-            track.getStart().toISOString() : (new Date()).toISOString();
+      var dl = getDownloadDetails(track, 'gpx');
       $(this)
-        .attr('download', name+"."+ext)
-        .attr('href', "data:"+mime+";base64,"+btoa(data));
+        .attr('download', dl.name)
+        .attr('href', "data:"+dl.mime+";base64,"+btoa(dl.data));
     }).removeAttr('disabled');
-    $('#export-group').css('display', 'inline-block');
+    $('#export-grp').css('display', 'inline-block');
 
     var selecting = false,
         mousePos,
@@ -1020,11 +1015,35 @@
       e.stopPropagation();
       draggingElement = e.currentTarget;
       $(this).css('opacity', 0.5);
+      var track = $(draggingElement).data("track"),
+          // Potentially long operation:
+          // magnitude ~1500ms! for real tracks (~8000 points)
+          dl = getDownloadDetails(track, 'gpx'),
+          dataURL = "data:"+dl.mime+";base64,"+btoa(dl.data),
+          // Browser does NOT allow colons in name:
+          // haven't found a way to escape them
+          name = dl.name.replace(/:/g,""),
+          data = dl.mime+":"+name+":"+dataURL;
+      e.originalEvent.dataTransfer.setData("DownloadURL", data);
     }).on('dragend', '.track', function(e){
       draggingElement = null;
       $(this).css('opacity', 1);
     });
   });
+
+  function getDownloadDetails(track, format){
+    var format = GPSTools.Format.GPX,
+        ext = 'gpx',
+        data = format.generate(track),
+        mime = format.mimeType,
+        name = track.hasTime() ?
+          track.getStart().toISOString() : (new Date()).toISOString();
+    return {
+      name: name + "." + ext,
+      mime: mime,
+      data: data
+    };
+  }
 
   function setProgress(val, max){
     if (typeof max != "undefined"){
