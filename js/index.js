@@ -776,7 +776,7 @@
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
   $('#mrg-trk-btn').click(function(e){
-    var options = $('select')[0].selectedOptions,
+    var options = trackList.find('.selected'),
         tracks = [], i = 0, l = options.length;
     if(options.length > 1){
       for(;i<l;i++){
