@@ -303,17 +303,20 @@ GPSTools.Track.prototype.setName = function(name) {
   this.events.trigger('changename');
 }
 GPSTools.Track.prototype.hasTime = function (){
-  return !!(this.points && this.points[0] && this.points[0].time);
+  var p = this.points;
+  return !!(p && p[0] && p[0].time && p[p.length - 1].time);
 };
 GPSTools.Track.prototype.hasElevation = function (){
-  return !!(this.points && (this.points[0] && this.points[0].ele || this.points[1] && this.points[1].ele));
+  var p = this.points;
+  return !!(p && (p[0] && p[0].ele || p[1] && p[1].ele));
 };
 // Deprecated
 // Use Track.getStartTime
 GPSTools.Track.prototype.getStart = function (){
+  var p = this.points;
   if(!this.start){
-    if(this.points && this.points[0] && this.points[0].time)
-      this.start = new Date(this.points[0].time);
+    if(p && p[0] && p[0].time)
+      this.start = new Date(p[0].time);
   }
   return this.start;
 };
@@ -324,9 +327,11 @@ GPSTools.Track.prototype.getStartTime = function (){
 // Deprecated
 // Use Track.getEndTime
 GPSTools.Track.prototype.getEnd = function (){
+  var p = this.points,
+      l = p.length - 1;
   if(!this.end){
-    if(this.points && this.points[this.points.length-1] && this.points[this.points.length-1].time)
-      this.end = new Date(this.points[this.points.length-1].time);
+    if(p && p[l] && p[l].time)
+      this.end = new Date(p[l].time);
   }
   return this.end;
 };
