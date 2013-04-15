@@ -743,7 +743,7 @@
       speed_lbl.text(speed.toFixed(1));
       hold = 'duration';
     });
-    modal.modal().find('.btn-primary').click(function(){
+    modal.modal().find('.btn-primary').off('click').click(function(){
       modal.modal('hide');
       var start = new Date(start_txt.val()),
           end = new Date(end_txt.val()),
