@@ -489,17 +489,20 @@ GPSTools.Track.prototype.setTime = function(start, end) {
       l = points.length,
       cuml_dist = 0,
       time, date,
-      grad = this.getGradient(),
-      histSum = 0, hist = this.getGradientHistogram(),
-      histAvg;
-  for(key in hist){
-    histSum += key * hist[key];
+      grad, histSum, hist, histAvg;
+  if(this.hasElevation()){
+    grad = this.getGradient();
+    histSum = 0;
+    hist = this.getGradientHistogram();
+    for(key in hist){
+      histSum += key * hist[key];
+    }
+    histAvg = histSum / (distance * 10);
   }
-  histAvg = histSum / (distance * 10);
   this.points[0].time = start.toISOString();
   for(;i<l;i++){
     cuml_dist += points[i-1].distanceTo(points[i]); // km
-    time = cuml_dist / distance * duration + (grad[i-1] - histAvg)*0.5; // s
+    time = cuml_dist / distance * duration + (histAvg ? (grad[i-1] - histAvg)*0.5 : 0); // s
     date = new Date(+start + time*1000);
     this.points[i].time = date.toISOString();
   }
