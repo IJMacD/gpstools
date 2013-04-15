@@ -231,6 +231,37 @@ GPSTools.Format.TCX = function(){
     generate: function (track) {}
   };
 }();
+GPSTools.Format.JSON = (function(GPSTools){
+  return {
+    isValid: function(string){
+      try {
+        JSON.parse(string);
+      }
+      catch (e) {
+        return false;
+      }
+      return true;
+    },
+    parse: function(string){
+      var obj = JSON.parse(string),
+          points = [],
+          track,
+          i = 0,
+          l = obj.points.length,
+          p;
+      for(;i<l;i++){
+        p = obj.points[i];
+        points.push(new GPSTools.Point(p.lat, p.lon, p.ele, p.time));
+      }
+      track = new GPSTools.Track(points);
+      track.name = obj.name;
+      return track;
+    },
+    generate: function(track){
+      return JSON.stringify(track);
+    }
+  }
+}(GPSTools));
 GPSTools.Track = function (points) {
   this.points = points || [];
   var events = this.events = $({}),
