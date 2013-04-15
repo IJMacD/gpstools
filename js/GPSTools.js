@@ -463,6 +463,31 @@ GPSTools.Track.prototype.getThumb = function(size) {
   GPSTools.Map.clearLine();
   return thumb;
 };
+GPSTools.Track.prototype.setTime = function(start, end) {
+  var distance = this.getDistance(),
+      duration = (+end - start) / 1000, // s
+      speed = distance / duration * 1000, // m s^-1,
+      points = this.points,
+      i = 1,
+      l = points.length,
+      cuml_dist = 0,
+      time, date,
+      grad = this.getGradient(),
+      histSum = 0, hist = this.getGradientHistogram(),
+      histAvg;
+  for(key in hist){
+    histSum += key * hist[key];
+  }
+  histAvg = histSum / (distance * 10);
+  this.points[0].time = start.toISOString();
+  for(;i<l;i++){
+    cuml_dist += points[i-1].distanceTo(points[i]); // km
+    time = cuml_dist / distance * duration + (grad[i-1] - histAvg)*0.5; // s
+    date = new Date(+start + time*1000);
+    this.points[i].time = date.toISOString();
+  }
+  this.events.trigger('changetime');
+};
 GPSTools.SuperTrack = function(tracks){
   this.name = "Super Track";
   this.tracks = (tracks instanceof Array) ? tracks : [];

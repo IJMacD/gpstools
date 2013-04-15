@@ -746,31 +746,8 @@
     modal.modal().find('.btn-primary').off('click').click(function(){
       modal.modal('hide');
       var start = new Date(start_txt.val()),
-          end = new Date(end_txt.val()),
-          points = track.points,
-          duration = (+end - start) / 1000, // s
-          speed = distance / duration * 1000, // m s^-1,
-          points = track.points,
-          i = 1,
-          l = points.length,
-          cuml_dist = 0,
-          time, date,
-          grad = track.getGradient(),
-          histSum = 0, hist = track.getGradientHistogram(),
-          histAvg;
-      for(key in hist){
-        histSum += key * hist[key];
-      }
-      histAvg = histSum / (distance * 10);
-      track.points[0].time = start.toISOString();
-      for(;i<l;i++){
-        cuml_dist += points[i-1].distanceTo(points[i]); // km
-        time = cuml_dist / distance * duration + (grad[i-1] - histAvg)*0.5; // s
-        date = new Date(+start + time*1000);
-        track.points[i].time = date.toISOString();
-      }
-      track.events.trigger('changetime');
-
+          end = new Date(end_txt.val());
+      track.setTime(start, end);
       if(typeof callback == "function")
         callback();
     });
