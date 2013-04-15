@@ -480,10 +480,13 @@
 
     function addRow(table, i, track){
       var row = $('<tr>'),
-          subNameCell;
+          subNameCell,
+          subStartCell,
+          subEndCell;
 
-      row.append($('<td>').text(i+1));
-      subNameCell = $('<td>')
+      row.append($('<td>').text(i+1));  // Col 0: ID
+
+      subNameCell = $('<td>')           // Col 1: Name
         .attr('contenteditable', true);
       subNameCell.on("input", (function(subNameCell, track){
           return function(){
@@ -493,12 +496,44 @@
       );
       row.append(subNameCell);
 
-      row.append($('<td>'));
-      row.append($('<td>'));
-      row.append($('<td>'));
-      row.append($('<td>'));
+      row.append($('<td>'));          // Col 2: Distance
 
-      row.append($('<td>').append(
+      subStartCell = $('<td>')        // Col 3: Start Time
+        .attr("contenteditable", true)
+        .on("blur", function(){
+          var startTime = subStartCell.text(),
+              match = startTime.match(/(\d\d):(\d\d):(\d\d)/),
+              start = track.getStartTime();
+          if(!start)
+            start = new Date();
+          if(match){
+            start.setHours(match[1]);
+            start.setMinutes(match[2]);
+            start.setSeconds(match[3]);
+            track.setStartTime(start);
+          }
+        });
+      row.append(subStartCell);
+
+      subEndCell = $('<td>')        // Col 4: End Time
+        .attr("contenteditable", true)
+        .on("blur", function(){
+          var endTime = subEndCell.text(),
+              match = endTime.match(/(\d\d):(\d\d):(\d\d)/),
+              end = track.getEndTime();
+          if(!end)
+            end = new Date();
+          if(match){
+            end.setHours(match[1]);
+            end.setMinutes(match[2]);
+            end.setSeconds(match[3]);
+            track.setEndTime(end);
+          }
+        });
+      row.append(subEndCell);
+      row.append($('<td>'));          // Col 5: Duration
+
+      row.append($('<td>').append(    // Col 6: Actions
         $('<button>').addClass('btn btn-small').append(
           $('<i>').addClass('icon-time')
         ).on('click', (function(track){
@@ -529,9 +564,13 @@
           case 2:
             text = track.getDistance().toFixed(2); break;
           case 3:
-            text = formatDate(track.getStart(), "HH:i:s"); break;
+            if(track.getStartTime())
+              text = formatDate(track.getStartTime(), "HH:i:s");
+            break;
           case 4:
-            text = formatDate(track.getEnd(), "HH:i:s"); break;
+            if(track.getEndTime())
+              text = formatDate(track.getEndTime(), "HH:i:s");
+            break;
           case 5:
             text = juration.stringify(track.getDuration()); break;
         }
@@ -664,14 +703,8 @@
         step = 0.1,
         i, key;
     for(key in data){
-      if(typeof min == "undefined"){
-        min = key;
-        max = key;
-      }
-      else{
-        min = Math.min(min, key);
-        max = Math.max(max, key);
-      }
+      min = Math.min(min || key, key);
+      max = Math.max(max || key, key);
     }
     for(i=min;i<=max;i+=step){
       key = i.toFixed(1);
