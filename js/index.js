@@ -140,26 +140,15 @@
         // Closure to capture the file information.
         reader.onload = (function(theFile) {
           return function(e) {
-            var doc = $($.parseXML( e.target.result )),
-                track;
-            if(GPSTools.Format.GPX.isValid(doc)) {
-              logging("Found GPX file!");
-              track = GPSTools.Format.GPX.parse(doc);
-            }
-            else if(GPSTools.Format.KML.isValid(doc)) {
-              logging("Found KML file!");
-              track = GPSTools.Format.KML.parse(doc);
-            }
-            else if(GPSTools.Format.TCX.isValid(doc)) {
-              logging("Found TCX file!");
-              track = GPSTools.Format.TCX.parse(doc);
-            }
-            else {
-              logging("Unrecognised file type");
+            var track = GPSTools.parseTrack(e.target.result);
+
+            if(!track){
+              setProgress(++added);
               return;
             }
 
-            track.setName(theFile.name);
+            if(!track.name)
+              track.setName(theFile.name);
 
             addTrack(track);
 

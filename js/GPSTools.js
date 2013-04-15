@@ -1,5 +1,12 @@
 var GPSTools = (function(){
-  var cropTrack = function(track, start, end){
+  var parseTrack = function(string) {
+        for(fmt in GPSTools.Format){
+          if(GPSTools.Format[fmt].isValid(string)){
+            return GPSTools.Format[fmt].parse(string);
+          }
+        }
+      },
+      cropTrack = function(track, start, end){
         var points = track.points.slice(start, end),
             newTrack = new GPSTools.Track(points);
         newTrack.name = (newTrack.hasTime() ? newTrack.getStart().toISOString() : track.name) + " (Cropped)";
@@ -27,7 +34,8 @@ var GPSTools = (function(){
   return {
     areMergeable: areMergeable,
     cropTrack: cropTrack,
-    mergeTracks: mergeTracks
+    mergeTracks: mergeTracks,
+    parseTrack: parseTrack
   };
 }());
 GPSTools.Format = {};
@@ -35,6 +43,14 @@ GPSTools.Format.GPX = function(){
   return {
       mimeType: "application/gpx+xml",
       isValid: function (doc) {
+        if(typeof doc == "string"){
+          try {
+            doc = $.parseXML(doc);
+          }
+          catch(e) {
+            return false;
+          }
+        }
         // This is not a jQuery object yet.
         if(!doc.find)
           doc = $(doc);
@@ -42,6 +58,9 @@ GPSTools.Format.GPX = function(){
         return !!(doc.find('gpx').length);
       },
       parse: function (doc) {
+          if(typeof doc == "string"){
+            doc = $.parseXML(doc);
+          }
           // This is not a jQuery object yet.
           if(!doc.find)
             doc = $(doc);
@@ -123,6 +142,14 @@ GPSTools.Format.GPX = function(){
 GPSTools.Format.KML = function(){
   return {
     isValid: function (doc) {
+      if(typeof doc == "string"){
+        try {
+          doc = $.parseXML(doc);
+        }
+        catch(e) {
+          return false;
+        }
+      }
       // This is not a jQuery object yet.
       if(!doc.find)
         doc = $(doc);
@@ -130,6 +157,9 @@ GPSTools.Format.KML = function(){
       return !!(doc.find('kml').length);
     },
     parse: function (doc) {
+      if(typeof doc == "string"){
+        doc = $.parseXML(doc);
+      }
       // This is not a jQuery object yet.
       if(!doc.find)
         doc = $(doc);
@@ -158,6 +188,14 @@ GPSTools.Format.KML = function(){
 GPSTools.Format.TCX = function(){
   return {
     isValid: function (doc) {
+      if(typeof doc == "string"){
+        try {
+          doc = $.parseXML(doc);
+        }
+        catch(e) {
+          return false;
+        }
+      }
       // This is not a jQuery object yet.
       if(!doc.find)
         doc = $(doc);
@@ -165,6 +203,9 @@ GPSTools.Format.TCX = function(){
       return !!(doc.find('TrainingCenterDatabase').length);
     },
     parse: function (doc) {
+      if(typeof doc == "string"){
+        doc = $.parseXML(doc);
+      }
       // This is not a jQuery object yet.
       if(!doc.find)
         doc = $(doc);
