@@ -25,12 +25,15 @@
     <button id="get-ele-btn" class="btn" disabled>Get Elevation</button>
     <button id="gen-spd-btn" class="btn" disabled>Fake Speed</button>
     <div class="btn-group" id="export-grp">
-      <a id="gen-gpx-btn" class="btn" disabled>Export GPX</a>
-      <button class="btn dropdown-toggle" data-toggle="dropdown" disabled>
+      <a id="gen-fmt-btn" class="btn">Export GPX</a>
+      <button class="btn dropdown-toggle" data-toggle="dropdown">
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu">
-        <li><a href="#">Export GPX</a>
+        <li><a href="#" id="gen-gpx-btn">Export GPX</a>
+        <li><a href="#" id="gen-kml-btn">Export KML</a>
+        <li><a href="#" id="gen-tcx-btn">Export TCX</a>
+        <li><a href="#" id="gen-json-btn">Export JSON</a>
       </ul>
     </div>
     <button id="mrg-trk-btn" class="btn" disabled>Merge Tracks</button>

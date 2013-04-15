@@ -3,16 +3,36 @@
   var progress,
       trackList,
       titleLabel,
-      currentTrack;
+      currentTrack,
+      defaultExportFormat = 'gpx',
+      generateFormatBtn;
 
   $(function(){
     progress = $('progress');
     trackList = $('#tracks-list');
     titleLabel = $('#track-title');
+    generateFormatBtn = $('#gen-fmt-btn');
 
     $('#open-file-btn').click(function(){
       $('#files').click();
     });
+
+    function exportFormatHandler(e){
+      if(!currentTrack)
+        return;
+      defaultExportFormat = (e.data && e.data.format) || defaultExportFormat;
+      var dl = getDownloadDetails(currentTrack, defaultExportFormat);
+      $(e.target)
+        .attr('download', dl.name)
+        .attr('href', "data:"+dl.mime+";base64,"+btoa(dl.data));
+      generateFormatBtn.text("Export " + defaultExportFormat.toUpperCase());
+    }
+
+    $('#gen-fmt-btn').on('click', exportFormatHandler);
+    $('#gen-gpx-btn').on('click', {format: 'gpx'}, exportFormatHandler);
+    $('#gen-kml-btn').on('click', {format: 'kml'}, exportFormatHandler);
+    $('#gen-tcx-btn').on('click', {format: 'tcx'}, exportFormatHandler);
+    $('#gen-json-btn').on('click', {format: 'json'}, exportFormatHandler);
 
     var detail = $('#details').click(function(e){
       if(detail.is(e.target)){
@@ -269,12 +289,6 @@
       }
     }).removeAttr('disabled').show();
 
-    $('#gen-gpx-btn').off('click').on('click', function (){
-      var dl = getDownloadDetails(track, 'gpx');
-      $(this)
-        .attr('download', dl.name)
-        .attr('href', "data:"+dl.mime+";base64,"+btoa(dl.data));
-    }).removeAttr('disabled');
     $('#export-grp').css('display', 'inline-block');
 
     var selecting = false,
@@ -1032,10 +1046,11 @@
   });
 
   function getDownloadDetails(track, format){
-    var format = GPSTools.Format.GPX,
-        ext = 'gpx',
-        data = format.generate(track),
-        mime = format.mimeType,
+    var ext = format.toLowerCase(),
+        fmt = format.toUpperCase(),
+        generator = GPSTools.Format[fmt],
+        data = generator.generate(track),
+        mime = generator.mimeType,
         name = track.hasTime() ?
           track.getStart().toISOString() : (new Date()).toISOString();
     return {
