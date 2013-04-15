@@ -308,6 +308,8 @@ GPSTools.Track.prototype.hasTime = function (){
 GPSTools.Track.prototype.hasElevation = function (){
   return !!(this.points && (this.points[0] && this.points[0].ele || this.points[1] && this.points[1].ele));
 };
+// Deprecated
+// Use Track.getStartTime
 GPSTools.Track.prototype.getStart = function (){
   if(!this.start){
     if(this.points && this.points[0] && this.points[0].time)
@@ -315,6 +317,12 @@ GPSTools.Track.prototype.getStart = function (){
   }
   return this.start;
 };
+// API Method should be this
+GPSTools.Track.prototype.getStartTime = function (){
+  return this.getStart();
+}
+// Deprecated
+// Use Track.getEndTime
 GPSTools.Track.prototype.getEnd = function (){
   if(!this.end){
     if(this.points && this.points[this.points.length-1] && this.points[this.points.length-1].time)
@@ -322,6 +330,10 @@ GPSTools.Track.prototype.getEnd = function (){
   }
   return this.end;
 };
+// API Method should be this
+GPSTools.Track.prototype.getEndTime = function (){
+  return this.getEnd();
+}
 /**
  * @return Duration in s
  */
@@ -487,6 +499,16 @@ GPSTools.Track.prototype.setTime = function(start, end) {
     this.points[i].time = date.toISOString();
   }
   this.events.trigger('changetime');
+};
+GPSTools.Track.prototype.setStartTime = function(start) {
+  var end = this.getEndTime();
+  if(end)
+    this.setTime(start, end);
+};
+GPSTools.Track.prototype.setEndTime = function(end) {
+  var start = this.getStartTime();
+  if(start)
+    this.setTime(start, end);
 };
 GPSTools.SuperTrack = function(tracks){
   this.name = "Super Track";
