@@ -509,11 +509,15 @@ GPSTools.Track.prototype.setStartTime = function(start) {
   var end = this.getEndTime();
   if(end)
     this.setTime(start, end);
+  else
+    this.points[0].time = start.toISOString();
 };
 GPSTools.Track.prototype.setEndTime = function(end) {
   var start = this.getStartTime();
   if(start)
     this.setTime(start, end);
+  else
+    this.points[this.points.length-1].time = end.toISOString();
 };
 GPSTools.SuperTrack = function(tracks){
   this.name = "Super Track";
