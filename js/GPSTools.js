@@ -244,17 +244,34 @@ GPSTools.Format.JSON = (function(GPSTools){
     },
     parse: function(string){
       var obj = JSON.parse(string),
-          points = [],
+          ts = obj.tracks,
+          tracks = [],
           track,
           i = 0,
-          l = obj.points.length,
-          p;
-      for(;i<l;i++){
-        p = obj.points[i];
-        points.push(new GPSTools.Point(p.lat, p.lon, p.ele, p.time));
+          l;
+      function parseTrack(trackObj){
+        var points = [],
+            ps = trackObj.points,
+            i = 0,
+            l = ps.length,
+            p;
+        for(;i<l;i++){
+          p = ps[i];
+          points.push(new GPSTools.Point(p.lat, p.lon, p.ele, p.time));
+        }
+        track = new GPSTools.Track(points);
+        track.name = trackObj.name;
+        return track;
       }
-      track = new GPSTools.Track(points);
-      track.name = obj.name;
+      if(ts){
+        l = ts.length;
+        for(;i<l;i++){
+          tracks.push(parseTrack(ts[i]));
+        }
+        track = new GPSTools.SuperTrack(tracks);
+      }
+      else
+        track = parseTrack(trackObj);
       return track;
     },
     generate: function(track){
