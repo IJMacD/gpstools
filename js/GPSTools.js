@@ -295,7 +295,7 @@ GPSTools.Track = function (points) {
     that.duration = 0;
 
     if(!suspendChangeEvent)
-      events.trigger('change');
+      events.trigger('changepoints');
   });
 };
 GPSTools.Track.prototype.setName = function(name) {
@@ -549,7 +549,7 @@ GPSTools.SuperTrack = function(tracks){
   this.events.on('changesubtracks', function(e){
     that.distance = 0;
     that.duration = 0;
-    if(!e.originalEvent || e.originalEvent.type == "changepoints")
+    if(!e.originalEvent || e.originalEvent.type == "changelocation")
       that.thumb = null;
     that.events.trigger('change');
   });
