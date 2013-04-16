@@ -747,9 +747,9 @@
 
     var speed = 10, // m s^-1,
         distance = track.getDistance(), // km
-        duration = (distance / speed) * 1000, // s
-        end = new Date(),
-        start = new Date(end - duration*1000),
+        duration = track.hasTime() ? track.getDuration() : (distance / speed) * 1000, // s
+        end = track.getEndTime() || new Date(),
+        start = track.getStartTime() || new Date(end - duration*1000),
         modal = $('#speedModal'),
         start_txt = modal.find('#start_txt'),
         end_txt = modal.find('#end_txt'),
