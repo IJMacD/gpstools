@@ -320,9 +320,13 @@ GPSTools.Track.prototype.getStart = function (){
   }
   return this.start;
 };
-// API Method should be this
+// API Method Track.getStart should be this
 GPSTools.Track.prototype.getStartTime = function (){
   return this.getStart();
+}
+GPSTools.Track.prototype.getStartPoint = function (){
+  var p = this.points;
+  return p && p[0];
 }
 // Deprecated
 // Use Track.getEndTime
@@ -335,10 +339,15 @@ GPSTools.Track.prototype.getEnd = function (){
   }
   return this.end;
 };
-// API Method should be this
+// API Method Track.getEnd should be this
 GPSTools.Track.prototype.getEndTime = function (){
   return this.getEnd();
 }
+GPSTools.Track.prototype.getEndPoint = function (){
+  var p = this.points,
+      l = p.length - 1;
+  return p && p[l];
+};
 /**
  * @return Duration in s
  */

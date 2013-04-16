@@ -438,14 +438,23 @@
     titleLabel.text(track.name);
 
     function drawMap(track){
-      GPSTools.Map.clearLine();
-      for(var i = 0, l = track.tracks.length; i < l; i++){
-        GPSTools.Map.drawLine(track.tracks[i].points);
+      var map = GPSTools.Map,
+          tracks = track.tracks,
+          p1, p2;
+      map.clearLine();
+      for(var i = 0, l = tracks.length; i < l; i++){
+        // Draw link lines
+        if(i > 0){
+          p1 = tracks[i-1].getEndPoint();
+          p2 = tracks[i].getStartPoint();
+          map.drawLine([p1,p2],{color:'#3399ff'});
+        }
+        map.drawLine(tracks[i].points);
       }
       if(l)
-        GPSTools.Map.zoomToExtent();
+        map.zoomToExtent();
       else
-        GPSTools.Map.zoomToMaxExtent();
+        map.zoomToMaxExtent();
     }
 
     showStats(track);
