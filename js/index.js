@@ -142,18 +142,14 @@
           return function(e) {
             var track = GPSTools.parseTrack(e.target.result);
 
-            if(!track){
-              setProgress(++added);
-              return;
+            if(track){
+              if(!track.name)
+                track.setName(theFile.name);
+
+              addTrack(track);
             }
 
-            if(!track.name)
-              track.setName(theFile.name);
-
-            addTrack(track);
-
-            added++;
-            setProgress(added);
+            setProgress(++added);
 
             if(added == l){
               displayTrack(track);
@@ -169,6 +165,9 @@
   }
 
   function displayTrack(track){
+
+    if(track instanceof GPSTools.SuperTrack)
+      return displaySuperTrack(track);
 
     if(currentTrack)
       currentTrack.events.off('.gpstools-detail');
@@ -607,12 +606,10 @@
   }
 
   function addTrack(track){
-    trackList.find('.selected').removeClass('selected');
 
-    var targetList,
-        trackItem,
-        trackTime;
+    var targetList;
 
+    // Work out where this track is going to get added
     if(currentTrack instanceof GPSTools.SuperTrack) {
 
       currentTrack.addTrack(track);
@@ -629,28 +626,58 @@
       targetList = trackList;
     }
 
-    trackItem = $('<div>')
-      .addClass('track')
-      .addClass('selected')
-      .attr('draggable', true)
-      .append($('<p>')
-        .addClass('track-name')
-      )
-      .append($('<span>')
-        .addClass('track-dist')
-      )
-      .data('track', track)
-      .appendTo(targetList);
+    trackItem = createTrackItem(track, targetList);
 
-    trackTime = $('<span>')
-      .addClass('track-time')
-      .appendTo(trackItem)
-      .toggle(track.hasTime());
+    // Only the outer trackItem gets selected
+    trackItem.addClass('selected');
 
-    if(track instanceof GPSTools.SuperTrack){
-      trackItem.append($('<div>')
-        .addClass('sub-tracks')
-      );
+    function createTrackItem(track, targetList){
+
+      var trackItem,
+          trackSubList,
+          subTrackItem,
+          t, i, l;
+
+      trackItem = $('<div>')
+        .addClass('track')
+        .attr('draggable', true)
+        .append($('<p>')
+          .addClass('track-name')
+        )
+        .append($('<span>')
+          .addClass('track-dist')
+        )
+        .data('track', track)
+        .appendTo(targetList);
+
+      $('<span>')
+        .addClass('track-time')
+        .appendTo(trackItem)
+        .toggle(track.hasTime());
+
+      populateListItem(trackItem, track);
+
+      track.events.on('change', {listItem: trackItem, track: track}, function(e){
+        var listItem = e.data.listItem,
+            track = e.data.track;
+        populateListItem(listItem, track);
+      });
+
+      if(track instanceof GPSTools.SuperTrack){
+
+        trackSubList = $('<div>')
+          .addClass('sub-tracks')
+          .appendTo(trackItem);
+
+        t = track.tracks;
+        if(t.length){
+          for(i=0,l=t.length;i<l;i++){
+            createTrackItem(t[i],trackSubList);
+          }
+        }
+      }
+
+      return trackItem;
     }
 
     function populateListItem(listItem, track){
@@ -661,14 +688,6 @@
         .text(juration.stringify(track.getDuration()))
         .toggle(track.hasTime());
     }
-
-    populateListItem(trackItem, track);
-
-    track.events.on('change', {listItem: trackItem, track: track}, function(e){
-      var listItem = e.data.listItem,
-          track = e.data.track;
-      populateListItem(listItem, track);
-    });
   }
 
   function updateListing(superTrackElement){
