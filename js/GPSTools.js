@@ -512,15 +512,19 @@ GPSTools.Track.prototype.setStartTime = function(start) {
   var end = this.getEndTime();
   if(end)
     this.setTime(start, end);
-  else
+  else{
     this.points[0].time = start.toISOString();
+    this.events.trigger('changetime');
+  }
 };
 GPSTools.Track.prototype.setEndTime = function(end) {
   var start = this.getStartTime();
   if(start)
     this.setTime(start, end);
-  else
+  else {
     this.points[this.points.length-1].time = end.toISOString();
+    this.events.trigger('changetime');
+  }
 };
 GPSTools.SuperTrack = function(tracks){
   this.name = "Super Track";
@@ -649,6 +653,24 @@ GPSTools.SuperTrack.prototype.getThumb = function(size) {
     GPSTools.Map.clearLine();
   }
   return this.thumb;
+};
+/**
+ * Set the split time of a track boundary.
+ *
+ * @param index int The index of the split point to set e.g.
+ * 0: Start of first track
+ * 1: End of first track and start of second
+ * ...
+ * n: End of nth track, start of (n+1)th track
+ */
+GPSTools.SuperTrack.prototype.setSplitTime = function(index, time) {
+  var tracks = this.tracks;
+  if(index >= 0 && index < tracks.length) {
+    tracks[index].setStartTime(time);
+  }
+  if(index > 0 && index <= tracks.length) {
+    tracks[index-1].setEndTime(time);
+  }
 };
 GPSTools.Point = function (lat,lon,ele,time) {
   this.lat = parseFloat(lat);

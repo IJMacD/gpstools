@@ -478,7 +478,7 @@
       addRow(breakdownBody, i, subTrack);
     }
 
-    function addRow(table, i, track){
+    function addRow(table, i, subtrack){
       var row = $('<tr>'),
           subNameCell,
           subStartCell,
@@ -488,11 +488,11 @@
 
       subNameCell = $('<td>')           // Col 1: Name
         .attr('contenteditable', true);
-      subNameCell.on("input", (function(subNameCell, track){
+      subNameCell.on("input", (function(subNameCell, subtrack){
           return function(){
-            track.setName(subNameCell.text());
+            subtrack.setName(subNameCell.text());
           }
-        }(subNameCell, track))
+        }(subNameCell, subtrack))
       );
       row.append(subNameCell);
 
@@ -503,14 +503,14 @@
         .on("blur", function(){
           var startTime = subStartCell.text(),
               match = startTime.match(/(\d\d):(\d\d):(\d\d)/),
-              start = track.getStartTime();
+              start = subtrack.getStartTime();
           if(!start)
             start = new Date();
           if(match){
             start.setHours(match[1]);
             start.setMinutes(match[2]);
             start.setSeconds(match[3]);
-            track.setStartTime(start);
+            track.setSplitTime(i, start);
           }
         });
       row.append(subStartCell);
@@ -520,14 +520,14 @@
         .on("blur", function(){
           var endTime = subEndCell.text(),
               match = endTime.match(/(\d\d):(\d\d):(\d\d)/),
-              end = track.getEndTime();
+              end = subtrack.getEndTime();
           if(!end)
             end = new Date();
           if(match){
             end.setHours(match[1]);
             end.setMinutes(match[2]);
             end.setSeconds(match[3]);
-            track.setEndTime(end);
+            track.setSplitTime(i+1, end);
           }
         });
       row.append(subEndCell);
@@ -536,43 +536,43 @@
       row.append($('<td>').append(    // Col 6: Actions
         $('<button>').addClass('btn btn-small').append(
           $('<i>').addClass('icon-time')
-        ).on('click', (function(track){
+        ).on('click', (function(subtrack){
           return function(e){
-            generateSpeed(track);
+            generateSpeed(subtrack);
           };
-        }(track)))
+        }(subtrack)))
       ));
 
-      populateRow(row, track);
+      populateRow(row, subtrack);
 
-      row.data("track", track);
+      row.data("track", subtrack);
 
       // small? (temporary) MEMORY LEAK:
-      track.events.on('change.gpstools-detail', {row: row, track: track}, function(e){
+      subtrack.events.on('change.gpstools-detail', {row: row, track: subtrack}, function(e){
         populateRow(e.data.row, e.data.track);
       });
 
       table.append(row);
     }
 
-    function populateRow(row, track){
+    function populateRow(row, subtrack){
       row.find('td').each(function(i,item){
         var text;
         switch (i){
           case 1:
-            text = track.name; break;
+            text = subtrack.name; break;
           case 2:
-            text = track.getDistance().toFixed(2); break;
+            text = subtrack.getDistance().toFixed(2); break;
           case 3:
-            if(track.getStartTime())
-              text = formatDate(track.getStartTime(), "HH:i:s");
+            if(subtrack.getStartTime())
+              text = formatDate(subtrack.getStartTime(), "HH:i:s");
             break;
           case 4:
-            if(track.getEndTime())
-              text = formatDate(track.getEndTime(), "HH:i:s");
+            if(subtrack.getEndTime())
+              text = formatDate(subtrack.getEndTime(), "HH:i:s");
             break;
           case 5:
-            text = juration.stringify(track.getDuration()); break;
+            text = juration.stringify(subtrack.getDuration()); break;
         }
         if(text)
           $(item).text(text);
