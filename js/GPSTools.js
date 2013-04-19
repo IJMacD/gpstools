@@ -342,7 +342,8 @@ GPSTools.Track.prototype.getStart = function (){
 };
 // API Method Track.getStart should be this
 GPSTools.Track.prototype.getStartTime = function (){
-  return this.getStart();
+  var p = this.points;
+  return p && p[0] && p[0].time && new Date(p[0].time);
 }
 GPSTools.Track.prototype.getStartPoint = function (){
   var p = this.points;
