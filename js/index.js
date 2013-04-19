@@ -513,7 +513,7 @@
               match = startTime.match(/(\d\d):(\d\d):(\d\d)/),
               start = subtrack.getStartTime();
           if(!start)
-            start = new Date();
+            start = subtrack.getEndTime() || new Date();
           if(match){
             start.setHours(match[1]);
             start.setMinutes(match[2]);
@@ -530,7 +530,7 @@
               match = endTime.match(/(\d\d):(\d\d):(\d\d)/),
               end = subtrack.getEndTime();
           if(!end)
-            end = new Date();
+            end = subtrack.getStartTime() || new Date();
           if(match){
             end.setHours(match[1]);
             end.setMinutes(match[2]);
