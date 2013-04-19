@@ -888,44 +888,47 @@
 
     stravaImportBtn.click(function(){
       stravaModal.modal();
-      stravaLoadRideBtn.click(function(){
-        resetModal();
-        if(!stravaRideId)
-          return;
-        var pp = pseudoProgress(10);
-        $.getJSON('proxy.php?url=' + encodeURIComponent('http://app.strava.com/api/v1/streams/'+stravaRideId+'?streams[]=latlng,time,altitude'),
-          function(data){
-            if(data.latlng){
-              if(rideDetails){
-                var latlng = data.latlng,
-                    time = data.time,
-                    elevation = data.altitude,
-                    l = latlng.length,
-                    i = 0,
-                    points = [],
-                    track, date,
-                    startDate = new Date(rideDetails.startDate).valueOf();
-                for(;i<l;i++){
-                  date = (new Date(startDate + (time[i]*1000))).toISOString();
-                  points.push(new GPSTools.Point(latlng[i][0],latlng[i][1],elevation[i],date));
-                }
-                track = new GPSTools.Track(points);
-                track.name = rideDetails.name;
-                addTrack(track);
-                displayTrack(track);
+    });
+
+
+    stravaLoadRideBtn.click(function(){
+      resetModal();
+      if(!stravaRideId)
+        return;
+      var pp = pseudoProgress(10);
+      $.getJSON('proxy.php?url=' + encodeURIComponent('http://app.strava.com/api/v1/streams/'+stravaRideId+'?streams[]=latlng,time,altitude'),
+        function(data){
+          if(data.latlng){
+            if(rideDetails){
+              var latlng = data.latlng,
+                  time = data.time,
+                  elevation = data.altitude,
+                  l = latlng.length,
+                  i = 0,
+                  points = [],
+                  track, date,
+                  startDate = new Date(rideDetails.startDate).valueOf();
+              for(;i<l;i++){
+                date = (new Date(startDate + (time[i]*1000))).toISOString();
+                points.push(new GPSTools.Point(latlng[i][0],latlng[i][1],elevation[i],date));
               }
-            }
-            else if (data.error){
+              track = new GPSTools.Track(points);
+              track.name = rideDetails.name;
+              addTrack(track);
+              displayTrack(track);
               resetModal();
-              alert(data.error);
             }
-            pp.complete();
           }
-        ).error(function(){
-          resetModal();
+          else if (data.error){
+            resetModal();
+            alert(data.error);
+          }
           pp.complete();
-          alert("Other Error!");
-        });
+        }
+      ).error(function(){
+        resetModal();
+        pp.complete();
+        alert("Other Error!");
       });
     });
 
