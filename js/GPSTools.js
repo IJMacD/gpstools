@@ -110,7 +110,7 @@ GPSTools.Format.GPX = function(){
           metadata = gpx.find('metadata'),
           time = $('<time>', doc),
           trk = $('<trk>', doc),
-          points = track.points,
+          points = track.getPoints(),
           l = points.length,
           i = 0,
           p, trkpt, ele,
@@ -327,6 +327,9 @@ GPSTools.Track.prototype.hasElevation = function (){
   var p = this.points;
   return !!(p && (p[0] && p[0].ele || p[1] && p[1].ele));
 };
+GPSTools.Track.prototype.getPoints = function (){
+  return this.points;
+}
 // Deprecated
 // Use Track.getStartTime
 GPSTools.Track.prototype.getStart = function (){
@@ -572,6 +575,16 @@ GPSTools.SuperTrack = function(tracks){
   });
 }
 GPSTools.SuperTrack.prototype = (new GPSTools.Track());
+GPSTools.SuperTrack.prototype.getPoints = function(){
+  var points = [],
+      i = 0,
+      t = this.tracks,
+      l = t.length;
+  for(;i<l;i++){
+    points = points.concat(t[i].getPoints());
+  }
+  return points;
+}
 GPSTools.SuperTrack.prototype.addTrack = function(track){
   if(track instanceof GPSTools.Track){
     this.tracks.push(track);
