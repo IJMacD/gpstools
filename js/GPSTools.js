@@ -271,7 +271,7 @@ GPSTools.Format.JSON = (function(GPSTools){
         track = new GPSTools.SuperTrack(tracks);
       }
       else
-        track = parseTrack(trackObj);
+        track = parseTrack(obj);
       return track;
     },
     generate: function(track){
