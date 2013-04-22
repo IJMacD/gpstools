@@ -860,7 +860,7 @@
         stravaRideId = result[0];
         stravaLoading.show();
 
-        $.getJSON('proxy.php?url=' + encodeURIComponent('http://app.strava.com/api/v1/rides/'+stravaRideId),
+        $.getJSON('http://ijmacd-gpstools.appspot.com/strava' + '/v1/rides/'+stravaRideId,
           function(data){
             stravaLoading.hide();
             if(data.ride){
@@ -896,7 +896,7 @@
       if(!stravaRideId)
         return;
       var pp = pseudoProgress(10);
-      $.getJSON('proxy.php?url=' + encodeURIComponent('http://app.strava.com/api/v1/streams/'+stravaRideId+'?streams[]=latlng,time,altitude'),
+      $.getJSON('http://ijmacd-gpstools.appspot.com/strava' + '/v1/streams/'+stravaRideId+'?streams[]=latlng,time,altitude',
         function(data){
           if(data.latlng){
             if(rideDetails){
