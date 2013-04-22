@@ -230,7 +230,7 @@
       var i = 0,
           points = track.points,
           l = points.length,
-          baseURL = "http://ws.geonames.org/srtm3",
+          baseURL = "http://ijmacd-gpstools.appspot.com/geonames/srtm3",
           geo = {},
           lat, lon, index,
           url, callback, delay,
@@ -248,8 +248,8 @@
       $(this).attr('disabled','');
       setProgress(0, l);
       for(;i<l;i++) {
-        lat = points[i].lat;
-        lon = points[i].lon;
+        lat = points[i].lat.toFixed(3);
+        lon = points[i].lon.toFixed(3);
         index = lat + ":" + lon;
         if(!geo[index]){
           url = baseURL + "?lat=" + lat + "&lng=" + lon;
@@ -1059,6 +1059,7 @@
       e.stopPropagation();
       draggingElement = e.currentTarget;
       $(this).css('opacity', 0.5);
+      /* - This needs to wait, I'm busy
       var track = $(draggingElement).data("track"),
           // Potentially long operation:
           // magnitude ~1500ms! for real tracks (~8000 points)
@@ -1069,6 +1070,7 @@
           name = dl.name.replace(/:/g,""),
           data = dl.mime+":"+name+":"+dataURL;
       e.originalEvent.dataTransfer.setData("DownloadURL", data);
+      */
     }).on('dragend', '.track', function(e){
       draggingElement = null;
       $(this).css('opacity', 1);
