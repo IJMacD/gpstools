@@ -5,7 +5,8 @@
       titleLabel,
       currentTrack,
       defaultExportFormat = 'gpx',
-      generateFormatBtn;
+      generateFormatBtn,
+      elevationCache = {};
 
   $(function(){
     progress = $('progress');
@@ -231,7 +232,7 @@
           points = track.points,
           l = points.length,
           baseURL = "http://ijmacd-gpstools.appspot.com/geonames/srtm3",
-          geo = {},
+          geo = elevationCache,
           lat, lon, index,
           url, callback, delay,
           getCallback = function(i,index){
