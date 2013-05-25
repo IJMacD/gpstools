@@ -367,7 +367,10 @@ GPSTools.Track.prototype.hasElevation = function (){
 };
 GPSTools.Track.prototype.getPoints = function (){
   return this.points;
-}
+};
+GPSTools.Track.prototype.setPoints = function (points){
+  this.points = points;
+};
 // Deprecated
 // Use Track.getStartTime
 GPSTools.Track.prototype.getStart = function (){
@@ -422,11 +425,12 @@ GPSTools.Track.prototype.getDistance = function (){
   if(!this.distance) {
     var dist  = 0,
         i = 1,
-        l = this.points.length;
+        l = this.points.length,
+        p1, p2;
     logging("Calculating Distance");
     for(;i<l;i++){
-      var p1 = this.points[i-1],
-          p2 = this.points[i];
+      p1 = this.points[i-1];
+      p2 = this.points[i];
       dist += p1.distanceTo(p2);
     }
     logging("Calculation finished");
@@ -492,8 +496,9 @@ GPSTools.Track.prototype.getGradient = function (){
 GPSTools.Track.prototype.getGradientHistogram = function() {
   var grad = this.getGradient(),
       hist = {},
-      val;
-  for (var i = grad.length - 1; i >= 0; i--) {
+      val,
+      i;
+  for (i = grad.length - 1; i >= 0; i--) {
     val = grad[i].toFixed(1);
     if(!hist[val])
       hist[val] = 0
@@ -551,7 +556,7 @@ GPSTools.Track.prototype.getThumb = function(size) {
 GPSTools.Track.prototype.setTime = function(start, end) {
   var distance = this.getDistance(),
       duration = (+end - start) / 1000, // s
-      speed = distance / duration * 1000, // m s^-1,
+      //speed = distance / duration * 1000, // m s^-1,
       points = this.points,
       i = 1,
       l = points.length,
@@ -628,7 +633,8 @@ GPSTools.SuperTrack.prototype.addTrack = function(track){
   if(track instanceof GPSTools.Track){
     this.tracks.push(track);
     this.distance = this.duration = 0;
-    var ev = this.events;
+    var ev = this.events,
+        event;
     if(!this.subTrackRingback){
       this.subTrackRingback = function(e){
         var event = $.Event('changesubtracks');
@@ -637,7 +643,7 @@ GPSTools.SuperTrack.prototype.addTrack = function(track){
       }
     }
     track.events.on('change changepoints', this.subTrackRingback);
-    var event = $.Event('addsubtrack');
+    event = $.Event('addsubtrack');
     event.newTrack = track;
     ev.trigger(event);
   }
@@ -647,12 +653,13 @@ GPSTools.SuperTrack.prototype.addTrack = function(track){
 GPSTools.SuperTrack.prototype.removeTrack = function(track){
   var i = 0,
       l = this.tracks.length,
-      ev = this.events;
+      ev = this.events,
+      event;
   for(;i<l;i++){
     if(this.tracks[i] == track){
       this.tracks.splice(i,1);
       track.events.off('change', this.subTrackRingback);
-      var event = $.Event('removesubtrack');
+      event = $.Event('removesubtrack');
       event.oldTrack = track;
       ev.trigger(event);
       break;
@@ -720,8 +727,7 @@ GPSTools.SuperTrack.prototype.getThumb = function(size) {
   if(!this.thumb){
     GPSTools.Map.clearLine();
     var i = 0,
-        l = this.tracks.length,
-        thumb;
+        l = this.tracks.length;
     for(;i<l;i++){
       GPSTools.Map.drawLine(this.tracks[i].points, {opacity:1,width:10});
     }
@@ -956,13 +962,16 @@ GPSTools.Map = function (){
       map.zoomToExtent(olBounds);
     },
     mark: function(point){
-      var lonlat = new OpenLayers.LonLat(point.lon,point.lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
+      var lonlat = new OpenLayers.LonLat(point.lon,point.lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()),
+          size,
+          offset,
+          icon;
       if(!marker){
         markers = new OpenLayers.Layer.Markers("Marker");
         map.addLayer(markers);
-        var size = new OpenLayers.Size(21,25),
-            offset = new OpenLayers.Pixel(-(size.w/2), -size.h),
-            icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
+        size = new OpenLayers.Size(21,25);
+        offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+        icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
         marker = new OpenLayers.Marker(lonlat,icon);
         markers.addMarker(marker);
       }else {
