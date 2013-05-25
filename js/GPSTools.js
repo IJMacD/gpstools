@@ -277,16 +277,28 @@ GPSTools.Format.JSON = (function(GPSTools){
           l;
       function parseTrack(trackObj){
         var points = [],
-            ps = trackObj.points,
-            i = 0,
-            l = ps.length,
+            ps,
+            i,
+            l,
             p;
-        for(;i<l;i++){
-          p = ps[i];
-          points.push(new GPSTools.Point(p.lat, p.lon, p.ele, p.time));
+        if(trackObj.data && trackObj.data.items){
+          ps = trackObj.data.items;
+          for(i=ps.length-1;i>=0;i--){
+            p = ps[i];
+            points.push(new GPSTools.Point(p.latitude, p.longitude, 0, p.timestampMs));
+          }
+        }
+        else if(trackObj.points){
+          ps = trackObj.points;
+          i = 0;
+          l = ps.length;
+          for(;i<l;i++){
+            p = ps[i];
+            points.push(new GPSTools.Point(p.lat, p.lon, p.ele, p.time));
+          }
         }
         track = new GPSTools.Track(points);
-        track.name = trackObj.name;
+        track.name = trackObj.name || "JSON Imported " + track.getStartTime();
         return track;
       }
       if(ts){
