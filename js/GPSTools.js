@@ -6,6 +6,32 @@ var GPSTools = (function(){
           }
         }
       },
+      trimTrack = function(track){
+        var i = 0,
+            ps = track.getPoints(),
+            l = ps.length,
+            p;
+        for (;i<l;i++) {
+          p = ps[i];
+          if(p.lat != 0 || p.lon != 0){
+            break;
+          }
+        };
+        if(i != 0){
+          ps = ps.splice(0, i);
+        }
+        if(i != l){
+          i = ps.length - 1;
+          for(;i>=0;i--){
+            p = ps[i];
+            if(p.lat != 0 || ps.lon != 0){
+              break;
+            }
+          }
+          ps = ps.length = i;
+        }
+        track.setPoints(ps);
+      },
       cropTrack = function(track, start, end){
         var points = track.points.slice(start, end),
             newTrack = new GPSTools.Track(points);
