@@ -261,8 +261,7 @@ p.controls {
 #importModal {
   z-index: 3000;
 }
-#speedModal h3,
-#importModal h3 {
+.modal h3 {
   color: #333;
   text-shadow: none;
 }

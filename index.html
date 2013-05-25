@@ -38,6 +38,7 @@
     </div>
     <button id="mrg-trk-btn" class="btn" disabled>Merge Tracks</button>
     <button id="ato-spl-btn" class="btn" disabled>Autosplit</button>
+    <button id="hud-btn" class="btn" data-toggle="modal" data-target="#hudModal">HUD</button>
     <button id="fll-scn-btn" class="btn" disabled>Fullscreen Map</button>
     &nbsp;
   </div>
@@ -180,6 +181,21 @@
   <div class="modal-footer">
   <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
   <a href="#" class="btn btn-primary" disabled>Import</a>
+  </div>
+</div>
+<div id="hudModal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Create Heads Up Display</h3>
+  </div>
+  <div class="modal-body">
+    <input id="hudDate" /><p></p>
+    <canvas width="1280" height="720" />
+  </div>
+  <div class="modal-footer">
+  <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+  <a href="#" class="btn btn-primary" disabled>Download</a>
+  <a href="#" class="btn" id="prv-hud-btn">Preview</a>
   </div>
 </div>
 <script src="./js/jquery-1.9.1.min.js"></script>

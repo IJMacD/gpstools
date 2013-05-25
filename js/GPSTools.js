@@ -599,6 +599,82 @@ GPSTools.Track.prototype.setEndTime = function(end) {
     this.events.trigger('changetime');
   }
 };
+/**
+ * Get the point immediately before a certain point in time
+ */
+GPSTools.Track.prototype.getPrecedingPointIndex = function(time) {
+  if(time < this.getStartTime())
+    throw new Error("Time was before track start");
+
+  if(time > this.getEndTime())
+    throw new Error("Time was after track ended");
+
+  // Binary search!
+  var low = 0,
+      high = this.points.length,
+      index = Math.floor(high/2),
+      currPoint = this.points[index],
+      prevIndex = index;
+
+  while(currPoint){
+    if(time > currPoint.getDate()){
+      low = index;
+    }
+    else {
+      high = index;
+    }
+    index = Math.floor((low+high)/2);
+    currPoint = this.points[index];
+    if(prevIndex == index - 1){
+      return prevIndex;
+    }
+    else if(index == prevIndex -1){
+      return index;
+    }
+    prevIndex = index;
+  }
+}
+GPSTools.Track.prototype.getInstantSpeed = function(time) {
+  var i1 = this.getPrecedingPointIndex(time),
+      i0 = i1-1,
+      i2 = i1+1,
+      i3 = i2+2,
+      p0 = this.points[i0],
+      p1 = this.points[i1],
+      p2 = this.points[i2],
+      p3 = this.points[i3],
+      v01 = (p0 && p0.speedTo(p1)) || 0,
+      v12 = p1.speedTo(p2),
+      v23 = p2.speedTo(p3),
+      t1 = p1.getTime(),
+      t0 = (p0 && p0.getTime()) ||  t1-1,
+      t2 = p2.getTime(),
+      t3 = p3.getTime(),
+      t01 = (t0 + t1)/2,
+      t12 = (t1 + t2)/2,
+      t23 = (t2 + t3)/2,
+      t = time.getTime(),
+      a = (t - t01)/(t12 - t01),
+      b = (t - t12)/(t23 - t12);
+  if(t < t12){
+    return v01 + a * (v12 - v01);
+  }
+  return v12 + b * (v23 - v12);
+}
+GPSTools.Track.prototype.getInstantAltitude = function(time) {
+  var i0 = this.getPrecedingPointIndex(time),
+      p0 = this.points[i0],
+      p1 = this.points[i0+1];
+  return (p0.ele + p1.ele)/2;
+}
+GPSTools.Track.prototype.getInstantDistance = function(time) {
+  var i0 = this.getPrecedingPointIndex(time);
+  //return this.points[i0].speedTo(this.points[i0+1]);
+}
+GPSTools.Track.prototype.getInstantHeading = function(time) {
+  var i0 = this.getPrecedingPointIndex(time);
+  return this.points[i0].bearingTo(this.points[i0+1]);
+}
 GPSTools.SuperTrack = function(tracks){
   this.name = "Super Track";
   this.tracks = (tracks instanceof Array) ? tracks : [];
@@ -762,6 +838,15 @@ GPSTools.Point = function (lat,lon,ele,time) {
   this.ele = parseFloat(ele);
   this.time = time;
 };
+GPSTools.Point.prototype.getDate = function(){
+  if(!this.date){
+    this.date = new Date(this.time);
+  }
+  return this.date;
+}
+GPSTools.Point.prototype.getTime = function(){
+  return this.getDate().getTime();
+}
 /**
  * @return Distance in km
  */
@@ -794,11 +879,32 @@ GPSTools.Point.prototype.speedTo = function(point) {
       t = Math.abs(new Date(this.time) - new Date(point.time)) / 1000;
   return s / t;
 };
+GPSTools.Point.prototype.bearingTo = (function() {
+  var toRad = function(n) {
+        return n * Math.PI / 180;
+      },
+      toDeg = function(n) {
+        return n * 180 / Math.PI;
+      };
+  return function(point){
+    var dLon = toRad(point.lon - this.lon),
+        lat1 = this.lat,
+        lat2 = point.lat,
+        lon1 = this.lon,
+        lon2 = point.lon,
+        y = Math.sin(dLon) * Math.cos(lat2),
+        x = Math.cos(lat1)*Math.sin(lat2) -
+            Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+    return toDeg(Math.atan2(y, x));
+  }
+}());
 GPSTools.Map = function (){
   var map,
       osmLayer,
       cycleLayer,
       osLayer,
+      googStreetLayer,
+      googSatLayer,
       lineLayer,
       drawLayer,
       drawControl,
@@ -1162,6 +1268,12 @@ GPSTools.Util = function(){
     /**
      * @param time Time in seconds
      */
+    toRad: function (n){
+      return Math.PI*n/180;
+    },
+    toDeg: function (n){
+      return 180*n/Math.PI;
+    },
     duration: function (time) {
       var dy,d,h,m,s;
 

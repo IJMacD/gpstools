@@ -412,6 +412,7 @@
     }());
 
     $('#fll-scn-btn').removeAttr('disabled').show();
+    $('#hud-btn').removeAttr('disabled').show();
 
     $('#ato-spl-btn').removeAttr('disabled').show().off('click').on('click', function(){
       var i = 1,
@@ -1045,9 +1046,187 @@
     }
   }());
 
-    });
-  });
+  // HUD closure
+  $(function(){
+    var canvas = $('#hudModal canvas'),
+        ctx = canvas[0].getContext('2d'),
+        hudBtn = $('#hud-btn'),
+        hudDate = $('#hudDate'),
+        hudWidth = 200,
+        hudHeight = 165,
+        videoWidth = 1280,
+        videoHeight = 720,
+        previewHudButton = $('#prv-hud-btn'),
+        backgroundURL = "hudBackground.png",
+        backgroundImage = new Image(),
+        headingURL = "hudCompass.png",
+        headingImage = new Image(),
+        headingImageOffset = 40,
+        startDate,
+        animationStart;
 
+    hudBtn.show();
+    hudDate.val((new Date).toISOString());
+    backgroundImage.src = backgroundURL;
+    headingImage.src = headingURL;
+
+    // Testing
+    previewHudButton.click(function(){
+      //ctx.save();
+      ctx.translate(0, videoHeight - hudHeight);
+      startDate = currentTrack.getStartTime().getTime();
+      requestAnimationFrame(loop);
+      //ctx.restore();
+    });
+
+    function loop(t){
+      if(!animationStart)
+        animationStart = t;
+      var time = new Date(startDate + t - animationStart);
+      ctx.clearRect(0,0,videoWidth,videoHeight);
+      generateDisplay(time);
+      if(time < currentTrack.getEndTime())
+        requestAnimationFrame(loop);
+    }
+
+    function generateDisplay(time){
+      var speed,
+          heading,
+          altitude;
+      // Get Stats
+        // Get Speed
+      speed = GPSTools.Util.convertToKPH(currentTrack.getInstantSpeed(time));
+      heading = (currentTrack.getInstantHeading(time)+360)%360;
+      altitude = currentTrack.getInstantAltitude(time);
+        // Get Heading
+        // Get Altitude
+
+      ctx.drawImage(backgroundImage, 0, 0);
+      drawComponents(speed, heading, altitude, time);
+    }
+    function drawComponents(speed, heading, altitude, time){
+      // Build up components
+      ctx.fillStyle = "#1A1A1A";
+      ctx.strokeStyle = "#C4C4C4";
+      ctx.lineWidth = 5;
+
+      // Draw Altitude
+      drawAltitude(altitude);
+
+      // Draw Speed
+      drawSpeed(speed);
+
+      // Draw Heading
+      drawHeading(heading);
+
+      // Draw Time
+      drawTime(time);
+    }
+    function drawAltitude(altitude){
+      var midAlt = Math.floor(altitude / 10) * 10,
+          modAlt = altitude - midAlt,
+          i = 0,
+          l = 10,
+          currAlt = midAlt + l*5,
+          spacing = 20,
+          y = -15 + (modAlt/10)*spacing;
+
+      // Draw Numbers
+        // Top Numbers
+      ctx.save();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "10px sans-serif";
+      ctx.beginPath();
+      ctx.rect(10,10,30,145);
+      ctx.clip();
+          // Numbers
+      for(;i<l;i++){
+        ctx.fillText(currAlt, 18, y);
+        y += spacing;
+        currAlt -= 10;
+      }
+      ctx.restore();
+      // Draw Higlighter
+      roundRect(ctx, 5, 67, 35, 25, 5, true);
+      ctx.save();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "14px sans-serif";
+      ctx.fillText(altitude.toFixed(), 12, 85);
+      ctx.restore();
+
+    }
+    function drawSpeed(speed){
+      var zeroAngle = 2.2,
+          fullSpeed = 70,
+          theta = zeroAngle+(speed / fullSpeed) * Math.PI * 2,
+          innerRadius = 24,
+          outerRadius = 50,
+          speedText = speed.toFixed(1);
+
+      // Draw Needle
+      ctx.save();
+      ctx.strokeStyle = "#FF0000";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(95+innerRadius*Math.cos(theta),70+innerRadius*Math.sin(theta));
+      ctx.lineTo(95+outerRadius*Math.cos(theta),70+outerRadius*Math.sin(theta));
+      ctx.stroke();
+      ctx.restore();
+      // Draw Cap
+      ctx.save();
+      ctx.fillStyle = "#000000";
+      ctx.font = "bold 20px sans-serif";
+      ctx.fillText(speedText,95-ctx.measureText(speedText).width/2,77);
+      ctx.restore();
+    }
+    function drawHeading(heading){
+      var offset = 145;
+
+      // Draw Markers
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(165,95,30,0,Math.PI*2,false);
+      ctx.clip();
+      ctx.drawImage(headingImage, 165 - headingImageOffset - heading, 75);
+      ctx.restore();
+      // Draw Shadows
+    }
+    function drawTime(time){
+      var width = 4 * hudWidth / 5,
+          height = hudHeight / 5;
+
+      // Draw Text
+      ctx.save();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "12px sans-serif";
+      ctx.fillText(formatDate(time, "YYYY-mm-ddTHH:ii:ss"), 58, 147);
+      ctx.restore();
+    }
+    function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+      if (typeof stroke == "undefined" ) {
+        stroke = true;
+      }
+      if (typeof radius === "undefined") {
+        radius = 5;
+      }
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+      if (stroke) {
+        ctx.stroke();
+      }
+      if (fill) {
+        ctx.fill();
+      }
+    }
   });
 
   // Dragging
@@ -1275,6 +1454,13 @@ function formatDate(date, format){
       return date.getFullYear() + "-"
         + (date.getMonth() + 1) + "-"
         + date.getDate();
+    case "YYYY-mm-ddTHH:ii:ss":
+      return date.getFullYear() + "-"
+        + pad(date.getMonth() + 1) + "-"
+        + pad(date.getDate()) + "T"
+        + pad(date.getHours()) + ":"
+        + pad(date.getMinutes()) + ":"
+        + pad(date.getSeconds());
     case "H:i":
       return date.getHours() + ":"
         + pad(date.getMinutes());
