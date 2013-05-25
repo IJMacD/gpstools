@@ -657,7 +657,7 @@
     trackItem = createTrackItem(track, targetList);
 
     // Only the outer trackItem gets selected
-    trackItem.addClass('selected');
+    //trackItem.addClass('selected');
 
     function createTrackItem(track, targetList){
 
