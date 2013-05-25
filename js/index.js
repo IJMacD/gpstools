@@ -1215,7 +1215,12 @@
   }
 
   function incrementProgress(){
-    return setProgress(progress.val() + 1);
+    if(setProgress(progress.val() + 1)){
+      try{
+        progressEvents.trigger("complete");
+      }catch(e){}
+      resetProgress();
+    }
   }
 
   function pseudoProgress(duration){
@@ -1238,6 +1243,20 @@
         resetProgress();
       }
     }
+  }
+
+  var progressEvents = $({});
+
+  function progressComplete(handler){
+    progressEvents.on("complete", handler);
+  }
+
+  function progressCompleteOnce(handler){
+    var f = function(){
+      progressEvents.off("complete", f);
+      handler();
+    };
+    progressEvents.on("complete", f);
   }
 
 }(GPSTools, jQuery));
