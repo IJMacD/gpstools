@@ -841,41 +841,59 @@
 
   // Strava Closure
   (function(){
-    var stravaRideDetails,
-        stravaRideIdTxt = $('#rideid_txt'),
+    var stravaRideIdTxt = $('#rideid_txt'),
         stravaImportBtn = $('#strava-import-btn'),
         stravaRideDetailsDiv = $('#strava-ride-details'),
         stravaRideNameTxt = $('#strava-name'),
         stravaRideDistanceTxt = $('#strava-distance'),
         stravaRideDurationTxt = $('#strava-duration'),
         stravaRideAthleteTxt = $('#strava-athlete'),
+        stravaRidesDetailsDiv = $('#strava-rides-details'),
+        stravaRidesNumLbl = $('#strava-num-rides'),
+        stravaRidesFirstLbl = $('#strava-first-ride'),
+        stravaRidesLastLbl = $('#strava-last-ride'),
         stravaLoading = $('#strava-loading'),
         stravaModal = $('#importModal'),
         stravaLoadRideBtn = stravaModal.find('.btn-primary'),
-        stravaRideId;
+        stravaAthleteId,
+        stravaRideId,
+        stravaRideIds,
+        stravaRideDetails = {};
+
+    stravaRideDetailsDiv.hide();
+    stravaRidesDetailsDiv.hide();
+
     stravaRideIdTxt.on('keyup change', function(){
       var val = stravaRideIdTxt.val(),
-          pattern = /\d+$/,
-          result = pattern.exec(val);
-      if(result && result[0]){
-        stravaRideId = result[0];
+          athleteRegex = /\/athletes\/(\d+)$/,
+          athleteResult = athleteRegex.exec(val),
+          idRegex = /\d+$/,
+          idResult = idRegex.exec(val),
+          i,
+          length;
+
+      if(athleteResult && athleteResult[1]){
+        stravaAthleteId = athleteResult[1];
         stravaLoading.show();
 
-        $.getJSON('http://ijmacd-gpstools.appspot.com/strava' + '/v1/rides/'+stravaRideId,
+        $.getJSON('http://ijmacd-gpstools.appspot.com/strava/v1/rides?athleteId='+stravaAthleteId,
           function(data){
             stravaLoading.hide();
-            if(data.ride){
-              rideDetails = data.ride;
-              stravaRideNameTxt.text(data.ride.name);
-              stravaRideDistanceTxt.text((data.ride.distance/1000).toFixed(1) + " km");
-              stravaRideDurationTxt.text(juration.stringify(data.ride.elapsedTime));
-              stravaRideAthleteTxt.text(data.ride.athlete.name);
-              stravaRideDetailsDiv.show();
+            if(data.rides){
+              rides = data.rides;
+              length = rides.length;
+              stravaRideIds = [];
+              for(i=0;i<length;i++){
+                stravaRideIds.push(rides[i].id);
+              }
+              stravaRidesNumLbl.text(length);
+              //stravaRidesFirstLbl.text(juration.stringify(rides[0].date));
+              //stravaRidesLastLbl.text(juration.stringify(rides[length-1].date));
+              stravaLoadRideBtn.text("Import " + length + " Rides");
+              stravaRidesDetailsDiv.show();
               stravaLoadRideBtn.removeAttr('disabled');
             }
             else if (data.error){
-              stravaRideDetailsDiv.hide();
-              stravaLoading.hide();
               alert(data.error);
             }
           }
@@ -884,8 +902,46 @@
           stravaLoading.hide();
           alert("Other Error!");
         });
+
+      }
+      else if(idResult && idResult[0]){
+        stravaRideId = idResult[0];
+        stravaRideIds = [idResult[0]];
+        stravaLoading.show();
+
+        stravaGetRideDetails(stravaRideId, function(ride){
+          stravaLoading.hide();
+          stravaRideNameTxt.text(ride.name);
+          stravaRideDistanceTxt.text((ride.distance/1000).toFixed(1) + " km");
+          stravaRideDurationTxt.text(juration.stringify(ride.elapsedTime));
+          stravaRideAthleteTxt.text(ride.athlete.name);
+          stravaLoadRideBtn.text("Import Ride");
+          stravaRideDetailsDiv.show();
+          stravaLoadRideBtn.removeAttr('disabled');
+        }, function(){
+          stravaRideDetailsDiv.hide();
+          stravaLoading.hide();
+          alert("Other Error!");
+        });
       }
     });
+
+    function stravaGetRideDetails(rideId, success, error){
+
+        $.getJSON('http://ijmacd-gpstools.appspot.com/strava/v1/rides/'+rideId,
+          function(data){
+            var ride = data.ride;
+            if(ride){
+              stravaRideDetails[rideId] = ride;
+              success(ride);
+            }
+            else if (data.error){
+              if(typeof error == "function")
+                error();
+            }
+          }
+        ).error(error);
+    }
 
     stravaImportBtn.click(function(){
       stravaModal.modal();
@@ -894,42 +950,72 @@
 
     stravaLoadRideBtn.click(function(){
       resetModal();
-      if(!stravaRideId)
+      if(!stravaRideIds || !stravaRideIds.length)
         return;
-      var pp = pseudoProgress(10);
-      $.getJSON('http://ijmacd-gpstools.appspot.com/strava' + '/v1/streams/'+stravaRideId+'?streams[]=latlng,time,altitude',
-        function(data){
-          if(data.latlng){
-            if(rideDetails){
-              var latlng = data.latlng,
-                  time = data.time,
-                  elevation = data.altitude,
+      var i = 0,
+          l = stravaRideIds.length;
+      setProgress(i, l);
+      for(;i<l;i++){
+        (function(rideId){
+
+          var both = !!stravaRideDetails[rideId],
+              streams;
+
+          if(!both){
+            stravaGetRideDetails(rideId, processRide, function(){incrementProgress();});
+          }
+
+          $.getJSON('http://ijmacd-gpstools.appspot.com/strava/v1/streams/'+rideId+'?streams[]=latlng,time,altitude',
+            function(data){
+              if(data.latlng){
+                streams = data;
+                processRide();
+              }
+              else if (data.error){
+                incrementProgress();
+                alert(data.error);
+              }
+            }
+          ).error(function(){
+            incrementProgress();
+            alert("Other Error!");
+          });
+
+          function processRide(){
+
+            if(!both){
+              both = true;
+              return;
+            }
+
+            if(stravaRideDetails[rideId] && streams){
+              var latlng = streams.latlng,
+                  time = streams.time,
+                  elevation = streams.altitude,
                   l = latlng.length,
                   i = 0,
                   points = [],
                   track, date,
+                  rideDetails = stravaRideDetails[rideId],
                   startDate = new Date(rideDetails.startDate).valueOf();
               for(;i<l;i++){
-                date = (new Date(startDate + (time[i]*1000))).toISOString();
-                points.push(new GPSTools.Point(latlng[i][0],latlng[i][1],elevation[i],date));
+                if(latlng[i][0] != 0 || latlng[i][1] != 0){
+                  date = (new Date(startDate + (time[i]*1000))).toISOString();
+                  points.push(new GPSTools.Point(latlng[i][0],latlng[i][1],elevation[i],date));
+                }
               }
               track = new GPSTools.Track(points);
               track.name = rideDetails.name;
               addTrack(track);
-              displayTrack(track);
-              resetModal();
+              incrementProgress();
             }
           }
-          else if (data.error){
-            resetModal();
-            alert(data.error);
-          }
-          pp.complete();
-        }
-      ).error(function(){
+
+        }(stravaRideIds[i]));
+      }
+
+      progressCompleteOnce(function(){
         resetModal();
-        pp.complete();
-        alert("Other Error!");
       });
     });
 
