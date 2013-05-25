@@ -931,6 +931,14 @@ GPSTools.Map = function (){
         key: "AnAvwFeZFUyC15cF3frJiEgWVLsBwn8C3pKsNsfkGsFnk2SE_QD1mMiyMKKRFiz9",
         type: "ordnanceSurvey"
       });
+      googStreetLayer = new OpenLayers.Layer.Google(
+          "Google Streets", // the default
+          {numZoomLevels: 20}
+      );
+      googSatLayer = new OpenLayers.Layer.Google(
+          "Google Hybrid",
+          {type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
+      );
       var myStyles = new OpenLayers.StyleMap({
           "default": new OpenLayers.Style({
               fillColor: "#ffcc66",
@@ -977,6 +985,8 @@ GPSTools.Map = function (){
       map.addLayer(osmLayer);
       map.addLayer(cycleLayer);
       map.addLayer(osLayer);
+      map.addLayer(googStreetLayer);
+      map.addLayer(googSatLayer);
       map.addLayer(lineLayer);
       map.addLayer(drawLayer);
 
