@@ -6,16 +6,38 @@
       currentTrack,
       defaultExportFormat = 'gpx',
       generateFormatBtn,
-      elevationCache = {};
+      elevationCache = {},
+      drawTrackButton,
+      superTrackButton,
+
+      // List Selection
+      firstSelected = 0;
 
   $(function(){
     progress = $('progress');
     trackList = $('#tracks-list');
     titleLabel = $('#track-title');
     generateFormatBtn = $('#gen-fmt-btn');
+    drawTrackButton = $('#drw-trk-btn');
+    superTrackButton = $('#spr-trk-btn');
 
     $('#open-file-btn').click(function(){
       $('#files').click();
+    });
+
+    drawTrackButton.click(function(){
+      drawTrackButton.attr('disabled', true);
+      GPSTools.Map.createLine(function(track){
+        addTrack(track);
+        displayTrack(track);
+        drawTrackButton.removeAttr('disabled');
+      });
+    });
+
+    superTrackButton.click(function(){
+      superTrack = new GPSTools.SuperTrack();
+      addTrack(superTrack);
+      displaySuperTrack(superTrack);
     });
 
     function exportFormatHandler(e){
@@ -45,12 +67,11 @@
       }
     });
 
-    var firstSelected = 0;
     trackList.on('click', '.track', function(e){
       e.stopPropagation();
       var selected = $(e.currentTarget),
           index = trackList.find('.track').index(selected),
-          tracks = [], i = 0, l, track,
+          tracks = [], track,
           mergeButton = $('#mrg-trk-btn');
 
       if(e.ctrlKey){
@@ -117,12 +138,14 @@
   function loadFiles(files){
     var i = 0,
         l = files.length,
-        added = 0;
+        added = 0,
+        f,
+        reader;
     // files is a FileList of File objects. List some properties.
     if(l > 0) {
       setProgress(0,l);
       for(;i<l;i++){
-        var f = files[i];
+        f = files[i];
         logging("File selected");
         logging("Filename: \"" + f.name + "\"");
         logging("Size (bytes): " + f.size);
@@ -136,7 +159,7 @@
             return;
           }
         }
-        var reader = new FileReader();
+        reader = new FileReader();
 
         // Closure to capture the file information.
         reader.onload = (function(theFile) {
@@ -280,111 +303,113 @@
 
     $('#export-grp').css('display', 'inline-block');
 
-    var selecting = false,
-        mousePos,
-        mouseOver,
-        mouseDown;
+    // Elevation/Speed hovering, selecting, cropping
+    (function(){
+      var selecting = false,
+          mousePos,
+          mouseDown;
 
-    function onMouseOver(){
-      var pos, index;
+      function onMouseOver(){
+        var pos, index;
 
-      if(mousePos){
+        if(mousePos){
+          GPSTools.Graph.clear('graphCanvas');
+          if(track.hasElevation())
+            plotElevation(track);
+          if(track.hasTime())
+            plotSpeed(track);
+          pos = GPSTools.Graph.mark('graphCanvas',mousePos);
+          if(pos > 0 && pos < 1){
+            index = Math.floor(pos * track.points.length);
+            GPSTools.Map.mark(track.points[index]);
+          }
+          else{
+            GPSTools.Map.unmark();
+          }
+
+          if(selecting)
+            GPSTools.Graph.endSelection('graphCanvas',mousePos);
+
+          GPSTools.Graph.drawAnnotations('graphCanvas');
+
+          webkitRequestAnimationFrame(onMouseOver);
+        }
+      }
+
+      $('#graphCanvas').off('mousemove').on('mousemove', function(e){
+        mousePos = e.offsetX;
+      });
+
+      $('#graphCanvas').off('mouseenter').on('mouseenter', function(e){
+        mousePos = e.offsetX;
+        webkitRequestAnimationFrame(onMouseOver);
+      });
+
+      $('#graphCanvas').off('mouseleave').on('mouseleave', function(e){
+        mousePos = false;
+      });
+
+      $('#graphCanvas').off('mousedown').on('mousedown', function(e){
+        GPSTools.Graph.startSelection('graphCanvas',e.offsetX);
+        $('#clr-slt-btn, #crp-slt-btn').show();
+        selecting = true;
+        mouseDown = {x:e.offsetX,y:e.offsetY};
+      });
+
+      $('#graphCanvas').off('mouseup mouseout').on('mouseup mouseout', function(e){
+        if(selecting){
+          selecting = false;
+
+          var start = GPSTools.Graph.getSelectionStart('graphCanvas'),
+              end = GPSTools.Graph.getSelectionEnd('graphCanvas'),
+              startIndex = Math.floor(start * track.points.length),
+              endIndex = Math.floor(end * track.points.length),
+              i, points = [];
+
+          if(startIndex == endIndex){
+            clearSelection();
+          }
+          else if(startIndex > 0){
+            for(i = startIndex; i < endIndex; i++){
+              points.push(track.points[i]);
+            }
+
+            GPSTools.Map.drawLine(points, true);
+          }
+        }
+      });
+
+      $('#clr-slt-btn').off('click').on('click', clearSelection);
+
+      $('#crp-slt-btn').off('click').on('click', function(){
+        var start = GPSTools.Graph.getSelectionStart('graphCanvas'),
+            end = GPSTools.Graph.getSelectionEnd('graphCanvas'),
+            startIndex = Math.floor(start * track.points.length),
+            endIndex = Math.floor(end * track.points.length),
+            newTrack;
+
+        if(startIndex > 0 && startIndex < endIndex){
+          newTrack = GPSTools.cropTrack(track, startIndex, endIndex);
+
+          clearSelection();
+          addTrack(newTrack);
+          displayTrack(newTrack);
+        }
+
+      });
+
+      function clearSelection(){
         GPSTools.Graph.clear('graphCanvas');
         if(track.hasElevation())
           plotElevation(track);
         if(track.hasTime())
           plotSpeed(track);
-        pos = GPSTools.Graph.mark('graphCanvas',mousePos);
-        if(pos > 0 && pos < 1){
-          index = Math.floor(pos * track.points.length);
-          GPSTools.Map.mark(track.points[index]);
-        }
-        else{
-          GPSTools.Map.unmark();
-        }
-
-        if(selecting)
-          GPSTools.Graph.endSelection('graphCanvas',mousePos);
-
+        GPSTools.Map.clearLine(true);
+        GPSTools.Graph.clearSelection();
         GPSTools.Graph.drawAnnotations('graphCanvas');
-
-        webkitRequestAnimationFrame(onMouseOver);
+        $('#clr-slt-btn, #crp-slt-btn').hide();
       }
-    }
-
-    $('#graphCanvas').off('mousemove').on('mousemove', function(e){
-      mousePos = e.offsetX;
-    });
-
-    $('#graphCanvas').off('mouseenter').on('mouseenter', function(e){
-      mousePos = e.offsetX;
-      webkitRequestAnimationFrame(onMouseOver);
-    });
-
-    $('#graphCanvas').off('mouseleave').on('mouseleave', function(e){
-      mousePos = false;
-    });
-
-    $('#graphCanvas').off('mousedown').on('mousedown', function(e){
-      GPSTools.Graph.startSelection('graphCanvas',e.offsetX);
-      $('#clr-slt-btn, #crp-slt-btn').show();
-      selecting = true;
-      mouseDown = {x:e.offsetX,y:e.offsetY};
-    });
-
-    $('#graphCanvas').off('mouseup mouseout').on('mouseup mouseout', function(e){
-      if(selecting){
-        selecting = false;
-
-        var start = GPSTools.Graph.getSelectionStart('graphCanvas'),
-            end = GPSTools.Graph.getSelectionEnd('graphCanvas'),
-            startIndex = Math.floor(start * track.points.length),
-            endIndex = Math.floor(end * track.points.length),
-            i, points = [];
-
-        if(startIndex == endIndex){
-          clearSelection();
-        }
-        else if(startIndex > 0){
-          for(i = startIndex; i < endIndex; i++){
-            points.push(track.points[i]);
-          }
-
-          GPSTools.Map.drawLine(points, true);
-        }
-      }
-    });
-
-    $('#clr-slt-btn').off('click').on('click', clearSelection);
-
-    $('#crp-slt-btn').off('click').on('click', function(){
-      var start = GPSTools.Graph.getSelectionStart('graphCanvas'),
-          end = GPSTools.Graph.getSelectionEnd('graphCanvas'),
-          startIndex = Math.floor(start * track.points.length),
-          endIndex = Math.floor(end * track.points.length),
-          i, points = [], newTrack;
-
-      if(startIndex > 0 && startIndex < endIndex){
-        newTrack = GPSTools.cropTrack(track, startIndex, endIndex);
-
-        clearSelection();
-        addTrack(newTrack);
-        displayTrack(newTrack);
-      }
-
-    });
-
-    function clearSelection(){
-      GPSTools.Graph.clear('graphCanvas');
-      if(track.hasElevation())
-        plotElevation(track);
-      if(track.hasTime())
-        plotSpeed(track);
-      GPSTools.Map.clearLine(true);
-      GPSTools.Graph.clearSelection();
-      GPSTools.Graph.drawAnnotations('graphCanvas');
-      $('#clr-slt-btn, #crp-slt-btn').hide();
-    }
+    }());
 
     $('#fll-scn-btn').removeAttr('disabled').show();
 
@@ -395,7 +420,7 @@
           thisDate,
           lastDate = new Date(track.points[i].time),
           trackStart = 0,
-          d, newTrack;
+          newTrack;
       setProgress(0, track.points.length);
       for (; i < l; i++) {
         p = track.points[i];
@@ -415,9 +440,10 @@
   // endFunction: displayTrack()
 
   function displayTracks(tracks){
-    var cumlDist = 0, cumlTime = 0;
+    var cumlDist = 0, cumlTime = 0,
+        i, l;
     GPSTools.Map.clearLine();
-    for(var i = 0, l = tracks.length; i < l; i++){
+    for(i = 0, l = tracks.length; i < l; i++){
       cumlDist += tracks[i].getDistance();
       cumlTime += tracks[i].getDuration() || 0;
       GPSTools.Map.drawLine(tracks[i].points);
@@ -440,9 +466,9 @@
     function drawMap(track){
       var map = GPSTools.Map,
           tracks = track.tracks,
-          p1, p2;
+          p1, p2, i, l;
       map.clearLine();
-      for(var i = 0, l = tracks.length; i < l; i++){
+      for(i = 0, l = tracks.length; i < l; i++){
         // Draw link lines
         if(i > 0){
           p1 = tracks[i-1].getEndPoint();
@@ -636,7 +662,6 @@
 
       var trackItem,
           trackSubList,
-          subTrackItem,
           t, i, l;
 
       trackItem = $('<div>')
@@ -689,13 +714,6 @@
         .text(juration.stringify(track.getDuration()))
         .toggle(track.hasTime());
     }
-  }
-
-  function updateListing(superTrackElement){
-    var superTrack = superTrackElement.data("track");
-    superTrackElement.css('background-image', "url("+superTrack.getThumb(64)+")");
-    superTrackElement.children('.track-dist').text(superTrack.getDistance());
-    superTrackElement.children('.track-time').text(superTrack.getDuration());
   }
 
   function showStats(track) {
@@ -1027,28 +1045,17 @@
     }
   }());
 
-  var drawTrackButton = $('#drw-trk-btn');
-  drawTrackButton.click(function(){
-    drawTrackButton.attr('disabled', true);
-    GPSTools.Map.createLine(function(track){
-      addTrack(track);
-      displayTrack(track);
-      drawTrackButton.removeAttr('disabled');
     });
   });
 
-  var superTrackButton = $('#spr-trk-btn');
-  superTrackButton.click(function(){
-    superTrack = new GPSTools.SuperTrack();
-    addTrack(superTrack);
-    displaySuperTrack(superTrack);
   });
 
+  // Dragging
   $(function(){
 
-    var draggingElement = null;
+    var draggingElement = null,
 
-    var dragHover = function(e){
+        dragHover = function(e){
       e.stopPropagation();
       e.preventDefault();
 
@@ -1079,26 +1086,37 @@
 
     trackList.on('drop', function(e){
       dragHover(e);
-      var files = e.originalEvent.dataTransfer.files;
+      var files = e.originalEvent.dataTransfer.files,
+          draggingTrackElement,
+          draggingTrack,
+          droppedElement,
+          droppedTrackElement,
+          droppedTrack,
+          newSubTrackList,
+          newSuperTrackElement,
+          newSuperTrack,
+          oldSubTrackList,
+          oldSuperTrackElement,
+          oldSuperTrack;
       if(files.length){
         loadFiles(files);
       }
       else {
         draggingElement = $(draggingElement);
-        var draggingTrackElement = draggingElement.closest('.track'),
-            draggingTrack = draggingElement.data("track"),
+        draggingTrackElement = draggingElement.closest('.track');
+        draggingTrack = draggingElement.data("track");
 
-            droppedElement = $(e.originalEvent.target),
-            droppedTrackElement = droppedElement.closest('.track'),
-            droppedTrack = droppedTrackElement.data("track"),
+        droppedElement = $(e.originalEvent.target);
+        droppedTrackElement = droppedElement.closest('.track');
+        droppedTrack = droppedTrackElement.data("track");
 
-            newSubTrackList = droppedElement.closest('.sub-tracks'),
-            newSuperTrackElement = newSubTrackList.closest('.track'),
-            newSuperTrack = newSuperTrackElement.data("track"),
+        newSubTrackList = droppedElement.closest('.sub-tracks');
+        newSuperTrackElement = newSubTrackList.closest('.track');
+        newSuperTrack = newSuperTrackElement.data("track");
 
-            oldSubTrackList = draggingElement.closest('.sub-tracks'),
-            oldSuperTrackElement = oldSubTrackList.closest('.track'),
-            oldSuperTrack = oldSuperTrackElement.data("track");
+        oldSubTrackList = draggingElement.closest('.sub-tracks');
+        oldSuperTrackElement = oldSubTrackList.closest('.track');
+        oldSuperTrack = oldSuperTrackElement.data("track");
 
         // Has been dropped on the empty space at the bottom of the trackList
         if(droppedElement.is(trackList)){
