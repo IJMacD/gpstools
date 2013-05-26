@@ -1089,14 +1089,16 @@
           l = start + count,
           data,
           base64,
-          zip = new JSZip();
+          movie = new movbuilder.MotionJPEGBuilder();
+      movie.setup(videoWidth, videoHeight, fps);
       for(;i<l;i++){
-        data = generateFrame(i);
-        base64 = data.substr(22);
-        zip.file("frame"+pad(i,4)+".png", base64, {base64: true});
+        generateFrame(i);
+        movie.addCanvasFrame(canvas[0]);
       }
-      downloadHudButton.attr('download', "frames"+pad(start,4)+"-"+pad(l-1,4)+".zip");
-      downloadHudButton.attr('href', "data:application/zip;base64,"+zip.generate());
+      movie.finish(function(url){
+        downloadHudButton.attr('download', "movie.mpg");
+        downloadHudButton.attr('href', url);
+      });
       hudFrameStart.val(l);
     });
 
