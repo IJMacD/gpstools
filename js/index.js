@@ -1051,26 +1051,29 @@
     var canvas = $('#hudModal canvas'),
         ctx = canvas[0].getContext('2d'),
         hudBtn = $('#hud-btn'),
-        hudDate = $('#hudDate'),
+        hudFrameStart = $('#hudFrameStart'),
+        hudFrameCount = $('#hudFrameCount'),
         hudWidth = 200,
         hudHeight = 165,
         videoWidth = 1280,
         videoHeight = 720,
+        paddingLeft = 20,
+        paddingBottom = 20,
         previewHudButton = $('#prv-hud-btn'),
+        downloadHudButton = $('#dld-hud-btn'),
         backgroundURL = "hudBackground.png",
         backgroundImage = new Image(),
         headingURL = "hudCompass.png",
         headingImage = new Image(),
         headingImageOffset = 40,
         startDate,
-        animationStart;
+        animationStart,
+        fps = 30,
+        frameDuration = 1000/fps;
 
-    hudBtn.show();
-    hudDate.val((new Date).toISOString());
     backgroundImage.src = backgroundURL;
     headingImage.src = headingURL;
 
-    // Testing
     previewHudButton.click(function(){
       //ctx.save();
       ctx.translate(0, videoHeight - hudHeight);
@@ -1078,6 +1081,35 @@
       requestAnimationFrame(loop);
       //ctx.restore();
     });
+
+    downloadHudButton.click(function(){
+      var start = parseInt(hudFrameStart.val()),
+          count = parseInt(hudFrameCount.val()),
+          i = start,
+          l = start + count,
+          data,
+          base64,
+          zip = new JSZip();
+      for(;i<l;i++){
+        data = generateFrame(i);
+        base64 = data.substr(22);
+        zip.file("frame"+pad(i,4)+".png", base64, {base64: true});
+      }
+      downloadHudButton.attr('download', "frames"+pad(start,4)+"-"+pad(l-1,4)+".zip");
+      downloadHudButton.attr('href', "data:application/zip;base64,"+zip.generate());
+      hudFrameStart.val(l);
+    });
+
+    function generateFrame(id){
+      ctx.save();
+      ctx.translate(paddingLeft, videoHeight - hudHeight - paddingBottom);
+      startDate = currentTrack.getStartTime().getTime();
+      var time = new Date(startDate + id * frameDuration);
+      ctx.clearRect(0,0,videoWidth,videoHeight);
+      generateDisplay(time);
+      ctx.restore();
+      return canvas[0].toDataURL();
+    }
 
     function loop(t){
       if(!animationStart)
@@ -1123,13 +1155,14 @@
       drawTime(time);
     }
     function drawAltitude(altitude){
-      var midAlt = Math.floor(altitude / 10) * 10,
+      var interval = 0.1,
+          midAlt = Math.floor(altitude / interval) * interval,
           modAlt = altitude - midAlt,
           i = 0,
-          l = 10,
-          currAlt = midAlt + l*5,
-          spacing = 20,
-          y = -15 + (modAlt/10)*spacing;
+          spacing = 15,
+          y = -5 + (modAlt/interval)*spacing,
+          l = hudHeight / spacing + 1,
+          currAlt = midAlt + l*interval/2;
 
       // Draw Numbers
         // Top Numbers
@@ -1141,17 +1174,17 @@
       ctx.clip();
           // Numbers
       for(;i<l;i++){
-        ctx.fillText(currAlt, 18, y);
+        ctx.fillText(currAlt.toFixed(1), 18, y);
         y += spacing;
-        currAlt -= 10;
+        currAlt -= interval;
       }
       ctx.restore();
       // Draw Higlighter
-      roundRect(ctx, 5, 67, 35, 25, 5, true);
+      roundRect(ctx, 5, 70, 35, 20, 8, true);
       ctx.save();
       ctx.fillStyle = "#FFFFFF";
       ctx.font = "14px sans-serif";
-      ctx.fillText(altitude.toFixed(), 12, 85);
+      ctx.fillText(altitude.toFixed(1), 12, 85);
       ctx.restore();
 
     }
@@ -1160,7 +1193,7 @@
           fullSpeed = 70,
           theta = zeroAngle+(speed / fullSpeed) * Math.PI * 2,
           innerRadius = 24,
-          outerRadius = 50,
+          outerRadius = 51,
           speedText = speed.toFixed(1);
 
       // Draw Needle
@@ -1185,7 +1218,7 @@
       // Draw Markers
       ctx.save();
       ctx.beginPath();
-      ctx.arc(165,95,30,0,Math.PI*2,false);
+      ctx.arc(165,95,29,0,Math.PI*2,false);
       ctx.clip();
       ctx.drawImage(headingImage, 165 - headingImageOffset - heading, 75);
       ctx.restore();
@@ -1480,4 +1513,9 @@ function formatDate(date, format){
       return date.toISOString();
   }
 }
-function pad(n){return n<10?"0"+n:n}
+function pad(n, width, z) {
+  width = width || 0;
+  z = z || '0';
+  n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
