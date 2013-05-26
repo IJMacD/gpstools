@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>GPS Tools</title>
+<link rel="stylesheet" href="./css/bootstrap.min.css" />
+<link rel="stylesheet" href="./css/index.css">
+<style>
+#content { padding: 40px 10px 10px; }
+#test-results { color: white; }
+#test-results li::after {
+  background-color: white;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  margin-left: 10px;
+  padding: 0 5px;
+}
+.pass::after { content:"Pass"; color: green; }
+.fail::after { content:"Fail"; color: red; }
+</style>
+</head>
+<body>
+<div id="action-bar">
+  <h1>GPSTools - Test</h1>
+  <progress value="0"></progress>
+</div>
+<input type="file" id="files" name="files" multiple />
+<div id="content">
+  <h1>Test Results</h1>
+  <ol id="test-results"></ol>
+</div>
+<script src="./js/jquery-1.9.1.min.js"></script>
+<script src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
+<script src="./OpenLayers.js"></script>
+<script src="./js/bootstrap.min.js"></script>
+<script src="./js/RGraph.common.core.js"></script>
+<script src="./js/RGraph.line.js"></script>
+<script src="./js/RGraph.bar.js"></script>
+<script src="./js/juration.js"></script>
+<script src="./js/jszip.js"></script>
+<script src="./js/GPSTools.js"></script>
+<script src="./js/test.js"></script>
+<script id="gpx-tmpl" type="text/plain">
+<gpx version="1.1" creator="GPSTools" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"><metadata></metadata></gpx>
+</script>
+</body>
+</html>
