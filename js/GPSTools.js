@@ -370,6 +370,15 @@ GPSTools.Track.prototype.getPoints = function (){
 };
 GPSTools.Track.prototype.setPoints = function (points){
   this.points = points;
+  this.start = null;
+  this.end = null;
+  this.duration = null;
+  this.distance = null;
+  this.elevation = null;
+  this.speed = null;
+  this.gradient = null;
+  this.avgSpeed = null;
+  this.maxSpeed = null;
 };
 // Deprecated
 // Use Track.getStartTime
