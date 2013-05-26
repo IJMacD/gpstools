@@ -1,0 +1,1149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="hud.svg">
+  <defs
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4596">
+      <stop
+         style="stop-color:#c4c4c4;stop-opacity:1;"
+         offset="0"
+         id="stop4598" />
+      <stop
+         style="stop-color:#c4c4c4;stop-opacity:0;"
+         offset="1"
+         id="stop4600" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4584">
+      <stop
+         style="stop-color:#c4c4c4;stop-opacity:1;"
+         offset="0"
+         id="stop4586" />
+      <stop
+         style="stop-color:#6e6e6e;stop-opacity:1;"
+         offset="1"
+         id="stop4588" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4507">
+      <stop
+         style="stop-color:#6f6f6f;stop-opacity:1"
+         offset="0"
+         id="stop4509" />
+      <stop
+         style="stop-color:#c4c4c4;stop-opacity:1"
+         offset="1"
+         id="stop4511" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4507"
+       id="linearGradient4513"
+       x1="407.61713"
+       y1="934.39056"
+       x2="408.72739"
+       y2="675.71167"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4507"
+       id="linearGradient4519"
+       gradientUnits="userSpaceOnUse"
+       x1="407.61713"
+       y1="934.39056"
+       x2="408.72739"
+       y2="675.71167" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4507-5"
+       id="linearGradient4519-3"
+       gradientUnits="userSpaceOnUse"
+       x1="407.61713"
+       y1="934.39056"
+       x2="408.72739"
+       y2="675.71167" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4507-5">
+      <stop
+         style="stop-color:#6f6f6f;stop-opacity:1"
+         offset="0"
+         id="stop4509-9" />
+      <stop
+         style="stop-color:#c4c4c4;stop-opacity:1"
+         offset="1"
+         id="stop4511-9" />
+    </linearGradient>
+    <linearGradient
+       y2="675.71167"
+       x2="408.72739"
+       y1="934.39056"
+       x1="407.61713"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient4537"
+       xlink:href="#linearGradient4507-5"
+       inkscape:collect="always" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4584"
+       id="linearGradient4590"
+       x1="224.64432"
+       y1="721.27429"
+       x2="223.90709"
+       y2="816.31726"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4596"
+       id="linearGradient4602"
+       x1="124.55965"
+       y1="946.64785"
+       x2="461.15462"
+       y2="946.64785"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4507"
+       id="linearGradient4604"
+       gradientUnits="userSpaceOnUse"
+       x1="296.75861"
+       y1="992.81805"
+       x2="296.26602"
+       y2="899.75616" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4507"
+       id="linearGradient4614"
+       x1="66.995033"
+       y1="989.7558"
+       x2="67.29068"
+       y2="604.77289"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.2285039,0,0,1.0517855,-15.862981,-40.178653)" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.1706033"
+     inkscape:cx="243.43761"
+     inkscape:cy="968.40929"
+     inkscape:document-units="px"
+     inkscape:current-layer="g3884-1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="829"
+     inkscape:window-height="504"
+     inkscape:window-x="200"
+     inkscape:window-y="4"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       transform="matrix(1.0517091,0,0,1.1841536,-12.000516,-620.11429)"
+       id="g3907-3"
+       inkscape:export-filename="E:\Code\gpstools\hudBackground.png"
+       inkscape:export-xdpi="36.369999"
+       inkscape:export-ydpi="36.369999"
+       style="fill:url(#linearGradient4602);fill-opacity:1;stroke:none">
+      <rect
+         ry="24.667852"
+         y="899.77893"
+         x="124.55965"
+         height="93.737839"
+         width="336.59497"
+         id="rect2985-4"
+         style="fill:url(#linearGradient4604);fill-opacity:1.0;stroke:none" />
+    </g>
+    <g
+       inkscape:export-ydpi="36.369999"
+       inkscape:export-xdpi="36.369999"
+       inkscape:export-filename="E:\Code\gpstools\hudBackground.png"
+       id="g4592"
+       transform="matrix(0.94163262,0,0,0.79950755,20.471026,-257.0687)"
+       style="stroke:none">
+      <rect
+         style="fill:#1a1a1a;fill-opacity:1;stroke:none"
+         id="rect4594"
+         width="336.59497"
+         height="93.737839"
+         x="124.55965"
+         y="899.77893"
+         ry="24.667852" />
+    </g>
+    <g
+       id="g3884"
+       transform="matrix(0.40413277,0,0,0.40440489,-0.01862458,626.78294)">
+      <rect
+         ry="26.752539"
+         y="654.12054"
+         x="19.530777"
+         height="387.9118"
+         width="87.911812"
+         id="rect2993"
+         style="fill:#1a1a1a;fill-opacity:1;stroke:#c4c4c4;stroke-width:20.65961838;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         ry="26.752539"
+         y="811.51465"
+         x="5"
+         height="64.055687"
+         width="110.79903"
+         id="rect3852"
+         style="fill:#1c1c1c;fill-opacity:1;stroke:#c4c4c4;stroke-width:10;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         transform="scale(1.0539521,0.94880973)"
+         xml:space="preserve"
+         style="font-size:43.71139526px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         x="39.719883"
+         y="904.67578"
+         id="text3812"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3814"
+           x="39.719883"
+           y="904.67578">70</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3816"
+         y="896.56793"
+         x="56.825668"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="896.56793"
+           x="56.825668"
+           id="tspan3818"
+           sodipodi:role="line">60</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         x="56.825668"
+         y="939.84882"
+         id="text3820"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3822"
+           x="56.825668"
+           y="939.84882">50</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3824"
+         y="977.93597"
+         x="58.556904"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="977.93597"
+           x="58.556904"
+           id="tspan3826"
+           sodipodi:role="line">50</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         x="58.556904"
+         y="1019.4856"
+         id="text3828"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3830"
+           x="58.556904"
+           y="1019.4856">40</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         x="37.782085"
+         y="692.28223"
+         id="text3836"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3838"
+           x="37.782085"
+           y="692.28223">110</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3840"
+         y="732.10065"
+         x="37.782085"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="732.10065"
+           x="37.782085"
+           id="tspan3842"
+           sodipodi:role="line">100</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         x="55.094433"
+         y="773.65027"
+         id="text3844"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3846"
+           x="55.094433"
+           y="773.65027">90</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3848"
+         y="815.19989"
+         x="55.094433"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="815.19989"
+           x="55.094433"
+           id="tspan3850"
+           sodipodi:role="line">80</tspan></text>
+    </g>
+    <g
+       id="g3856"
+       transform="matrix(0.40413277,0,0,0.40440489,-1.4962046,647.00317)">
+      <path
+         transform="translate(-168.57143,-40)"
+         d="m 542.85716,806.64789 c 0,74.16395 -60.12176,134.28572 -134.28572,134.28572 -74.16395,0 -134.28572,-60.12177 -134.28572,-134.28572 0,-74.16396 60.12177,-134.28572 134.28572,-134.28572 74.16396,0 134.28572,60.12176 134.28572,134.28572 z"
+         sodipodi:ry="134.28572"
+         sodipodi:rx="134.28572"
+         sodipodi:cy="806.64789"
+         sodipodi:cx="408.57144"
+         id="path2987"
+         style="fill:#1a1a1a;fill-opacity:1;stroke:#c4c4c4;stroke-width:20;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         sodipodi:type="arc" />
+      <text
+         xml:space="preserve"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         x="146"
+         y="832.36218"
+         id="text3777"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3779"
+           x="146"
+           y="832.36218">5</tspan></text>
+      <path
+         sodipodi:nodetypes="ccccc"
+         inkscape:connector-curvature="0"
+         id="path3805"
+         d="m 153.61074,824.47422 c 8.37371,-17.56804 43.91871,-53.87114 56.26262,-68.66265 l 11.41357,16.4272 8.52043,13.85512 c -18.90254,7.85669 -56.27317,35.83567 -76.19662,38.38033 z"
+         inkscape:transform-center-y="2.5016604"
+         inkscape:transform-center-x="-6.3847925"
+         style="fill:#ff0000;fill-opacity:1;stroke:none" />
+      <path
+         transform="translate(17.142864,-2.8571777)"
+         d="m 271.42858,769.50507 c 0,26.82526 -21.74617,48.57143 -48.57143,48.57143 -26.82526,0 -48.57143,-21.74617 -48.57143,-48.57143 0,-26.82526 21.74617,-48.57143 48.57143,-48.57143 26.82526,0 48.57143,21.74617 48.57143,48.57143 z"
+         sodipodi:ry="48.57143"
+         sodipodi:rx="48.57143"
+         sodipodi:cy="769.50507"
+         sodipodi:cx="222.85715"
+         id="path2995"
+         style="fill:#c4c4c4;fill-opacity:1;stroke:#c4c4c4;stroke-width:20;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         sodipodi:type="arc" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text3773"
+         y="858.36218"
+         x="172"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="858.36218"
+           x="172"
+           id="tspan3775"
+           sodipodi:role="line">0</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3781"
+         y="796.36218"
+         x="128"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="796.36218"
+           x="128"
+           id="tspan3783"
+           sodipodi:role="line">10</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         x="127.07506"
+         y="752.36218"
+         id="text3785"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3787"
+           x="127.07506"
+           y="752.36218">15</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3789"
+         y="710.36218"
+         x="150.26877"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="710.36218"
+           x="150.26877"
+           id="tspan3791"
+           sodipodi:role="line">20</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         x="186"
+         y="681.43719"
+         id="text3793"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3795"
+           x="186"
+           y="681.43719">25</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3797"
+         y="676.89972"
+         x="234.11864"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="676.89972"
+           x="234.11864"
+           id="tspan3799"
+           sodipodi:role="line">30</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         x="274.11865"
+         y="693.01837"
+         id="text3801"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3803"
+           x="274.11865"
+           y="693.01837">35</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:56px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+         x="225.17337"
+         y="787.22357"
+         id="text3808"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3810"
+           x="225.17337"
+           y="787.22357">5</tspan></text>
+    </g>
+    <g
+       id="g3907"
+       transform="translate(-3.6561747,49.999964)">
+      <rect
+         ry="9.9757996"
+         y="960.87817"
+         x="52.498604"
+         height="37.908039"
+         width="136.02907"
+         id="rect2985"
+         style="fill:#1a1a1a;fill-opacity:1;stroke:#c4c4c4;stroke-width:7.15181112;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text3769"
+         y="984.23822"
+         x="57.949791"
+         style="font-size:12.93660164px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"
+         transform="scale(0.99966351,1.0003366)"><tspan
+           y="984.23822"
+           x="57.949791"
+           id="tspan3771"
+           sodipodi:role="line">2013-05-24T19:11:00</tspan></text>
+    </g>
+    <g
+       id="g3879"
+       transform="matrix(0.40413277,0,0,0.40440489,-1.4962046,647.00317)">
+      <path
+         transform="translate(-22.857143,-40)"
+         d="m 511.42857,869.50507 c 0,42.60482 -34.53804,77.14286 -77.14286,77.14286 -42.60483,0 -77.14286,-34.53804 -77.14286,-77.14286 0,-42.60483 34.53803,-77.14286 77.14286,-77.14286 42.60482,0 77.14286,34.53803 77.14286,77.14286 z"
+         sodipodi:ry="77.14286"
+         sodipodi:rx="77.14286"
+         sodipodi:cy="869.50507"
+         sodipodi:cx="434.28571"
+         id="path2991"
+         style="fill:#1a1a1a;fill-opacity:1;stroke:#c4c4c4;stroke-width:20;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         sodipodi:type="arc" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text3765"
+         y="849.54803"
+         x="391.37192"
+         style="font-size:56px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+         xml:space="preserve"><tspan
+           y="849.54803"
+           x="391.37192"
+           id="tspan3767"
+           sodipodi:role="line">N</tspan></text>
+    </g>
+    <g
+       transform="translate(3.3777224,-446.86444)"
+       id="g3884-1">
+      <rect
+         ry="28.137932"
+         y="595.22662"
+         x="12.622277"
+         height="408"
+         width="108"
+         id="rect2993-7"
+         style="fill:url(#linearGradient4614);fill-opacity:1;stroke:none"
+         inkscape:export-filename="E:\Code\gpstools\hudBackground.png"
+         inkscape:export-xdpi="36.369999"
+         inkscape:export-ydpi="36.369999" />
+      <rect
+         inkscape:export-ydpi="36.369999"
+         inkscape:export-xdpi="36.369999"
+         inkscape:export-filename="E:\Code\gpstools\hudBackground.png"
+         style="fill:#1a1a1a;fill-opacity:1;stroke:none"
+         id="rect4606"
+         width="67.409561"
+         height="369.20328"
+         x="33.438076"
+         y="613.47491"
+         ry="25.462296" />
+      <rect
+         ry="26.752539"
+         y="761.51471"
+         x="8.6561747"
+         height="64.055687"
+         width="110.79903"
+         id="rect3852-4"
+         style="fill:#1c1c1c;stroke:#c4c4c4;stroke-width:10;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
+         inkscape:export-filename="E:\Code\gpstools\hudBackground.png"
+         inkscape:export-xdpi="36.369999"
+         inkscape:export-ydpi="36.369999" />
+    </g>
+    <g
+       transform="translate(3.3777224,-446.86444)"
+       id="g3856-2"
+       inkscape:export-filename="E:\Code\gpstools\hudBackground.png"
+       inkscape:export-xdpi="36.369999"
+       inkscape:export-ydpi="36.369999">
+      <path
+         sodipodi:type="arc"
+         style="fill:url(#linearGradient4513);fill-opacity:1;stroke:none"
+         id="path4505"
+         sodipodi:cx="408.57144"
+         sodipodi:cy="806.64789"
+         sodipodi:rx="134.28572"
+         sodipodi:ry="134.28572"
+         d="m 542.85716,806.64789 a 134.28572,134.28572 0 1 1 -268.57144,0 134.28572,134.28572 0 1 1 268.57144,0 z"
+         transform="matrix(1.0699766,0,0,1.0699766,-197.16189,-96.446514)" />
+      <path
+         transform="matrix(0.96183092,0,0,0.96183092,-152.97663,-9.2109925)"
+         d="m 542.85716,806.64789 a 134.28572,134.28572 0 1 1 -268.57144,0 134.28572,134.28572 0 1 1 268.57144,0 z"
+         sodipodi:ry="134.28572"
+         sodipodi:rx="134.28572"
+         sodipodi:cy="806.64789"
+         sodipodi:cx="408.57144"
+         id="path2987-3"
+         style="fill:#1a1a1a;fill-opacity:1;stroke:none"
+         sodipodi:type="arc" />
+      <path
+         transform="matrix(1.2044117,0,0,1.2044117,-29.289483,-160.0743)"
+         d="m 271.42858,769.50507 a 48.57143,48.57143 0 1 1 -97.14286,0 48.57143,48.57143 0 1 1 97.14286,0 z"
+         sodipodi:ry="48.57143"
+         sodipodi:rx="48.57143"
+         sodipodi:cy="769.50507"
+         sodipodi:cx="222.85715"
+         id="path2995-6"
+         style="fill:url(#linearGradient4590);fill-opacity:1;stroke:none"
+         sodipodi:type="arc" />
+      <text
+         xml:space="preserve"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         x="146"
+         y="832.36218"
+         id="text3777-2"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3779-2"
+           x="146"
+           y="832.36218">5</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3773-8"
+         y="858.36218"
+         x="172"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="858.36218"
+           x="172"
+           id="tspan3775-5"
+           sodipodi:role="line">0</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3781-7"
+         y="796.36218"
+         x="128"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="796.36218"
+           x="128"
+           id="tspan3783-6"
+           sodipodi:role="line">10</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         x="127.07506"
+         y="752.36218"
+         id="text3785-1"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3787-8"
+           x="127.07506"
+           y="752.36218">15</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3789-9"
+         y="710.36218"
+         x="150.26877"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="710.36218"
+           x="150.26877"
+           id="tspan3791-2"
+           sodipodi:role="line">20</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         x="186"
+         y="681.43719"
+         id="text3793-7"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3795-9"
+           x="186"
+           y="681.43719">25</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3797-5"
+         y="676.89972"
+         x="234.11864"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="676.89972"
+           x="234.11864"
+           id="tspan3799-4"
+           sodipodi:role="line">30</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+         x="274.11865"
+         y="693.01837"
+         id="text3801-3"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3803-1"
+           x="274.11865"
+           y="693.01837">35</tspan></text>
+      <path
+         sodipodi:type="arc"
+         style="fill:#c4c4c4;fill-opacity:1;stroke:none"
+         id="path4582"
+         sodipodi:cx="222.85715"
+         sodipodi:cy="769.50507"
+         sodipodi:rx="48.57143"
+         sodipodi:ry="48.57143"
+         d="m 271.42858,769.50507 a 48.57143,48.57143 0 1 1 -97.14286,0 48.57143,48.57143 0 1 1 97.14286,0 z"
+         transform="matrix(1.1055263,0,0,1.1055263,-6.3744218,-84.060185)" />
+    </g>
+    <rect
+       style="fill:#000000;fill-opacity:0;stroke:none"
+       id="rect4250"
+       width="440"
+       height="40"
+       x="0"
+       y="832.36218"
+       ry="0"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       transform="scale(0.99966351,1.0003366)"
+       sodipodi:linespacing="125%"
+       id="text3765-0"
+       y="860.1781"
+       x="32.387283"
+       style="font-size:22.63905334px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       xml:space="preserve"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="860.1781"
+         x="32.387283"
+         id="tspan3767-1"
+         sodipodi:role="line">N</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:22.63905334px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       x="119.81431"
+       y="860.1781"
+       id="text4344"
+       sodipodi:linespacing="125%"
+       transform="scale(0.99966351,1.0003366)"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan4346"
+         x="119.81431"
+         y="860.1781">W</tspan></text>
+    <text
+       transform="scale(0.99966351,1.0003366)"
+       sodipodi:linespacing="125%"
+       id="text4348"
+       y="860.17261"
+       x="213.14981"
+       style="font-size:22.63905334px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       xml:space="preserve"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="860.17261"
+         x="213.14981"
+         id="tspan4350"
+         sodipodi:role="line">S</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:22.63905334px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       x="302.77664"
+       y="860.1781"
+       id="text4352"
+       sodipodi:linespacing="125%"
+       transform="scale(0.99966351,1.0003366)"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan4354"
+         x="302.77664"
+         y="860.1781">E</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.80215931px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       x="77.9431"
+       y="856.29944"
+       id="text4356"
+       sodipodi:linespacing="125%"
+       transform="scale(0.99966351,1.0003366)"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan4358"
+         x="77.9431"
+         y="856.29944">NW</tspan></text>
+    <text
+       transform="scale(0.99966351,1.0003366)"
+       sodipodi:linespacing="125%"
+       id="text4360"
+       y="856.3147"
+       x="169.26308"
+       style="font-size:11.17813683px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       xml:space="preserve"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="856.3147"
+         x="169.26308"
+         id="tspan4362"
+         sodipodi:role="line">SW</tspan></text>
+    <text
+       transform="scale(0.99966351,1.0003366)"
+       sodipodi:linespacing="125%"
+       id="text4364"
+       y="857.23859"
+       x="257.763"
+       style="font-size:14.43579674px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       xml:space="preserve"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="857.23859"
+         x="257.763"
+         id="tspan4366"
+         sodipodi:role="line">SE</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:13.81282806px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       x="347.95676"
+       y="856.77777"
+       id="text4368"
+       sodipodi:linespacing="125%"
+       transform="scale(0.99966351,1.0003366)"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan4370"
+         x="347.95676"
+         y="856.77777">NE</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:22.63905334px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       x="392.50845"
+       y="860.1781"
+       id="text4374"
+       sodipodi:linespacing="125%"
+       transform="scale(0.99966351,1.0003366)"><tspan
+         sodipodi:role="line"
+         id="tspan4376"
+         x="392.50845"
+         y="860.1781">N</tspan></text>
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="path4380"
+       sodipodi:cx="230.87778"
+       sodipodi:cy="913.32056"
+       sodipodi:rx="7.724535"
+       sodipodi:ry="7.724535"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       transform="matrix(0.19418645,0,0,0.19418645,11.666668,676.00771)"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       transform="matrix(0.19418645,0,0,0.19418645,26.666665,676.00771)"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       sodipodi:ry="7.724535"
+       sodipodi:rx="7.724535"
+       sodipodi:cy="913.32056"
+       sodipodi:cx="230.87778"
+       id="path4382"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       transform="matrix(0.19418645,0,0,0.19418645,56.666665,676.00771)"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       sodipodi:ry="7.724535"
+       sodipodi:rx="7.724535"
+       sodipodi:cy="913.32056"
+       sodipodi:cx="230.87778"
+       id="path4386"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="path4388"
+       sodipodi:cx="230.87778"
+       sodipodi:cy="913.32056"
+       sodipodi:rx="7.724535"
+       sodipodi:ry="7.724535"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       transform="matrix(0.19418645,0,0,0.19418645,71.666665,676.00771)"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="path4392"
+       sodipodi:cx="230.87778"
+       sodipodi:cy="913.32056"
+       sodipodi:rx="7.724535"
+       sodipodi:ry="7.724535"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       transform="matrix(0.19418645,0,0,0.19418645,116.66666,676.00771)"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       transform="matrix(0.19418645,0,0,0.19418645,101.66666,676.00771)"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       sodipodi:ry="7.724535"
+       sodipodi:rx="7.724535"
+       sodipodi:cy="913.32056"
+       sodipodi:cx="230.87778"
+       id="path4394"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       transform="matrix(0.19418645,0,0,0.19418645,146.66666,676.00771)"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       sodipodi:ry="7.724535"
+       sodipodi:rx="7.724535"
+       sodipodi:cy="913.32056"
+       sodipodi:cx="230.87778"
+       id="path4398"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="path4400"
+       sodipodi:cx="230.87778"
+       sodipodi:cy="913.32056"
+       sodipodi:rx="7.724535"
+       sodipodi:ry="7.724535"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       transform="matrix(0.19418645,0,0,0.19418645,161.66666,676.00771)"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="path4404"
+       sodipodi:cx="230.87778"
+       sodipodi:cy="913.32056"
+       sodipodi:rx="7.724535"
+       sodipodi:ry="7.724535"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       transform="matrix(0.19418645,0,0,0.19418645,191.66666,676.00771)"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       transform="matrix(0.19418645,0,0,0.19418645,206.66666,676.00771)"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       sodipodi:ry="7.724535"
+       sodipodi:rx="7.724535"
+       sodipodi:cy="913.32056"
+       sodipodi:cx="230.87778"
+       id="path4406"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       transform="matrix(0.19418645,0,0,0.19418645,236.66666,676.00771)"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       sodipodi:ry="7.724535"
+       sodipodi:rx="7.724535"
+       sodipodi:cy="913.32056"
+       sodipodi:cx="230.87778"
+       id="path4410"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="path4412"
+       sodipodi:cx="230.87778"
+       sodipodi:cy="913.32056"
+       sodipodi:rx="7.724535"
+       sodipodi:ry="7.724535"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       transform="matrix(0.19418645,0,0,0.19418645,251.66666,676.00771)"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="path4416"
+       sodipodi:cx="230.87778"
+       sodipodi:cy="913.32056"
+       sodipodi:rx="7.724535"
+       sodipodi:ry="7.724535"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       transform="matrix(0.19418645,0,0,0.19418645,281.66666,676.00771)"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       transform="matrix(0.19418645,0,0,0.19418645,296.66666,676.00771)"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       sodipodi:ry="7.724535"
+       sodipodi:rx="7.724535"
+       sodipodi:cy="913.32056"
+       sodipodi:cx="230.87778"
+       id="path4418"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       transform="matrix(0.19418645,0,0,0.19418645,326.66666,676.00771)"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       sodipodi:ry="7.724535"
+       sodipodi:rx="7.724535"
+       sodipodi:cy="913.32056"
+       sodipodi:cx="230.87778"
+       id="path4422"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="path4424"
+       sodipodi:cx="230.87778"
+       sodipodi:cy="913.32056"
+       sodipodi:rx="7.724535"
+       sodipodi:ry="7.724535"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       transform="matrix(0.19418645,0,0,0.19418645,341.66666,676.00771)"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:13.81282806px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       x="-10.490496"
+       y="857.1535"
+       id="text4368-4"
+       sodipodi:linespacing="125%"
+       transform="scale(0.99966351,1.0003366)"><tspan
+         sodipodi:role="line"
+         id="tspan4370-6"
+         x="-10.490496"
+         y="857.1535">NE</tspan></text>
+    <path
+       transform="matrix(0.19418645,0,0,0.19418645,-18.333335,676.00771)"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       sodipodi:ry="7.724535"
+       sodipodi:rx="7.724535"
+       sodipodi:cy="913.32056"
+       sodipodi:cx="230.87778"
+       id="path4447"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="path4449"
+       sodipodi:cx="230.87778"
+       sodipodi:cy="913.32056"
+       sodipodi:rx="7.724535"
+       sodipodi:ry="7.724535"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       transform="matrix(0.19418645,0,0,0.19418645,-33.333335,676.00771)"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="path4380-7"
+       sodipodi:cx="230.87778"
+       sodipodi:cy="913.32056"
+       sodipodi:rx="7.724535"
+       sodipodi:ry="7.724535"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       transform="matrix(0.19418645,0,0,0.19418645,371.37982,676.11079)"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       transform="matrix(0.19418645,0,0,0.19418645,386.37982,676.11079)"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       sodipodi:ry="7.724535"
+       sodipodi:rx="7.724535"
+       sodipodi:cy="913.32056"
+       sodipodi:cx="230.87778"
+       id="path4382-7"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       transform="matrix(0.19418645,0,0,0.19418645,416.37982,676.11079)"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       sodipodi:ry="7.724535"
+       sodipodi:rx="7.724535"
+       sodipodi:cy="913.32056"
+       sodipodi:cx="230.87778"
+       id="path4386-7"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       transform="matrix(0.19418645,0,0,0.19418645,341.37982,676.11079)"
+       d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"
+       sodipodi:ry="7.724535"
+       sodipodi:rx="7.724535"
+       sodipodi:cy="913.32056"
+       sodipodi:cx="230.87778"
+       id="path4447-3"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="E:\Code\gpstools\hudCompass.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       transform="matrix(0.64787231,0,0,0.64787231,149.29788,-139.24265)"
+       d="m 542.85716,806.64789 a 134.28572,134.28572 0 1 1 -268.57144,0 134.28572,134.28572 0 1 1 268.57144,0 z"
+       sodipodi:ry="134.28572"
+       sodipodi:rx="134.28572"
+       sodipodi:cy="806.64789"
+       sodipodi:cx="408.57144"
+       id="path4515"
+       style="fill:url(#linearGradient4537);fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="E:\Code\gpstools\hudBackground.png"
+       inkscape:export-xdpi="36.369999"
+       inkscape:export-ydpi="36.369999" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#1a1a1a;fill-opacity:1;stroke:none"
+       id="path4517"
+       sodipodi:cx="408.57144"
+       sodipodi:cy="806.64789"
+       sodipodi:rx="134.28572"
+       sodipodi:ry="134.28572"
+       d="m 542.85716,806.64789 a 134.28572,134.28572 0 1 1 -268.57144,0 134.28572,134.28572 0 1 1 268.57144,0 z"
+       transform="matrix(0.53149784,0,0,0.53149784,196.84519,-45.369405)"
+       inkscape:export-filename="E:\Code\gpstools\hudBackground.png"
+       inkscape:export-xdpi="36.369999"
+       inkscape:export-ydpi="36.369999" />
+  </g>
+</svg>
