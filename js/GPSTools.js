@@ -436,13 +436,13 @@ GPSTools.Track.prototype.getDistance = function (){
         i = 1,
         l = this.points.length,
         p1, p2;
-    logging("Calculating Distance");
+    //logging("Calculating Distance");
     for(;i<l;i++){
       p1 = this.points[i-1];
       p2 = this.points[i];
       dist += p1.distanceTo(p2);
     }
-    logging("Calculation finished");
+    //logging("Calculation finished");
     this.distance = dist;
   }
   return this.distance;
@@ -463,7 +463,7 @@ GPSTools.Track.prototype.getHeightGain = function (){
   var sum = 0,
       i = 1,
       l = this.points.length, p, p1;
-  logging("Summing elevation data");
+  //logging("Summing elevation data");
   for(;i<l;i++) {
     p = this.points[i];
     p1 = this.points[i-1];
@@ -623,7 +623,7 @@ GPSTools.Track.prototype.getPrecedingPointIndex = function(time) {
       high = this.points.length,
       index = Math.floor(high/2),
       currPoint = this.points[index],
-      prevIndex = index;
+      prevIndex;
 
   while(currPoint){
     if(time > currPoint.getDate()){
@@ -634,10 +634,7 @@ GPSTools.Track.prototype.getPrecedingPointIndex = function(time) {
     }
     index = Math.floor((low+high)/2);
     currPoint = this.points[index];
-    if(prevIndex == index - 1){
-      return prevIndex;
-    }
-    else if(index == prevIndex -1){
+    if(prevIndex == index){
       return index;
     }
     prevIndex = index;
@@ -647,7 +644,7 @@ GPSTools.Track.prototype.getInstantSpeed = function(time) {
   var i1 = this.getPrecedingPointIndex(time),
       i0 = i1-1,
       i2 = i1+1,
-      i3 = i2+2,
+      i3 = i1+2,
       p0 = this.points[i0],
       p1 = this.points[i1],
       p2 = this.points[i2],
@@ -673,16 +670,46 @@ GPSTools.Track.prototype.getInstantSpeed = function(time) {
 GPSTools.Track.prototype.getInstantAltitude = function(time) {
   var i0 = this.getPrecedingPointIndex(time),
       p0 = this.points[i0],
-      p1 = this.points[i0+1];
-  return (p0.ele + p1.ele)/2;
+      p1 = this.points[i0+1],
+      t0 = p0.getTime(),
+      t1 = p1.getTime(),
+      a = (time.getTime() - t0)/(t1-t0),
+      e0 = p0.ele,
+      e1 = p1.ele;
+  if(a < 0 || a > 1)
+    console.log(t0 + "[" + time + "]" + t1);
+  return e0 + a * (e1 - e0);
 }
 GPSTools.Track.prototype.getInstantDistance = function(time) {
   var i0 = this.getPrecedingPointIndex(time);
   //return this.points[i0].speedTo(this.points[i0+1]);
 }
 GPSTools.Track.prototype.getInstantHeading = function(time) {
-  var i0 = this.getPrecedingPointIndex(time);
-  return this.points[i0].bearingTo(this.points[i0+1]);
+  var i1 = this.getPrecedingPointIndex(time),
+      i0 = i1-1,
+      i2 = i1+1,
+      i3 = i2+2,
+      p0 = this.points[i0],
+      p1 = this.points[i1],
+      p2 = this.points[i2],
+      p3 = this.points[i3],
+      b01 = (p0 && p0.bearingTo(p1)) || 0,
+      b12 = p1.bearingTo(p2),
+      b23 = p2.bearingTo(p3),
+      t1 = p1.getTime(),
+      t0 = (p0 && p0.getTime()) ||  t1-1,
+      t2 = p2.getTime(),
+      t3 = p3.getTime(),
+      t01 = (t0 + t1)/2,
+      t12 = (t1 + t2)/2,
+      t23 = (t2 + t3)/2,
+      t = time.getTime(),
+      a = (t - t01)/(t12 - t01),
+      b = (t - t12)/(t23 - t12);
+  if(t < t12){
+    return b01 + a * (b12 - b01);
+  }
+  return b12 + b * (b23 - b12);
 }
 GPSTools.SuperTrack = function(tracks){
   this.name = "Super Track";
@@ -868,6 +895,10 @@ GPSTools.Point.prototype.distanceTo = function(){
         return n * 180 / Math.PI;
       };
   return function(point) {
+    if(!point){
+      console.log(point);
+      return 0;
+    }
     var dLat = toRad(point.lat-this.lat),
         dLon = toRad(point.lon-this.lon),
         lat1 = toRad(this.lat),
@@ -897,10 +928,10 @@ GPSTools.Point.prototype.bearingTo = (function() {
       };
   return function(point){
     var dLon = toRad(point.lon - this.lon),
-        lat1 = this.lat,
-        lat2 = point.lat,
-        lon1 = this.lon,
-        lon2 = point.lon,
+        lat1 = toRad(this.lat),
+        lat2 = toRad(point.lat),
+        lon1 = toRad(this.lon),
+        lon2 = toRad(point.lon),
         y = Math.sin(dLon) * Math.cos(lat2),
         x = Math.cos(lat1)*Math.sin(lat2) -
             Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
@@ -1223,7 +1254,6 @@ GPSTools.Graph = (function(){
     getPosition: function(id,x,y){
       var canvas = $('#'+id)[0],
           width = canvas.width,
-          height = canvas.height,
           fracX = (x - gutterWidth) / (width - gutterWidth * 2);
       return fracX;
     },
