@@ -71,7 +71,7 @@ DEALINGS IN THE SOFTWARE.
 		},
 	
 		addCanvasFrame: function(canvas) {
-			var u = canvas.toDataURL('image/jpeg');
+			var u = canvas.toDataURL('image/jpeg',1.0);
 			var dataStart = u.indexOf(',') + 1;
 			
 			var bytes = this.b64.decode(u.substring(dataStart));

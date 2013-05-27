@@ -1092,13 +1092,15 @@
           l = start + count,
           data,
           base64,
-          movie = new movbuilder.MotionJPEGBuilder();
+          movie = new movbuilder.MotionJPEGBuilder(),
+          startTime = new Date;
       movie.setup(videoWidth, videoHeight, fps);
       for(;i<l;i++){
         generateFrame(i);
         movie.addCanvasFrame(canvas[0]);
       }
       movie.finish(function(url){
+        console.log(count + " frames: "+((new Date) - startTime)/1000 + " seconds");
         downloadHudButton.attr('download', "frames"+pad(start,5)+"-"+pad(i,5)+".avi");
         downloadHudButton.attr('href', url);
       });
@@ -1519,7 +1521,7 @@ function formatDate(date, format){
   }
 }
 function pad(n, width, z) {
-  width = width || 0;
+  width = width || 2;
   z = z || '0';
   n = n + '';
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
