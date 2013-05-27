@@ -1060,6 +1060,7 @@
         paddingLeft = 20,
         paddingBottom = 20,
         previewHudButton = $('#prv-hud-btn'),
+        generateHudButton = $('#gen-hud-btn'),
         downloadHudButton = $('#dld-hud-btn'),
         backgroundURL = "hudBackground.png",
         backgroundImage = new Image(),
@@ -1085,26 +1086,36 @@
       //ctx.restore();
     });
 
-    downloadHudButton.click(function(){
+    generateHudButton.click(function(){
       var start = parseInt(hudFrameStart.val()),
           count = parseInt(hudFrameCount.val()),
           i = start,
           l = start + count,
           data,
-          base64,
           movie = new movbuilder.MotionJPEGBuilder(),
           startTime = new Date;
+      setProgress(0,count);
       movie.setup(videoWidth, videoHeight, fps);
-      for(;i<l;i++){
+      generateNext();
+
+      function generateNext(){
+        incrementProgress();
         generateFrame(i);
         movie.addCanvasFrame(canvas[0]);
+        i++;
+        if(i<l){
+          setTimeout(generateNext,0);
+        }
+        else{
+          movie.finish(function(url){
+            console.log(count + " frames: "+((new Date) - startTime)/1000 + " seconds");
+            downloadHudButton.removeAttr('disabled');
+            downloadHudButton.attr('download', "frames"+pad(start,5)+"-"+pad(i,5)+".avi");
+            downloadHudButton.attr('href', url);
+          });
+          hudFrameStart.val(l);
+        }
       }
-      movie.finish(function(url){
-        console.log(count + " frames: "+((new Date) - startTime)/1000 + " seconds");
-        downloadHudButton.attr('download', "frames"+pad(start,5)+"-"+pad(i,5)+".avi");
-        downloadHudButton.attr('href', url);
-      });
-      hudFrameStart.val(l);
     });
 
     function generateFrame(id){
