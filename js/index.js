@@ -1099,7 +1099,7 @@
         movie.addCanvasFrame(canvas[0]);
       }
       movie.finish(function(url){
-        downloadHudButton.attr('download', "movie.mpg");
+        downloadHudButton.attr('download', "frames"+pad(start,5)+"-"+pad(i,5)+".avi");
         downloadHudButton.attr('href', url);
       });
       hudFrameStart.val(l);
