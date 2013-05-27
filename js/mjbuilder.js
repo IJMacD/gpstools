@@ -44,19 +44,23 @@ DEALINGS IN THE SOFTWARE.
 		this.moviLIST   = MotionJPEGBuilder.createMoviLIST();
 		this.frameList  = [];
 	}
+
+	function BlobBuilder(){
+		this.buffer = [];
+	};
+	BlobBuilder.prototype = {
+		append: function(data){
+			this.buffer.push(data.slice(0));
+		},
+		getBlob: function(type){
+			return new Blob(this.buffer, {type: type});
+		}
+	};
+	BlobBuilder.prototype.constructor = BlobBuilder;
 	
 	function getBlobBuilder() {
-		var constructor = function(){
-				this.buffer = [];
-			};
-		constructor.prototype.append = function(data){
-			this.buffer.push(data);
-		};
-		constructor.prototype.getBlob = function(type){
-			return new Blob(this.buffer, {type: type});
-		};
 
-		return constructor;
+		return BlobBuilder;
 	}
 	
 	MotionJPEGBuilder.prototype = {
@@ -230,7 +234,7 @@ DEALINGS IN THE SOFTWARE.
 			var fieldName = od[i];
 			var val = s[fieldName];
 			if (Verbose) {
-				console.log("          ".substring(0,nest) + fieldName);
+				console.log("          ".substring(0,nest) + fieldName + " " + val);
 			}
 			switch(fieldName.charAt(0)) {
 			case 'b': // BYTE
