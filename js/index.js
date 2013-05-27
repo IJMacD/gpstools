@@ -1070,7 +1070,11 @@
         startDate,
         animationStart,
         fps = 30,
-        frameDuration = 1000/fps;
+        frameDuration = 1000/fps,
+        frameTimes = [],
+        frameTimesSize = 50,
+        status = $('#hud-status'),
+        prevFrameTime;
 
     canvas[0].width = videoWidth;
     canvas[0].height = videoHeight;
@@ -1091,17 +1095,34 @@
           count = parseInt(hudFrameCount.val()),
           i = start,
           l = start + count,
-          data,
-          movie = new movbuilder.MotionJPEGBuilder(),
+          filename = "frames"+pad(start,5)+"-"+pad(l-1,5)+".avi",
+          movie = new movbuilder.MotionJPEGBuilder(new movbuilder.MotionJPEGBuilder.FileBuilder(filename)),
           startTime = new Date;
       setProgress(0,count);
+      downloadHudButton.attr('disabled', true);
       movie.setup(videoWidth, videoHeight, fps);
       generateNext();
 
       function generateNext(){
+        var delta,
+            rate,
+            remaining,
+            now;
         incrementProgress();
         generateFrame(i);
         movie.addCanvasFrame(canvas[0]);
+
+        now = Date.now();
+        if(i%frameTimesSize == 0){
+          if(prevFrameTime){
+            delta = (now - prevFrameTime);
+            rate = frameTimesSize/delta;
+            remaining = (l - i)/rate;
+            status.text("Estimated finish time: " + (new Date(now + remaining)));
+          }
+          prevFrameTime = now;
+        }
+
         i++;
         if(i<l){
           setTimeout(generateNext,0);
@@ -1110,10 +1131,10 @@
           movie.finish(function(url){
             console.log(count + " frames: "+((new Date) - startTime)/1000 + " seconds");
             downloadHudButton.removeAttr('disabled');
-            downloadHudButton.attr('download', "frames"+pad(start,5)+"-"+pad(i,5)+".avi");
+            downloadHudButton.attr('download', filename);
             downloadHudButton.attr('href', url);
+            hudFrameStart.val(l);
           });
-          hudFrameStart.val(l);
         }
       }
     });
@@ -1126,7 +1147,7 @@
       var time = new Date(startDate + id * frameDuration);
       generateDisplay(time);
       ctx.restore();
-      return canvas[0].toDataURL();
+      //return canvas[0].toDataURL();
     }
 
     function loop(t){

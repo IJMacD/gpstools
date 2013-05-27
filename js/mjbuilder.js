@@ -29,9 +29,9 @@ DEALINGS IN THE SOFTWARE.
 	var RateBase = 1000000;
 	var Verbose = false;
 
-	function MotionJPEGBuilder() {
-		var B = getBlobBuilder();
-		this.builder = new B();
+	function MotionJPEGBuilder(builder) {
+		//var B = getBlobBuilder();
+		this.builder = builder || new BlobBuilder();
 		this.b64 = new Base64();
 		this.movieDesc = {
 			w: 0, h:0, fps: 0,
@@ -50,13 +50,86 @@ DEALINGS IN THE SOFTWARE.
 	};
 	BlobBuilder.prototype = {
 		append: function(data){
-			this.buffer.push(data.slice(0));
+		    if (data instanceof ArrayBuffer){
+		        this.buffer.push(new Uint8Array(data.slice(0)));
+		    } else if (typeof(data) === "string"){
+		        this.buffer.push(new String(data));
+		    } else if (data instanceof Uint8Array){
+		        this.buffer.push(data.slice(0));
+		    } else if (data instanceof Blob){
+		        this.buffer.push(data.slice());
+		    } else {
+		        console.log(data);
+		    }
 		},
 		getBlob: function(type){
 			return new Blob(this.buffer, {type: type});
+		},
+		getURL: function(callback){
+			var U = window.URL || window.webkitURL;
+			if (U) {
+				callback(U.createObjectURL(this.getBlob('video/avi')));
+			}
 		}
 	};
 	BlobBuilder.prototype.constructor = BlobBuilder;
+	MotionJPEGBuilder.BlobBuilder = BlobBuilder;
+
+
+	function createTempFile(filename, callback) {
+		var rFS = webkitRequestFileSystem || mozRequestFileSystem || requestFileSystem;
+
+		rFS(TEMPORARY, 4 * 1024 * 1024 * 1024, function(filesystem) {
+			function create() {
+				filesystem.root.getFile(filename, {
+					create : true
+				}, function(fileEntry) {
+					callback(fileEntry);
+				});
+			}
+
+			filesystem.root.getFile(filename, null, function(entry) {
+				entry.remove(create, create);
+			}, create);
+		});
+	}
+
+	function FileBuilder(filename){
+		// This still has a buffer in case writing starts
+		// before the file is ready
+		var that = this;
+
+		this.buffer = [];
+
+		createTempFile(filename, function(fileEntry){
+
+			fileEntry.createWriter(function(fileWriter){
+				that.writer = fileWriter;
+
+			});
+
+			that.fileEntry = fileEntry;
+
+		});
+
+	};
+	FileBuilder.prototype = {
+		append: function(data){
+			this.buffer.push(data.slice(0));
+		},
+		getURL: function(callback){
+
+			var that = this;
+
+			this.writer.onwrite = function(){
+				callback(that.fileEntry.toURL());
+			}
+
+			this.writer.write(new Blob(this.buffer));
+		}
+	};
+	FileBuilder.prototype.constructor = FileBuilder;
+	MotionJPEGBuilder.FileBuilder = FileBuilder;
 	
 	function getBlobBuilder() {
 
@@ -74,16 +147,15 @@ DEALINGS IN THE SOFTWARE.
 			var u = canvas.toDataURL('image/jpeg',1.0);
 			var dataStart = u.indexOf(',') + 1;
 			
-			var bytes = this.b64.decode(u.substring(dataStart));
-			if (bytes.length % 2) { // padding
-				bytes.push(0);
-			}
+			var bytes = atob(u.substring(dataStart));
+
+			var len = bytes.length % 2 ? bytes.length + 1 : bytes.length;
 			
-			var abuf = new ArrayBuffer(bytes.length);
+			var abuf = new ArrayBuffer(len);
 			var u8a  = new Uint8Array(abuf);
 			var i;
-			for (i = 0;i < bytes.length;i++) {
-				u8a[i] = bytes[i];
+			for (i = 0;i < len;i++) {
+				u8a[i] = bytes.charCodeAt(i);
 			}
 			
 			
@@ -196,20 +268,11 @@ DEALINGS IN THE SOFTWARE.
 		
 		build: function(onFinish) {
 			MotionJPEGBuilder.appendStruct(this.builder, this.avi);
-			var blob = this.builder.getBlob('video/avi');
+			this.builder.getURL(onFinish);
 			
-			var U = window.URL || window.webkitURL;
-			if (U) {
-				var burl = U.createObjectURL(blob);
-				if (burl) {
-					onFinish(burl);
-					return;
-				}
-			}
-			
-			var fr = new FileReader();
-			fr.onload = function(){ onFinish(fr.result); };
-			fr.readAsDataURL(blob);
+			// var fr = new FileReader();
+			// fr.onload = function(){ onFinish(fr.result); };
+			// fr.readAsDataURL(blob);
 		}
 	};
 	
