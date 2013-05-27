@@ -1048,7 +1048,7 @@
 
   // HUD closure
   $(function(){
-    var canvas = $('#hudModal canvas'),
+    var canvas = $('<canvas>'),
         ctx = canvas[0].getContext('2d'),
         hudBtn = $('#hud-btn'),
         hudFrameStart = $('#hudFrameStart'),
@@ -1070,6 +1070,9 @@
         animationStart,
         fps = 30,
         frameDuration = 1000/fps;
+
+    canvas[0].width = videoWidth;
+    canvas[0].height = videoHeight;
 
     backgroundImage.src = backgroundURL;
     headingImage.src = headingURL;
@@ -1104,10 +1107,10 @@
 
     function generateFrame(id){
       ctx.save();
+      ctx.clearRect(0,0,videoWidth,videoHeight);
       ctx.translate(paddingLeft, videoHeight - hudHeight - paddingBottom);
       startDate = currentTrack.getStartTime().getTime();
       var time = new Date(startDate + id * frameDuration);
-      ctx.clearRect(0,0,videoWidth,videoHeight);
       generateDisplay(time);
       ctx.restore();
       return canvas[0].toDataURL();
