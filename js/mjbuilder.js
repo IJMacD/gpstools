@@ -42,14 +42,15 @@ DEALINGS IN THE SOFTWARE.
 		this.avi = MotionJPEGBuilder.createAVIStruct();
 		this.headerLIST = MotionJPEGBuilder.createHeaderLIST();
 		this.moviLIST   = MotionJPEGBuilder.createMoviLIST();
-		this.frameList  = [];
+		this.frameIndices  = [];
 	}
 
-	function BlobBuilder(){
+	function Builder(){
 		this.buffer = [];
-	};
-	BlobBuilder.prototype = {
-		append: function(data){
+	}
+
+	Builder.prototype = {
+		append: function(data, callback){
 		    if (data instanceof ArrayBuffer){
 		        this.buffer.push(new Uint8Array(data.slice(0)));
 		    } else if (typeof(data) === "string"){
@@ -61,15 +62,24 @@ DEALINGS IN THE SOFTWARE.
 		    } else {
 		        console.log(data);
 		    }
+		    callback && callback();
 		},
-		getBlob: function(type){
-			return new Blob(this.buffer, {type: type});
-		},
-		getURL: function(callback){
-			var U = window.URL || window.webkitURL;
-			if (U) {
-				callback(U.createObjectURL(this.getBlob('video/avi')));
-			}
+		getURL: function(){
+			throw new Error("Not Implemented");
+		}
+	};
+
+	function BlobBuilder(){
+		Builder.apply(this);
+	};
+	BlobBuilder.prototype = new Builder();
+	BlobBuilder.prototype.getBlob = function(type){
+		return new Blob(this.buffer, {type: type});
+	};
+	BlobBuilder.prototype.getURL = function(callback){
+		var U = window.URL || window.webkitURL;
+		if (U) {
+			callback(U.createObjectURL(this.getBlob('video/avi')));
 		}
 	};
 	BlobBuilder.prototype.constructor = BlobBuilder;
@@ -94,18 +104,35 @@ DEALINGS IN THE SOFTWARE.
 		});
 	}
 
-	function FileBuilder(filename){
+	function FileBuilder(filename, callback){
 		// This still has a buffer in case writing starts
 		// before the file is ready
 		var that = this;
 
-		this.buffer = [];
+		this.length = 0;
+		this.position = 0;
 
 		createTempFile(filename, function(fileEntry){
 
 			fileEntry.createWriter(function(fileWriter){
 				that.writer = fileWriter;
 
+				fileWriter.onwrite = function updateProperties(){
+					that.length = fileWriter.length;
+					that.position = fileWriter.position;
+				}
+				// Write any saved (queued) data
+				if(that.buffer.length){
+					fileWriter.onwrite = function(){
+						fileWriter.onwrite = updateProperties;
+						updateProperties();
+						callback();
+					}
+					fileWriter.write(new Blob(that.buffer));
+				}
+				else {
+					callback();
+				}
 			});
 
 			that.fileEntry = fileEntry;
@@ -113,20 +140,54 @@ DEALINGS IN THE SOFTWARE.
 		});
 
 	};
-	FileBuilder.prototype = {
-		append: function(data){
-			this.buffer.push(data.slice(0));
-		},
-		getURL: function(callback){
+	FileBuilder.prototype = new Builder();
+	FileBuilder.prototype.append = function(data, callback){
 
-			var that = this;
+		if(!this.writer){
+			// Writer isn't ready yet save data for later
+			Builder.prototype.append.apply(this,[data,callback]);
+			callback();
+		}
+		else {
 
-			this.writer.onwrite = function(){
-				callback(that.fileEntry.toURL());
+			var fileWriter = this.writer,
+				// Save old handler
+				oldHandler = fileWriter.onwrite;
+
+			fileWriter.onwrite = function(){
+				// Restore old handler
+				fileWriter.onwrite = oldHandler;
+				// Call oldHandler
+				oldHandler();
+				// Call specificHandler
+				callback();
 			}
 
-			this.writer.write(new Blob(this.buffer));
+		    if (data instanceof ArrayBuffer){
+		        fileWriter.write(new Blob([data]));
+		    } else if (typeof(data) === "string"){
+		        fileWriter.write(new Blob([data]));
+		    // } else if (data instanceof Uint8Array){
+		    //     fileWriter.write(data);
+		    } else if (data instanceof Blob){
+		        fileWriter.write(data);
+		    } else {
+		        console.log(data);
+		    }
 		}
+	};
+	FileBuilder.prototype.seek = function(offset){
+		this.writer.seek(offset);
+		this.position = this.writer.position;
+	};
+	FileBuilder.prototype.seekEnd = function(){
+		this.writer.seek(this.length);
+		this.position = this.writer.position;
+	};
+	FileBuilder.prototype.getURL = function(callback){
+
+		callback(this.fileEntry.toURL());
+
 	};
 	FileBuilder.prototype.constructor = FileBuilder;
 	MotionJPEGBuilder.FileBuilder = FileBuilder;
@@ -137,13 +198,15 @@ DEALINGS IN THE SOFTWARE.
 	}
 	
 	MotionJPEGBuilder.prototype = {
-		setup: function(frameWidth, frameHeight, fps) {
+		setup: function(frameWidth, frameHeight, fps, callback) {
 			this.movieDesc.w = frameWidth;
 			this.movieDesc.h = frameHeight;
 			this.movieDesc.fps = fps;
+
+			this.writeHeaders(callback);
 		},
 	
-		addCanvasFrame: function(canvas) {
+		addCanvasFrame: function(canvas, onComplete) {
 			var u = canvas.toDataURL('image/jpeg',1.0);
 			var dataStart = u.indexOf(',') + 1;
 			
@@ -158,65 +221,62 @@ DEALINGS IN THE SOFTWARE.
 				u8a[i] = bytes.charCodeAt(i);
 			}
 			
-			
-			/*
-			var jpeg = new JPEGScanner(abuf);
-			var a_jpeg = jpeg.generateForAVI();
-			var bb = a_jpeg.emit();*/
-			var bb = new ( getBlobBuilder() );
-			bb.append(abuf);
-			var blob = bb.getBlob('image/jpeg');
+			var blob = new Blob([abuf], {type:'image/jpeg'});
 
 			var bsize = blob.size;
 			this.movieDesc.videoStreamSize += bsize;
-			this.frameList.push(blob);
+			this.addVideoStreamData(this.moviLIST, blob, onComplete);
 			
 			if (this.movieDesc.maxJPEGSize < bsize) {
 				this.movieDesc.maxJPEGSize = bsize;
 			}
 		},
 		
-		addVideoStreamData: function(list, frameBuffer) {
-			var stream = MotionJPEGBuilder.createMoviStream();
-			stream.dwSize = frameBuffer.size;
-			stream.handler = function(bb) {
-				bb.append(frameBuffer);
-			};
-		
-			list.push(stream);
-			return stream.dwSize + 8;
-		},
-		
-		finish: function(onFinish) {
-			var streamSize = 0;
-			this.moviLIST.aStreams = [];
-			var frameCount = this.frameList.length;
-			var frameIndices = [];
-			var frOffset = 4; // 'movi' +0
+		addVideoStreamData: function(list, frameBuffer, onComplete) {
+
 			var IndexEntryOrder = ['chId', 'dwFlags', 'dwOffset', 'dwLength'];
-			for (var i = 0;i < frameCount;i++) {
-				var frsize = this.addVideoStreamData(this.moviLIST.aStreams, this.frameList[i]);
-				frameIndices.push({
-					chId: '00dc',
-					dwFlags: AVIIF_KEYFRAME,
-					dwOffset: frOffset,
-					dwLength: frsize - 8,
-					_order: IndexEntryOrder
-				})
-				
-				frOffset += frsize;
-				streamSize += frsize;
-			};
+
+			var frsize = frameBuffer.size;
+
+			list.dwSize += frsize + 8;
+
+			this.frameIndices.push({
+				chId: '00dc',
+				dwFlags: AVIIF_KEYFRAME,
+				dwOffset: list.dwSize,
+				dwLength: frsize,
+				_order: IndexEntryOrder
+			});
 			
-			this.moviLIST.dwSize = streamSize + 4; // + 'movi'
-						
+
+			// -------------------------
+
+			var stream = MotionJPEGBuilder.createMoviStream();
+			stream.dwSize = frsize;
+
+			var that = this;
+
+			var builder = new BlobBuilder();
+
+			MotionJPEGBuilder.appendStruct(builder, stream);
+
+			this.builder.append(builder.getBlob(), function(){
+
+				// Manually write frameBuffer so that it is only written once.
+				that.builder.append(frameBuffer, onComplete);
+			});
+
+		},
+
+		writeHeaders: function(callback){
+
 			// stream header
 			
 			var frameDu = Math.floor(RateBase / this.movieDesc.fps);
 			var strh = MotionJPEGBuilder.createStreamHeader();
 			strh.wRight  = this.movieDesc.w;
 			strh.wBottom = this.movieDesc.h;
-			strh.dwLength = this.frameList.length;
+			strh.dwLength = this.frameIndices.length;
 			strh.dwScale  = frameDu;
 
 			var bi = MotionJPEGBuilder.createBitmapHeader();
@@ -236,7 +296,7 @@ DEALINGS IN THE SOFTWARE.
 			var avih = MotionJPEGBuilder.createAVIMainHeader();
 			avih.dwMicroSecPerFrame = frameDu;
 			avih.dwMaxBytesPerSec = this.movieDesc.maxJPEGSize * this.movieDesc.fps;
-			avih.dwTotalFrames = this.frameList.length;
+			avih.dwTotalFrames = this.frameIndices.length;
 			avih.dwWidth  = this.movieDesc.w;
 			avih.dwHeight = this.movieDesc.h;
 			avih.dwSuggestedBufferSize = 0;
@@ -247,13 +307,27 @@ DEALINGS IN THE SOFTWARE.
 			this.headerLIST.dwSize = hdrlSize;
 			this.headerLIST.aData = [avih, strl];
 
+			// This is only the first part of the avi
+			// i.e. the headers - up to the start of the data
+			this.avi.aData = [this.headerLIST, this.moviLIST];
+
+			// Build struct in memory then write to file
+			var builder = new BlobBuilder();
+
+			MotionJPEGBuilder.appendStruct(builder, this.avi);
+
+			this.builder.append(builder.getBlob(), callback);
+		},
+
+		finish: function(onFinish) {
+
 			var indexChunk = {
 				chFourCC: 'idx1',
-				dwSize: frameIndices.length * 16,
-				aData: frameIndices,
+				dwSize: this.frameIndices.length * 16,
+				aData: this.frameIndices,
 				_order: ['chFourCC', 'dwSize', 'aData']
 			};
-			
+
 			// AVI Container
 			var aviSize = 0;
 			aviSize += 8 + this.headerLIST.dwSize;
@@ -261,13 +335,31 @@ DEALINGS IN THE SOFTWARE.
 			aviSize += 8 + indexChunk.dwSize;
 						
 			this.avi.dwSize = aviSize + 4;
-			this.avi.aData = [this.headerLIST, this.moviLIST, indexChunk];
 
-			this.build(onFinish);
+			var that = this;
+
+			this.builder.seek(0);
+
+			// Write headers again
+			this.writeHeaders(function(){
+
+				// Jump back to end of file
+				that.builder.seekEnd();
+
+				var builder = new BlobBuilder();
+
+				MotionJPEGBuilder.appendStruct(builder, indexChunk);
+
+				that.builder.append(builder.getBlob(), function(){
+
+					that.build(onFinish);
+				});
+			});
+
+
 		},
 		
 		build: function(onFinish) {
-			MotionJPEGBuilder.appendStruct(this.builder, this.avi);
 			this.builder.getURL(onFinish);
 			
 			// var fr = new FileReader();
@@ -293,9 +385,15 @@ DEALINGS IN THE SOFTWARE.
 		
 		var od = s._order;
 		var len = od.length;
-		for (var i = 0;i < len;i++) {
+		var i = 0;
+
+		var val,
+			j,
+			dlen;
+
+		for(;i < len;i++){
 			var fieldName = od[i];
-			var val = s[fieldName];
+			val = s[fieldName];
 			if (Verbose) {
 				console.log("          ".substring(0,nest) + fieldName + " " + val);
 			}
@@ -325,8 +423,8 @@ DEALINGS IN THE SOFTWARE.
 				bb.append(_abtempWORD);
 				break
 			case 'a': // Array of structured data
-				var dlen = val.length;
-				for (var j = 0;j < dlen;j++) {
+				dlen = val.length;
+				for(j = 0;j<dlen;j++){
 					MotionJPEGBuilder.appendStruct(bb, val[j], nest+1);
 				}
 				break;
@@ -337,7 +435,7 @@ DEALINGS IN THE SOFTWARE.
 				MotionJPEGBuilder.appendStruct(bb, val, nest+1);
 				break;
 			case 'h': // Handler function
-				val(bb);
+				//val(bb);
 				break;
 			default:
 				throw "Unknown data type: "+fieldName;
@@ -403,9 +501,9 @@ DEALINGS IN THE SOFTWARE.
 	MotionJPEGBuilder.createMoviLIST = function() {
 		return {
 			chLIST: 'LIST',
-			dwSize: 0,
+			dwSize: 4,	// Start at 4 (+ 'movi')
 			chFourCC: 'movi',
-			aStreams: null,
+			aStreams: [],
 			_order: ['chLIST', 'dwSize', 'chFourCC', 'aStreams']
 		};
 	};

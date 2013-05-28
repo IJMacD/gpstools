@@ -1096,12 +1096,13 @@
           i = start,
           l = start + count,
           filename = "frames"+pad(start,5)+"-"+pad(l-1,5)+".avi",
-          movie = new movbuilder.MotionJPEGBuilder(new movbuilder.MotionJPEGBuilder.FileBuilder(filename)),
-          startTime = new Date;
-      setProgress(0,count);
-      downloadHudButton.attr('disabled', true);
-      movie.setup(videoWidth, videoHeight, fps);
-      generateNext();
+          startTime = new Date,
+          movie = new movbuilder.MotionJPEGBuilder(new movbuilder.MotionJPEGBuilder.FileBuilder(filename,function(){
+
+            setProgress(0,count);
+            downloadHudButton.attr('disabled', true);
+            movie.setup(videoWidth, videoHeight, fps, generateNext);
+          }));
 
       function generateNext(){
         var delta,
@@ -1110,32 +1111,35 @@
             now;
         incrementProgress();
         generateFrame(i);
-        movie.addCanvasFrame(canvas[0]);
+        movie.addCanvasFrame(canvas[0], function(){
+          i++;
+          if(i<l){
+            generateNext();
 
-        now = Date.now();
-        if(i%frameTimesSize == 0){
-          if(prevFrameTime){
-            delta = (now - prevFrameTime);
-            rate = frameTimesSize/delta;
-            remaining = (l - i)/rate;
-            status.text("Estimated finish time: " + (new Date(now + remaining)));
+            now = Date.now();
+            if(i%frameTimesSize == 0){
+              if(prevFrameTime){
+                delta = (now - prevFrameTime);
+                rate = frameTimesSize/delta;
+                remaining = (l - i)/rate;
+                status.text("Estimated finish time: " + (new Date(now + remaining)));
+              }
+              prevFrameTime = now;
+            }
           }
-          prevFrameTime = now;
-        }
+          else{
+            status.text("Closing File...");
+            movie.finish(function(url){
+              status.text("");
+              console.log(count + " frames: "+((new Date) - startTime)/1000 + " seconds");
+              downloadHudButton.removeAttr('disabled');
+              downloadHudButton.attr('download', filename);
+              downloadHudButton.attr('href', url);
+              hudFrameStart.val(l);
+            });
+          }
+        });
 
-        i++;
-        if(i<l){
-          setTimeout(generateNext,0);
-        }
-        else{
-          movie.finish(function(url){
-            console.log(count + " frames: "+((new Date) - startTime)/1000 + " seconds");
-            downloadHudButton.removeAttr('disabled');
-            downloadHudButton.attr('download', filename);
-            downloadHudButton.attr('href', url);
-            hudFrameStart.val(l);
-          });
-        }
       }
     });
 
