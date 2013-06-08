@@ -1306,6 +1306,8 @@
 
       //ctx.translate(videoWidth - paddingRight - 100, videoHeight - paddingBottom - 100);
 
+      // Draw Map
+      drawMap(position, heading, speed);
     }
     function drawAltitude(altitude){
       var interval = 0.1,
@@ -1387,6 +1389,127 @@
       ctx.font = "12px sans-serif";
       ctx.fillText(formatDate(time, "YYYY-mm-ddTHH:ii:ss"), 58, 147);
       ctx.restore();
+    }
+    function drawMap(position, heading, speed){
+      GPSTools.Map.setCentre(position.lon,position.lat,16);
+      var map = GPSTools.Map.getMap(),
+          layer = map.baseLayer,
+          latLon = map.getCenter(),
+          tileData = layer.getTileData(latLon),
+          tile = tileData.tile,
+          tileCtx = tile.getCanvasContext(),
+          tileCanvas,
+          i = tileData.i,
+          j = tileData.j,
+          r = 55,
+          cx = videoWidth - paddingRight - r,
+          cy = videoHeight - paddingBottom - r,
+          px = map.getViewPortPxFromLonLat(map.getCenter()),
+          midX = px.x,
+          midY = px.y,
+          radHeading = heading*Math.PI/180 - Math.PI/2,
+          moving = speed > 5,
+          backgroundSize = 122,
+          halfBGSize = backgroundSize / 2,
+          drawList = [],
+          oL = i < r,
+          oR = 256-i < r,
+          oT = j < r,
+          oB = 256-j < r,
+          k, l;
+
+      ctx.save();
+
+      ctx.drawImage(mapBackgroundImage, cx - halfBGSize, cy - halfBGSize);
+
+      // ctx.strokeStyle = "#FF0000";
+      // ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI*2, false);
+      ctx.clip();
+
+      ctx.translate(cx,cy);
+      if(moving){
+        ctx.rotate(-radHeading-Math.PI/2);
+      }
+
+      function drawTile(latLon, x, y){
+
+          var tileData = layer.getTileData(latLon),
+              tile = tileData.tile,
+              tileCtx = tile.getCanvasContext();
+
+          if(tileCtx){
+            ctx.drawImage(tileCtx.canvas, x, y);
+          }
+      }
+
+      if(tileCtx){
+        tileCanvas = tileCtx.canvas;
+        ctx.drawImage(tileCanvas,-i,-j);
+
+        // Left Col
+        if(oL){
+
+          drawList.push([-1,0]);
+
+          if(oT){
+            drawList.push([-1,-1]);
+          }
+          else if(oB){
+            drawList.push([-1,1]);
+          }
+        }
+        // Right Col
+        else if(oR){
+
+          drawList.push([1,0]);
+
+          if(oT){
+            drawList.push([1,-1]);
+          }
+          else if(oB){
+            drawList.push([1,1]);
+          }
+        }
+
+        // Middle Col (also catches L & R col overlaps)
+        if(oT){
+          drawList.push([0,-1]);
+        }
+        else if(oB){
+          drawList.push([0,1]);
+        }
+      }
+
+      for(k=0,l=drawList.length;k<l;k++){
+
+          px.x = midX + drawList[k][0] * (r + 1);
+          px.y = midY + drawList[k][1] * (r + 1);
+
+          latLon = map.getLonLatFromViewPortPx(px);
+
+          drawTile(latLon, drawList[k][0]*256-i, drawList[k][1]*256-j);
+
+      }
+
+      ctx.restore();
+
+      ctx.fillStyle = "#2020FF";
+      ctx.beginPath();
+      var a = 6;
+      if(moving){
+        ctx.moveTo(cx, cy-(2*a));
+        ctx.lineTo(cx+a, cy+(2*a));
+        ctx.lineTo(cx, cy+a);
+        ctx.lineTo(cx-a, cy+(2*a));
+        ctx.closePath();
+      }
+      else {
+        ctx.arc(cx, cy, a, 0, Math.PI*2, false);
+      }
+      ctx.fill();
+
     }
     function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
       if (typeof stroke == "undefined" ) {
