@@ -155,7 +155,7 @@ GPSTools.Format.GPX = function(){
         }
         if(hasTime) {
           time = $('<time>', doc);
-          time.text(p.time);
+          time.text(p.getDate().toISOString());
           trkpt.append(time);
         }
         trk.append(trkpt);
