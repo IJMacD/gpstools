@@ -640,6 +640,36 @@ GPSTools.Track.prototype.getPrecedingPointIndex = function(time) {
     prevIndex = index;
   }
 }
+GPSTools.Track.prototype.getInstantPosition = function(time) {
+  var i1 = this.getPrecedingPointIndex(time),
+      // i0 = i1-1,
+      i2 = i1+1,
+      // i3 = i1+2,
+      // p0 = this.points[i0],
+      p1 = this.points[i1],
+      p2 = this.points[i2],
+      // p3 = this.points[i3],
+      // v01 = (p0 && p0.speedTo(p1)) || 0,
+      // v12 = p1.speedTo(p2),
+      // v23 = p2.speedTo(p3),
+      t1 = p1.getTime(),
+      // t0 = (p0 && p0.getTime()) ||  t1-1,
+      t2 = p2.getTime(),
+      // t3 = p3.getTime(),
+      // t01 = (t0 + t1)/2,
+      // t12 = (t1 + t2)/2,
+      // t23 = (t2 + t3)/2,
+      t = time.getTime(),
+      a = (t - t1)/(t2 - t1);
+      //  = (t - t12)/(t23 - t12);
+  // if(t < t12){
+    return {
+      lat: p1.lat + a * (p2.lat - p1.lat),
+      lon: p1.lon + a * (p2.lon - p1.lon)
+    }
+  // }
+  // return v12 + b * (v23 - v12);
+}
 GPSTools.Track.prototype.getInstantSpeed = function(time) {
   var i1 = this.getPrecedingPointIndex(time),
       i0 = i1-1,
