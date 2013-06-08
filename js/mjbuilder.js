@@ -31,7 +31,7 @@ DEALINGS IN THE SOFTWARE.
 
 	function MotionJPEGBuilder(builder) {
 		//var B = getBlobBuilder();
-		this.builder = builder || new BlobBuilder();
+		this.builder = builder || new MotionJPEGBuilder.BlobBuilder();
 		this.b64 = new Base64();
 		this.movieDesc = {
 			w: 0, h:0, fps: 0,
@@ -43,6 +43,7 @@ DEALINGS IN THE SOFTWARE.
 		this.headerLIST = MotionJPEGBuilder.createHeaderLIST();
 		this.moviLIST   = MotionJPEGBuilder.createMoviLIST();
 		this.frameIndices  = [];
+		this.headerSize = 0;
 	}
 
 	function Builder(){
@@ -69,132 +70,174 @@ DEALINGS IN THE SOFTWARE.
 		}
 	};
 
-	function BlobBuilder(){
-		Builder.apply(this);
-	};
-	BlobBuilder.prototype = new Builder();
-	BlobBuilder.prototype.getBlob = function(type){
-		return new Blob(this.buffer, {type: type});
-	};
-	BlobBuilder.prototype.getURL = function(callback){
-		var U = window.URL || window.webkitURL;
-		if (U) {
-			callback(U.createObjectURL(this.getBlob('video/avi')));
-		}
-	};
-	BlobBuilder.prototype.constructor = BlobBuilder;
-	MotionJPEGBuilder.BlobBuilder = BlobBuilder;
-
-
-	function createTempFile(filename, callback) {
-		var rFS = webkitRequestFileSystem || mozRequestFileSystem || requestFileSystem;
-
-		rFS(TEMPORARY, 4 * 1024 * 1024 * 1024, function(filesystem) {
-			function create() {
-				filesystem.root.getFile(filename, {
-					create : true
-				}, function(fileEntry) {
-					callback(fileEntry);
-				});
+	// Closure: BlobBuilder
+	(function(){
+		function BlobBuilder(){
+			Builder.apply(this);
+		};
+		BlobBuilder.prototype = new Builder();
+		BlobBuilder.prototype.getBlob = function(type){
+			return new Blob(this.buffer, {type: type});
+		};
+		BlobBuilder.prototype.getURL = function(callback){
+			var U = window.URL || window.webkitURL;
+			if (U) {
+				callback(U.createObjectURL(this.getBlob('video/avi')));
 			}
+		};
+		BlobBuilder.prototype.constructor = BlobBuilder;
+		MotionJPEGBuilder.BlobBuilder = BlobBuilder;
+	}());
 
-			filesystem.root.getFile(filename, null, function(entry) {
-				entry.remove(create, create);
-			}, create);
-		});
-	}
+	// Closure: FileBuilder
+	(function(){
 
-	function FileBuilder(filename, callback){
-		// This still has a buffer in case writing starts
-		// before the file is ready
-		var that = this;
+		function getErrorHandler(errorCallback) {
 
-		this.length = 0;
-		this.position = 0;
+			return function(e){
+				e.code = e.code || (e.target.error && e.target.error.code);
 
-		createTempFile(filename, function(fileEntry){
+				switch (e.code) {
+					case FileError.QUOTA_EXCEEDED_ERR:
+						e.msg = 'QUOTA_EXCEEDED_ERR';
+						break;
+					case FileError.NOT_FOUND_ERR:
+						e.msg = 'NOT_FOUND_ERR';
+						break;
+					case FileError.SECURITY_ERR:
+						e.msg = 'SECURITY_ERR';
+						break;
+					case FileError.INVALID_MODIFICATION_ERR:
+						e.msg = 'INVALID_MODIFICATION_ERR';
+						break;
+					case FileError.INVALID_STATE_ERR:
+						e.msg = 'INVALID_STATE_ERR';
+						break;
+					default:
+						e.msg = "Unknown FileWriter Error";
+						break;
+				};
 
-			fileEntry.createWriter(function(fileWriter){
-				that.writer = fileWriter;
+				errorCallback(e);
+			}
+		}
 
-				fileWriter.onwrite = function updateProperties(){
-					that.length = fileWriter.length;
-					that.position = fileWriter.position;
+		function createTempFile(callback, errorCallback) {
+			var filename = 'output.avi',
+				rFS = webkitRequestFileSystem || mozRequestFileSystem || requestFileSystem;
+
+			rFS(TEMPORARY, 40 * 1024 * 1024, function(filesystem) {// * 1024
+				function create() {
+					filesystem.root.getFile(filename, {
+						create : true
+					}, function(fileEntry) {
+						callback(fileEntry);
+					}, errorCallback);
 				}
-				// Write any saved (queued) data
-				if(that.buffer.length){
-					fileWriter.onwrite = function(){
-						fileWriter.onwrite = updateProperties;
-						updateProperties();
+
+				filesystem.root.getFile(filename, null, function(entry) {
+					entry.remove(create, create);
+				}, create);
+			}, errorCallback);
+		}
+
+		function FileBuilder(callback, errorCallback){
+			// This still has a buffer in case writing starts
+			// before the file is ready
+			var that = this,
+				errorHandler = getErrorHandler(errorCallback);
+
+			this.length = 0;
+			this.position = 0;
+
+			createTempFile(function(fileEntry){
+
+				fileEntry.createWriter(function(fileWriter){
+					that.writer = fileWriter;
+
+					fileWriter.onerror = errorHandler;
+					fileWriter.onwrite = function updateProperties(){
+						that.length = fileWriter.length;
+						that.position = fileWriter.position;
+					}
+					// Write any saved (queued) data
+					if(that.buffer.length){
+						fileWriter.onwrite = function(){
+							fileWriter.onwrite = updateProperties;
+							updateProperties();
+							callback();
+						}
+						fileWriter.write(new Blob(that.buffer));
+					}
+					else {
 						callback();
 					}
-					fileWriter.write(new Blob(that.buffer));
-				}
-				else {
-					callback();
-				}
-			});
+				}, errorHandler);
 
-			that.fileEntry = fileEntry;
+				that.fileEntry = fileEntry;
 
-		});
+			}, errorHandler);
 
-	};
-	FileBuilder.prototype = new Builder();
-	FileBuilder.prototype.append = function(data, callback){
+		};
+		FileBuilder.prototype = new Builder();
+		FileBuilder.prototype.append = function(data, callback, errorCallback){
 
-		if(!this.writer){
-			// Writer isn't ready yet save data for later
-			Builder.prototype.append.apply(this,[data,callback]);
-			callback();
-		}
-		else {
-
-			var fileWriter = this.writer,
-				// Save old handler
-				oldHandler = fileWriter.onwrite;
-
-			fileWriter.onwrite = function(){
-				// Restore old handler
-				fileWriter.onwrite = oldHandler;
-				// Call oldHandler
-				oldHandler();
-				// Call specificHandler
+			if(!this.writer){
+				// Writer isn't ready yet save data for later
+				Builder.prototype.append.apply(this,[data,callback]);
 				callback();
 			}
+			else {
 
-		    if (data instanceof ArrayBuffer){
-		        fileWriter.write(new Blob([data]));
-		    } else if (typeof(data) === "string"){
-		        fileWriter.write(new Blob([data]));
-		    // } else if (data instanceof Uint8Array){
-		    //     fileWriter.write(data);
-		    } else if (data instanceof Blob){
-		        fileWriter.write(data);
-		    } else {
-		        console.log(data);
-		    }
-		}
-	};
-	FileBuilder.prototype.seek = function(offset){
-		this.writer.seek(offset);
-		this.position = this.writer.position;
-	};
-	FileBuilder.prototype.seekEnd = function(){
-		this.writer.seek(this.length);
-		this.position = this.writer.position;
-	};
-	FileBuilder.prototype.getURL = function(callback){
+				var fileWriter = this.writer,
+					// Save old handler
+					oldHandler = fileWriter.onwrite,
+					oldErrorHandler = fileWriter.onerror;
 
-		callback(this.fileEntry.toURL());
+				fileWriter.onwrite = function(e){
+					// Restore old handler
+					fileWriter.onwrite = oldHandler;
+					// Call oldHandler
+					oldHandler(e);
+					// Call specificHandler
+					callback && callback(e);
+				}
 
-	};
-	FileBuilder.prototype.constructor = FileBuilder;
-	MotionJPEGBuilder.FileBuilder = FileBuilder;
+				fileWriter.onerror = errorCallback;
+
+			    if (data instanceof ArrayBuffer){
+			        fileWriter.write(new Blob([data]));
+			    } else if (typeof(data) === "string"){
+			        fileWriter.write(new Blob([data]));
+			    // } else if (data instanceof Uint8Array){
+			    //     fileWriter.write(data);
+			    } else if (data instanceof Blob){
+			        fileWriter.write(data);
+			    } else {
+			        console.log(data);
+			    }
+			}
+		};
+		FileBuilder.prototype.seek = function(offset){
+			this.writer.seek(offset);
+			this.position = this.writer.position;
+		};
+		FileBuilder.prototype.seekEnd = function(){
+			this.writer.seek(this.length);
+			this.position = this.writer.position;
+		};
+		FileBuilder.prototype.getURL = function(callback){
+
+			callback(this.fileEntry.toURL());
+
+		};
+		FileBuilder.prototype.constructor = FileBuilder;
+		MotionJPEGBuilder.FileBuilder = FileBuilder;
+	}());
 	
 	function getBlobBuilder() {
 
-		return BlobBuilder;
+		return new MotionJPEGBuilder.BlobBuilder();
 	}
 	
 	MotionJPEGBuilder.prototype = {
@@ -232,13 +275,24 @@ DEALINGS IN THE SOFTWARE.
 			}
 		},
 		
-		addVideoStreamData: function(list, frameBuffer, onComplete) {
+		addVideoStreamData: function(list, frameBuffer, oncomplete, onerror, onsofterror) {
 
 			var IndexEntryOrder = ['chId', 'dwFlags', 'dwOffset', 'dwLength'];
 
 			var frsize = frameBuffer.size;
 
-			list.dwSize += frsize + 8;
+			// Now check if we're going to hit 4GB limit
+			var predictedSize = list.dwSize					// current MoviList size
+					+ frsize + 8							// this frame size + this frame header
+					+ 224									// AVI headers size
+					+ (this.frameIndices.length + 1) * 16	// space needed for frame indexes
+
+			if(predictedSize > 4 * 1024 * 1024 * 1024){		// 4Gb
+				onsofterror();
+				return;
+			}
+
+			list.dwSize += frsize + 8; // 8 is sizeof MoviStream
 
 			this.frameIndices.push({
 				chId: '00dc',
@@ -256,15 +310,15 @@ DEALINGS IN THE SOFTWARE.
 
 			var that = this;
 
-			var builder = new BlobBuilder();
+			var builder = getBlobBuilder();
 
 			MotionJPEGBuilder.appendStruct(builder, stream);
 
 			this.builder.append(builder.getBlob(), function(){
 
 				// Manually write frameBuffer so that it is only written once.
-				that.builder.append(frameBuffer, onComplete);
-			});
+				that.builder.append(frameBuffer, oncomplete, onerror);
+			}, onerror);
 
 		},
 
@@ -312,11 +366,15 @@ DEALINGS IN THE SOFTWARE.
 			this.avi.aData = [this.headerLIST, this.moviLIST];
 
 			// Build struct in memory then write to file
-			var builder = new BlobBuilder();
+			var builder = getBlobBuilder(),
+				that = this;
 
 			MotionJPEGBuilder.appendStruct(builder, this.avi);
 
-			this.builder.append(builder.getBlob(), callback);
+			this.builder.append(builder.getBlob(), function(){
+				that.headerSize = that.builder.position;
+				callback();
+			});
 		},
 
 		finish: function(onFinish) {
@@ -346,7 +404,7 @@ DEALINGS IN THE SOFTWARE.
 				// Jump back to end of file
 				that.builder.seekEnd();
 
-				var builder = new BlobBuilder();
+				var builder = getBlobBuilder();
 
 				MotionJPEGBuilder.appendStruct(builder, indexChunk);
 

@@ -1048,24 +1048,32 @@
 
   // HUD closure
   $(function(){
-    var canvas = $('<canvas>'),
+    var canvas = $('#hud-preview'),
         ctx = canvas[0].getContext('2d'),
         hudBtn = $('#hud-btn'),
         hudFrameStart = $('#hudFrameStart'),
         hudFrameCount = $('#hudFrameCount'),
+        hudAutoContinue = $('#hudAutoContinue'),
+        hudCustomControls = $('#hudCustomControls'),
         hudWidth = 200,
         hudHeight = 165,
         videoWidth = 1280,
         videoHeight = 720,
         paddingLeft = 20,
+        paddingRight = 20,
         paddingBottom = 20,
-        previewHudButton = $('#prv-hud-btn'),
         generateHudButton = $('#gen-hud-btn'),
-        downloadHudButton = $('#dld-hud-btn'),
+        stepHudButton = $('#stp-hud-btn'),
+        customiseHudButton = $('#hud-cst-btn'),
+        previewHudButton = $('#hud-prv-btn'),
+        cancelHudButton = $('#cnl-hud-btn'),
+        downloadHudButton = $('<a>'),
         backgroundURL = "hudBackground.png",
         backgroundImage = new Image(),
         headingURL = "hudCompass.png",
         headingImage = new Image(),
+        mapBackgroundURL = "hudMapBackground.png",
+        mapBackgroundImage = new Image(),
         headingImageOffset = 40,
         startDate,
         animationStart,
@@ -1074,84 +1082,171 @@
         frameTimes = [],
         frameTimesSize = 50,
         status = $('#hud-status'),
-        prevFrameTime;
+        prevFrameTime,
+        run = false,
 
-    canvas[0].width = videoWidth;
-    canvas[0].height = videoHeight;
+        start,
+        count,
+        i, 
+        l,
+        startTime,
+        movie;
 
     backgroundImage.src = backgroundURL;
     headingImage.src = headingURL;
+    mapBackgroundImage.src = mapBackgroundURL;
+
+    canvas.hide();
+    canvas[0].width = videoWidth;
+    canvas[0].height = videoHeight;
+
+    hudCustomControls.hide();
+
+    customiseHudButton.click(function(){
+      hudCustomControls.toggle();
+    });
 
     previewHudButton.click(function(){
-      //ctx.save();
-      ctx.translate(0, videoHeight - hudHeight);
-      startDate = currentTrack.getStartTime().getTime();
-      requestAnimationFrame(loop);
-      //ctx.restore();
+      canvas.toggle();
+    })
+
+    cancelHudButton.hide().click(function(){
+      movie = null;
+    });
+
+    // previewHudButton.click(function(){
+    //   //ctx.save();
+    //   ctx.translate(0, videoHeight - hudHeight);
+    //   startDate = currentTrack.getStartTime().getTime();
+    //   requestAnimationFrame(loop);
+    //   //ctx.restore();
+    // });
+
+    stepHudButton.click(function(){
+      if(!movie){
+        setup(function(){
+          step(true);
+        });
+      }
+      else
+        step(true);
     });
 
     generateHudButton.click(function(){
-      var start = parseInt(hudFrameStart.val()),
-          count = parseInt(hudFrameCount.val()),
-          i = start,
-          l = start + count,
-          filename = "frames"+pad(start,5)+"-"+pad(l-1,5)+".avi",
-          startTime = new Date,
-          movie = new movbuilder.MotionJPEGBuilder(new movbuilder.MotionJPEGBuilder.FileBuilder(filename,function(){
-
-            setProgress(0,count);
-            downloadHudButton.attr('disabled', true);
-            movie.setup(videoWidth, videoHeight, fps, generateNext);
-          }));
-
-      function generateNext(){
-        var delta,
-            rate,
-            remaining,
-            now;
-        incrementProgress();
-        generateFrame(i);
-        movie.addCanvasFrame(canvas[0], function(){
-          i++;
-          if(i<l){
-            generateNext();
-
-            now = Date.now();
-            if(i%frameTimesSize == 0){
-              if(prevFrameTime){
-                delta = (now - prevFrameTime);
-                rate = frameTimesSize/delta;
-                remaining = (l - i)/rate;
-                status.text("Estimated finish time: " + (new Date(now + remaining)));
-              }
-              prevFrameTime = now;
-            }
-          }
-          else{
-            status.text("Closing File...");
-            movie.finish(function(url){
-              status.text("");
-              console.log(count + " frames: "+((new Date) - startTime)/1000 + " seconds");
-              downloadHudButton.removeAttr('disabled');
-              downloadHudButton.attr('download', filename);
-              downloadHudButton.attr('href', url);
-              hudFrameStart.val(l);
-            });
-          }
-        });
-
-      }
+      setup(function(){
+        cancelHudButton.show();
+        status.text("Starting...");
+        step();
+      });
     });
 
+    function setup(callback){
+      start = parseInt(hudFrameStart.val());
+      count = parseInt(hudFrameCount.val());
+      i = start;
+      l = start + count;
+      startTime = new Date;
+      movie = new movbuilder.MotionJPEGBuilder(new movbuilder.MotionJPEGBuilder.FileBuilder(function(){
+        setProgress(0,count);
+        generateHudButton.attr('disabled', true);
+        downloadHudButton.attr('disabled', true);
+        movie.setup(videoWidth, videoHeight, fps, callback);
+      }, function(e){
+        var msg = "Could not start";
+        if(e.code == FileError.QUOTA_EXCEEDED_ERR)
+          msg += ": Quota Exceeded";
+        status.text(msg);
+      }));
+    }
+
+    function step(singleStep){
+      if(!movie){
+        cleanUp();
+        return;
+      }
+      if(generateFrame(i)){
+        movie.addCanvasFrame(canvas[0], function(){
+          i++;
+          if(!singleStep){
+            if(i<l){
+              step();
+
+              progress();
+            }
+            else{
+              closeFile();
+            }
+          }
+        }, function(e){
+          console.log("Error: "+e.msg);
+          status.text("Error: "+e.msg);
+        }, closeFile);
+      }
+      else {
+        closeFile();
+        hudAutoContinue.removeAttr('checked');
+      }
+    }
+
+    function closeFile(){
+      status.text("Closing File...");
+      filename = "frames"+pad(start,6)+"-"+pad(i-1,6)+".avi",
+      movie.finish(function(url){
+        console.log((i - start) + " frames: "+((new Date) - startTime)/1000 + " seconds");
+        cleanUp();
+        downloadHudButton.attr('download', filename);
+        downloadHudButton.attr('href', url);
+        hudFrameStart.val(i);
+
+        // Only download if more than one frame has been generated
+        if(i - start){
+          var e = document.createEvent('MouseEvents');
+          e.initEvent('click', true, true);
+          downloadHudButton[0].dispatchEvent(e);
+        }
+
+        if(hudAutoContinue.is(':checked')){
+          setTimeout(function(){generateHudButton.trigger('click')},500);
+        }
+      });
+    }
+
+    function progress(){
+      incrementProgress();
+      var delta,
+          rate,
+          remaining,
+          now = Date.now();
+      if(i%frameTimesSize == 0){
+        if(prevFrameTime){
+          delta = (now - prevFrameTime);
+          rate = frameTimesSize/delta;
+          remaining = (l - i)/rate;
+          status.text("Estimated finish time: " + (new Date(now + remaining)));
+        }
+        prevFrameTime = now;
+      }
+    }
+
+    function cleanUp(){
+      status.text("");
+      resetProgress();
+      generateHudButton.removeAttr('disabled');
+      downloadHudButton.removeAttr('disabled');
+      cancelHudButton.hide();
+    }
+
     function generateFrame(id){
-      ctx.save();
       ctx.clearRect(0,0,videoWidth,videoHeight);
-      ctx.translate(paddingLeft, videoHeight - hudHeight - paddingBottom);
       startDate = currentTrack.getStartTime().getTime();
-      var time = new Date(startDate + id * frameDuration);
-      generateDisplay(time);
-      ctx.restore();
-      //return canvas[0].toDataURL();
+      var time = new Date(startDate + id * frameDuration),
+          success = false;
+      try{
+        generateDisplay(time);
+        success = true;
+      }
+      catch (e){}
+      return success;
     }
 
     function loop(t){
@@ -1167,23 +1262,31 @@
     function generateDisplay(time){
       var speed,
           heading,
-          altitude;
+          altitude,
+          position;
       // Get Stats
         // Get Speed
       speed = GPSTools.Util.convertToKPH(currentTrack.getInstantSpeed(time));
       heading = (currentTrack.getInstantHeading(time)+360)%360;
       altitude = currentTrack.getInstantAltitude(time);
+      position = currentTrack.getInstantPosition(time);
         // Get Heading
         // Get Altitude
 
-      ctx.drawImage(backgroundImage, 0, 0);
-      drawComponents(speed, heading, altitude, time);
+      drawComponents(speed, heading, altitude, time, position);
     }
-    function drawComponents(speed, heading, altitude, time){
+    function drawComponents(speed, heading, altitude, time, position){
+
+      ctx.save();
+
       // Build up components
       ctx.fillStyle = "#1A1A1A";
       ctx.strokeStyle = "#C4C4C4";
       ctx.lineWidth = 5;
+
+      ctx.translate(paddingLeft, videoHeight - hudHeight - paddingBottom);
+
+      ctx.drawImage(backgroundImage, 0, 0);
 
       // Draw Altitude
       drawAltitude(altitude);
@@ -1196,6 +1299,13 @@
 
       // Draw Time
       drawTime(time);
+
+      ctx.translate(paddingLeft, videoHeight - hudHeight - paddingBottom);
+
+      ctx.restore();
+
+      //ctx.translate(videoWidth - paddingRight - 100, videoHeight - paddingBottom - 100);
+
     }
     function drawAltitude(altitude){
       var interval = 0.1,
