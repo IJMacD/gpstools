@@ -373,8 +373,9 @@ GPSTools.Format.CSV = (function(GPSTools){
     }
   }
 }(GPSTools));
-GPSTools.Track = function (points) {
+GPSTools.Track = function (points, name) {
   this.points = points || [];
+  this.name = name || "Track";
   var events = this.events = $({}),
       suspendChangeEvent = false,
       that = this;
@@ -415,7 +416,7 @@ GPSTools.Track.prototype.setName = function(name) {
 }
 GPSTools.Track.prototype.hasTime = function (){
   var p = this.points;
-  return !!(p && p[0] && p[0].time && p[p.length - 1].time);
+  return !!(p && p[0] && p[0].time && p[p.length - 1].time && (p[0].time != p[p.length - 1].time));
 };
 GPSTools.Track.prototype.hasElevation = function (){
   var p = this.points;
@@ -1037,7 +1038,9 @@ GPSTools.Map = function (){
       drawCallback,
       bounds,
       marker, markers,
-      lineHighlight;
+      lineHighlight,
+      tempLonLat,
+      lonLatProjection = new OpenLayers.Projection("EPSG:4326");
   return {
     create: function () {
       map = new OpenLayers.Map("mapCanvas", {
@@ -1092,7 +1095,7 @@ GPSTools.Map = function (){
           var feature = drawLayer.features[0],
               points = feature.geometry.components,
               fromProjection = map.getProjectionObject(),
-              toProjection = new OpenLayers.Projection("EPSG:4326"),
+              toProjection = lonLatProjection,
               i=0, l=points.length,
               gPoints = [], point, track;
           drawLayer.destroyFeatures([feature]);
@@ -1169,7 +1172,7 @@ GPSTools.Map = function (){
           olBounds,
           olStyle,
           olFeature,
-          fromProjection = new OpenLayers.Projection("EPSG:4326"),
+          fromProjection = lonLatProjection,
           toProjection = map.getProjectionObject();
       logging("Drawing line" + (options.highlight ? " (highlight)" : ""));
       for(i=0;i<points.length;i++){
@@ -1204,7 +1207,7 @@ GPSTools.Map = function (){
       map.zoomToExtent(olBounds);
     },
     mark: function(point){
-      var lonlat = new OpenLayers.LonLat(point.lon,point.lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()),
+      var lonlat = new OpenLayers.LonLat(point.lon,point.lat).transform(lonLatProjection, map.getProjectionObject()),
           size,
           offset,
           icon;
@@ -1235,6 +1238,15 @@ GPSTools.Map = function (){
       }
       drawControl.activate();
       drawCallback = callback;
+    },
+    setCentre: function(lon, lat, zoom){
+      if(!tempLonLat){
+        tempLonLat = new OpenLayers.LonLat();
+      }
+      tempLonLat.lon = lon;
+      tempLonLat.lat = lat;
+      tempLonLat.transform(lonLatProjection,map.getProjectionObject());
+      map.setCenter(tempLonLat,zoom);
     },
     zoomToExtent: function(){
       var bounds = lineLayer.getDataExtent();
@@ -1267,6 +1279,9 @@ GPSTools.Map = function (){
       dctx.fillRect(dx,dy,dw,dh);
       dctx.drawImage(scanvas, sx, sy, sw, sh, dx, dy, dw, dh);
       return dcanvas.toDataURL();
+    },
+    getMap: function(){
+      return map;
     }
   };
 }();
@@ -1373,18 +1388,12 @@ GPSTools.Graph = (function(){
       var pos = GPSTools.Graph.getPosition(id,x,0);
       if(pos > 0 && pos < 1){
         selectionStart = x;
-        selectionEnd = x;
       }
     },
     endSelection: function(id, x){
       var pos = GPSTools.Graph.getPosition(id,x,0);
       if(pos > 0 && pos < 1){
-        if(x < selectionStart){
-          selectionStart = x;
-        }
-        else{
-          selectionEnd = x;
-        }
+        selectionEnd = x;
       }
     },
     clearSelection: function(id){
@@ -1393,8 +1402,18 @@ GPSTools.Graph = (function(){
     getSelectionStart: function(id){
       return GPSTools.Graph.getPosition(id,selectionStart);
     },
+    setSelectionStart: function(id,fraction){
+      var canvas = $('#'+id)[0],
+          width = canvas.width;
+      selectionStart = fraction * (width - gutterWidth * 2) + gutterWidth;
+    },
     getSelectionEnd: function(id){
       return GPSTools.Graph.getPosition(id,selectionEnd);
+    },
+    setSelectionEnd: function(id,fraction){
+      var canvas = $('#'+id)[0],
+          width = canvas.width;
+      selectionEnd = fraction * (width - gutterWidth * 2) + gutterWidth;
     }
   }
 }());

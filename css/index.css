@@ -3,7 +3,9 @@ body {
   height: 100%;
 }
 body,
-#details {
+#details,
+#summary,
+#tracks-list:empty {
   background:
     linear-gradient(27deg, #151515 2px, transparent 2px) 0 2px,
     linear-gradient(207deg, #151515 2px, transparent 2px) 4px 0px,
@@ -46,24 +48,29 @@ body,
 #files {
   display: none;
 }
-#tracks-list {
-  border: 3px dashed transparent;
+#sidebar {
+  background: rgba(0,0,0,0.9);
   bottom: 0;
+  border: 3px dashed transparent;
   box-sizing: border-box;
   display: inline-block;
-  overflow-x: hidden;
-  overflow-y: auto;
   position: fixed;
   top: 40px;
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
   vertical-align: top;
   width: 30%;
   z-index: 1000;
 }
-#tracks-list:not(:empty) {
-  background: rgba(0,0,0,0.9);
+#tracks-list {
+  bottom: 250px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: absolute;
+  top: 0;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  width: 100%;
 }
 #track-detail {
   box-sizing: border-box;
@@ -120,16 +127,17 @@ body,
   min-height: 20px;
 }
 #summary {
-  background: rgba(0,0,0,0.8);
-  max-width: 450px;
+  bottom: 0;
+  box-sizing: border-box;
+  height: 250px;
+  overflow-y: auto;
   padding: 5px;
   position: absolute;
-  right: 0;
-  top: 40px;
-  z-index: 1000;
+  width: 100%;
 }
 #details {
   cursor: pointer;
+  display: none;
   left: 0;
   position: absolute;
   right: 0;
@@ -227,13 +235,10 @@ small {
   vertical-align: middle;
 }
 #slt-btns {
+  display: none;
   height: 30px;
   margin-top: -50px;
   text-align: right;
-}
-#crp-slt-btn,
-#clr-slt-btn {
-  display: none;
 }
 .loading {
   display: none;

@@ -46,21 +46,26 @@
   <progress value="0"></progress>
 </div>
 <input type="file" id="files" name="files" multiple />
-<div id="tracks-list"></div>
-<div id="track-detail">
-  <div id="map">
-    <div id="mapCanvas"></div>
-  </div>
+<div id="sidebar">
+  <div id="tracks-list"></div>
   <div id="summary">
     <h1 id="track-title" contentEditable="true"></h1>
     <output id="gps"></output>
   </div>
+</div>
+<div id="track-detail">
+  <div id="map">
+    <div id="mapCanvas"></div>
+  </div>
   <div id="details">
+    <h2>Details</h2>
     <div id="graph">
       <h2>Elevation / Speed</h2>
       <div id="slt-btns">
         <button id="crp-slt-btn" class="btn">Crop Track</button>
         <button id="clr-slt-btn" class="btn">Clear Selection</button>
+        <button id="tos-slt-btn" class="btn"><i class="icon-arrow-left"></i></button>
+        <button id="toe-slt-btn" class="btn"><i class="icon-arrow-right"></i></button>
       </div>
       <canvas id="graphCanvas" width="940" height="250">[No canvas support]</canvas>
     </div>
@@ -190,20 +195,30 @@
     <h3>Create Heads Up Display</h3>
   </div>
   <div class="modal-body form-horizontal">
-    <div class="control-group">
-      <label class="control-label" for="hudFrameStart">Frame Start: </label>
-      <div class="controls"><input id="hudFrameStart" value="0" type="number"/></div>
-    </div>
-    <div class="control-group">
-      <label class="control-label" for="hudFrameCount">Frame Count: </label>
-      <div class="controls"><input id="hudFrameCount" value="30" type="number"/></div>
+    <a href="#" id="hud-cst-btn">Customise</a>
+    <a href="#" id="hud-prv-btn">Preview</a>
+    <div id="hudCustomControls">
+      <div class="control-group">
+        <label class="control-label" for="hudFrameStart">Frame Start: </label>
+        <div class="controls"><input id="hudFrameStart" value="0" type="number"/></div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="hudFrameCount">Frame Count: </label>
+        <div class="controls"><input id="hudFrameCount" value="10000" type="number"/></div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="hudAutoContinue">Auto Continue: </label>
+        <div class="controls"><input id="hudAutoContinue" type="checkbox" checked/></div>
+      </div>
     </div>
     <p id="hud-status"></p>
+    <canvas id="hud-preview" width="1280" height="720" />
   </div>
   <div class="modal-footer">
   <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
-  <a href="#" class="btn" id="gen-hud-btn">Generate</a>
-  <a href="#" class="btn btn-primary" id="dld-hud-btn" disabled>Download</a>
+  <a href="#" class="btn" id="cnl-hud-btn">Cancel</a>
+  <a href="#" class="btn" id="stp-hud-btn">Step</a>
+  <a href="#" class="btn btn-primary" id="gen-hud-btn">Download</a>
   </div>
 </div>
 <script src="./js/jquery-1.9.1.min.js"></script>
