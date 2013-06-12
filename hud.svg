@@ -137,6 +137,15 @@
        y2="604.77289"
        gradientUnits="userSpaceOnUse"
        gradientTransform="matrix(1.2285039,0,0,1.0517855,-15.862981,-40.178653)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4507-5"
+       id="linearGradient4092"
+       gradientUnits="userSpaceOnUse"
+       x1="407.61713"
+       y1="934.39056"
+       x2="408.72739"
+       y2="675.71167" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -146,16 +155,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.1706033"
-     inkscape:cx="243.43761"
-     inkscape:cy="968.40929"
+     inkscape:cx="514.81759"
+     inkscape:cy="652.07811"
      inkscape:document-units="px"
-     inkscape:current-layer="g3884-1"
+     inkscape:current-layer="layer1"
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:window-width="829"
      inkscape:window-height="504"
-     inkscape:window-x="200"
+     inkscape:window-x="1263"
      inkscape:window-y="4"
      inkscape:window-maximized="0" />
   <metadata
@@ -557,11 +566,11 @@
          sodipodi:cy="806.64789"
          sodipodi:rx="134.28572"
          sodipodi:ry="134.28572"
-         d="m 542.85716,806.64789 a 134.28572,134.28572 0 1 1 -268.57144,0 134.28572,134.28572 0 1 1 268.57144,0 z"
+         d="m 542.85716,806.64789 c 0,74.16395 -60.12176,134.28572 -134.28572,134.28572 -74.16395,0 -134.28572,-60.12177 -134.28572,-134.28572 0,-74.16396 60.12177,-134.28572 134.28572,-134.28572 74.16396,0 134.28572,60.12176 134.28572,134.28572 z"
          transform="matrix(1.0699766,0,0,1.0699766,-197.16189,-96.446514)" />
       <path
          transform="matrix(0.96183092,0,0,0.96183092,-152.97663,-9.2109925)"
-         d="m 542.85716,806.64789 a 134.28572,134.28572 0 1 1 -268.57144,0 134.28572,134.28572 0 1 1 268.57144,0 z"
+         d="m 542.85716,806.64789 c 0,74.16395 -60.12176,134.28572 -134.28572,134.28572 -74.16395,0 -134.28572,-60.12177 -134.28572,-134.28572 0,-74.16396 60.12177,-134.28572 134.28572,-134.28572 74.16396,0 134.28572,60.12176 134.28572,134.28572 z"
          sodipodi:ry="134.28572"
          sodipodi:rx="134.28572"
          sodipodi:cy="806.64789"
@@ -571,7 +580,7 @@
          sodipodi:type="arc" />
       <path
          transform="matrix(1.2044117,0,0,1.2044117,-29.289483,-160.0743)"
-         d="m 271.42858,769.50507 a 48.57143,48.57143 0 1 1 -97.14286,0 48.57143,48.57143 0 1 1 97.14286,0 z"
+         d="m 271.42858,769.50507 c 0,26.82526 -21.74617,48.57143 -48.57143,48.57143 -26.82526,0 -48.57143,-21.74617 -48.57143,-48.57143 0,-26.82526 21.74617,-48.57143 48.57143,-48.57143 26.82526,0 48.57143,21.74617 48.57143,48.57143 z"
          sodipodi:ry="48.57143"
          sodipodi:rx="48.57143"
          sodipodi:cy="769.50507"
@@ -675,7 +684,7 @@
          sodipodi:cy="769.50507"
          sodipodi:rx="48.57143"
          sodipodi:ry="48.57143"
-         d="m 271.42858,769.50507 a 48.57143,48.57143 0 1 1 -97.14286,0 48.57143,48.57143 0 1 1 97.14286,0 z"
+         d="m 271.42858,769.50507 c 0,26.82526 -21.74617,48.57143 -48.57143,48.57143 -26.82526,0 -48.57143,-21.74617 -48.57143,-48.57143 0,-26.82526 21.74617,-48.57143 48.57143,-48.57143 26.82526,0 48.57143,21.74617 48.57143,48.57143 z"
          transform="matrix(1.1055263,0,0,1.1055263,-6.3744218,-84.060185)" />
     </g>
     <rect
@@ -1145,5 +1154,31 @@
        inkscape:export-filename="E:\Code\gpstools\hudBackground.png"
        inkscape:export-xdpi="36.369999"
        inkscape:export-ydpi="36.369999" />
+    <path
+       inkscape:export-ydpi="63.099998"
+       inkscape:export-xdpi="63.099998"
+       inkscape:export-filename="E:\Code\gpstools\hudMapBackground.png"
+       sodipodi:type="arc"
+       style="fill:url(#linearGradient4092);fill-opacity:1;stroke:none"
+       id="path4090"
+       sodipodi:cx="408.57144"
+       sodipodi:cy="806.64789"
+       sodipodi:rx="134.28572"
+       sodipodi:ry="134.28572"
+       d="m 542.85716,806.64789 a 134.28572,134.28572 0 1 1 -268.57144,0 134.28572,134.28572 0 1 1 268.57144,0 z"
+       transform="matrix(0.64787231,0,0,0.64787231,371.40557,-129.84579)" />
+    <path
+       inkscape:export-ydpi="63.099998"
+       inkscape:export-xdpi="63.099998"
+       inkscape:export-filename="E:\Code\gpstools\hudMapBackground.png"
+       transform="matrix(0.52872338,0,0,0.52872338,420.08642,-33.734557)"
+       d="m 542.85716,806.64789 a 134.28572,134.28572 0 1 1 -268.57144,0 134.28572,134.28572 0 1 1 268.57144,0 z"
+       sodipodi:ry="134.28572"
+       sodipodi:rx="134.28572"
+       sodipodi:cy="806.64789"
+       sodipodi:cx="408.57144"
+       id="path4094"
+       style="fill:#1a1a1a;fill-opacity:1;stroke:none"
+       sodipodi:type="arc" />
   </g>
 </svg>

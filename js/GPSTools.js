@@ -155,7 +155,7 @@ GPSTools.Format.GPX = function(){
         }
         if(hasTime) {
           time = $('<time>', doc);
-          time.text(p.time);
+          time.text(p.getDate().toISOString());
           trkpt.append(time);
         }
         trk.append(trkpt);
@@ -317,8 +317,65 @@ GPSTools.Format.JSON = (function(GPSTools){
     }
   }
 }(GPSTools));
-GPSTools.Track = function (points) {
+GPSTools.Format.CSV = (function(GPSTools){
+  var lineRegex = /(?:"([^"])",)*"([^"])"/;
+  return {
+    isValid: function(string){
+      return lineRegex.test(string);
+    },
+    parse: function(string){
+      var lines = string.split("\n"),
+          values,
+          tracks = [],
+          track,
+          point,
+          points = {},
+          i,
+          l,
+          name,
+          time,
+          lat,
+          lon,
+          alt,
+          // Hard coded for strava db dump
+          // n.b. "latiude"
+          nameIndex = 0,
+          timeIndex = 2,
+          latitudeIndex = 3,
+          longitudeIndex = 4,
+          altitudeIndex = 5;
+      
+      for(i = 1, l = lines.length - 1; i < l; i += 1){
+        values = lines[i].substr(1,l-2).split("\",\"");
+        name = values[nameIndex];
+        time = parseInt(values[timeIndex]);
+        lat = values[latitudeIndex];
+        lon = values[longitudeIndex];
+        alt = values[altitudeIndex];
+        point = new GPSTools.Point(lat, lon, alt, time);
+        if(!points[name])
+          points[name] = [];
+        points[name].push(point);
+      }
+
+      for(name in points){
+        track = new GPSTools.Track(points[name], name);
+        tracks.push(track);
+      }
+
+      if(tracks.length > 1)
+        track = new GPSTools.SuperTrack(tracks);
+
+      return track;
+    },
+    generate: function(track){
+      return JSON.stringify(track);
+    }
+  }
+}(GPSTools));
+GPSTools.Track = function (points, name) {
   this.points = points || [];
+  this.name = name || "Track";
   var events = this.events = $({}),
       suspendChangeEvent = false,
       that = this;
@@ -359,7 +416,7 @@ GPSTools.Track.prototype.setName = function(name) {
 }
 GPSTools.Track.prototype.hasTime = function (){
   var p = this.points;
-  return !!(p && p[0] && p[0].time && p[p.length - 1].time);
+  return !!(p && p[0] && p[0].time && p[p.length - 1].time && (p[0].time != p[p.length - 1].time));
 };
 GPSTools.Track.prototype.hasElevation = function (){
   var p = this.points;
@@ -639,6 +696,36 @@ GPSTools.Track.prototype.getPrecedingPointIndex = function(time) {
     }
     prevIndex = index;
   }
+}
+GPSTools.Track.prototype.getInstantPosition = function(time) {
+  var i1 = this.getPrecedingPointIndex(time),
+      // i0 = i1-1,
+      i2 = i1+1,
+      // i3 = i1+2,
+      // p0 = this.points[i0],
+      p1 = this.points[i1],
+      p2 = this.points[i2],
+      // p3 = this.points[i3],
+      // v01 = (p0 && p0.speedTo(p1)) || 0,
+      // v12 = p1.speedTo(p2),
+      // v23 = p2.speedTo(p3),
+      t1 = p1.getTime(),
+      // t0 = (p0 && p0.getTime()) ||  t1-1,
+      t2 = p2.getTime(),
+      // t3 = p3.getTime(),
+      // t01 = (t0 + t1)/2,
+      // t12 = (t1 + t2)/2,
+      // t23 = (t2 + t3)/2,
+      t = time.getTime(),
+      a = (t - t1)/(t2 - t1);
+      //  = (t - t12)/(t23 - t12);
+  // if(t < t12){
+    return {
+      lat: p1.lat + a * (p2.lat - p1.lat),
+      lon: p1.lon + a * (p2.lon - p1.lon)
+    }
+  // }
+  // return v12 + b * (v23 - v12);
 }
 GPSTools.Track.prototype.getInstantSpeed = function(time) {
   var i1 = this.getPrecedingPointIndex(time),
@@ -951,7 +1038,9 @@ GPSTools.Map = function (){
       drawCallback,
       bounds,
       marker, markers,
-      lineHighlight;
+      lineHighlight,
+      tempLonLat,
+      lonLatProjection = new OpenLayers.Projection("EPSG:4326");
   return {
     create: function () {
       map = new OpenLayers.Map("mapCanvas", {
@@ -1006,7 +1095,7 @@ GPSTools.Map = function (){
           var feature = drawLayer.features[0],
               points = feature.geometry.components,
               fromProjection = map.getProjectionObject(),
-              toProjection = new OpenLayers.Projection("EPSG:4326"),
+              toProjection = lonLatProjection,
               i=0, l=points.length,
               gPoints = [], point, track;
           drawLayer.destroyFeatures([feature]);
@@ -1083,7 +1172,7 @@ GPSTools.Map = function (){
           olBounds,
           olStyle,
           olFeature,
-          fromProjection = new OpenLayers.Projection("EPSG:4326"),
+          fromProjection = lonLatProjection,
           toProjection = map.getProjectionObject();
       logging("Drawing line" + (options.highlight ? " (highlight)" : ""));
       for(i=0;i<points.length;i++){
@@ -1118,7 +1207,7 @@ GPSTools.Map = function (){
       map.zoomToExtent(olBounds);
     },
     mark: function(point){
-      var lonlat = new OpenLayers.LonLat(point.lon,point.lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()),
+      var lonlat = new OpenLayers.LonLat(point.lon,point.lat).transform(lonLatProjection, map.getProjectionObject()),
           size,
           offset,
           icon;
@@ -1149,6 +1238,15 @@ GPSTools.Map = function (){
       }
       drawControl.activate();
       drawCallback = callback;
+    },
+    setCentre: function(lon, lat, zoom){
+      if(!tempLonLat){
+        tempLonLat = new OpenLayers.LonLat();
+      }
+      tempLonLat.lon = lon;
+      tempLonLat.lat = lat;
+      tempLonLat.transform(lonLatProjection,map.getProjectionObject());
+      map.setCenter(tempLonLat,zoom);
     },
     zoomToExtent: function(){
       var bounds = lineLayer.getDataExtent();
@@ -1181,6 +1279,9 @@ GPSTools.Map = function (){
       dctx.fillRect(dx,dy,dw,dh);
       dctx.drawImage(scanvas, sx, sy, sw, sh, dx, dy, dw, dh);
       return dcanvas.toDataURL();
+    },
+    getMap: function(){
+      return map;
     }
   };
 }();
@@ -1287,18 +1388,12 @@ GPSTools.Graph = (function(){
       var pos = GPSTools.Graph.getPosition(id,x,0);
       if(pos > 0 && pos < 1){
         selectionStart = x;
-        selectionEnd = x;
       }
     },
     endSelection: function(id, x){
       var pos = GPSTools.Graph.getPosition(id,x,0);
       if(pos > 0 && pos < 1){
-        if(x < selectionStart){
-          selectionStart = x;
-        }
-        else{
-          selectionEnd = x;
-        }
+        selectionEnd = x;
       }
     },
     clearSelection: function(id){
@@ -1307,8 +1402,18 @@ GPSTools.Graph = (function(){
     getSelectionStart: function(id){
       return GPSTools.Graph.getPosition(id,selectionStart);
     },
+    setSelectionStart: function(id,fraction){
+      var canvas = $('#'+id)[0],
+          width = canvas.width;
+      selectionStart = fraction * (width - gutterWidth * 2) + gutterWidth;
+    },
     getSelectionEnd: function(id){
       return GPSTools.Graph.getPosition(id,selectionEnd);
+    },
+    setSelectionEnd: function(id,fraction){
+      var canvas = $('#'+id)[0],
+          width = canvas.width;
+      selectionEnd = fraction * (width - gutterWidth * 2) + gutterWidth;
     }
   }
 }());

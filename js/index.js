@@ -57,13 +57,13 @@
     $('#gen-tcx-btn').on('click', {format: 'tcx'}, exportFormatHandler);
     $('#gen-json-btn').on('click', {format: 'json'}, exportFormatHandler);
 
-    var detail = $('#details').click(function(e){
+    var detail = $('#details, #details h2').click(function(e){
       if(detail.is(e.target)){
         var body = $('body'),
             toScroll = body.scrollTop() ? 0 : detail.offset().top;
         body.animate({
           scrollTop: toScroll
-        }, 2000);
+        }, 1960);
       }
     });
 
@@ -216,6 +216,7 @@
       $('#get-ele-btn').hide();
       GPSTools.Graph.clear('graphCanvas');
       GPSTools.Graph.clear('gradientCanvas');
+      $('#details').show();
       plotElevation(track);
       plotGradient(track);
     }
@@ -327,8 +328,17 @@
             GPSTools.Map.unmark();
           }
 
-          if(selecting)
-            GPSTools.Graph.endSelection('graphCanvas',mousePos);
+          if(selecting){
+            if(mousePos < mouseDown){
+              GPSTools.Graph.startSelection('graphCanvas', mousePos);
+              GPSTools.Graph.endSelection('graphCanvas', mouseDown);
+            }
+            else{
+              GPSTools.Graph.startSelection('graphCanvas', mouseDown);
+              GPSTools.Graph.endSelection('graphCanvas', mousePos);
+            }
+
+          }
 
           GPSTools.Graph.drawAnnotations('graphCanvas');
 
@@ -350,33 +360,24 @@
       });
 
       $('#graphCanvas').off('mousedown').on('mousedown', function(e){
-        GPSTools.Graph.startSelection('graphCanvas',e.offsetX);
-        $('#clr-slt-btn, #crp-slt-btn').show();
+        mouseDown = e.offsetX;
+        GPSTools.Graph.startSelection('graphCanvas',mouseDown);
+        $('#slt-btns').show();
         selecting = true;
-        mouseDown = {x:e.offsetX,y:e.offsetY};
       });
 
       $('#graphCanvas').off('mouseup mouseout').on('mouseup mouseout', function(e){
         if(selecting){
           selecting = false;
 
-          var start = GPSTools.Graph.getSelectionStart('graphCanvas'),
-              end = GPSTools.Graph.getSelectionEnd('graphCanvas'),
-              startIndex = Math.floor(start * track.points.length),
-              endIndex = Math.floor(end * track.points.length),
-              i, points = [];
-
-          if(startIndex == endIndex){
-            clearSelection();
-          }
-          else if(startIndex > 0){
-            for(i = startIndex; i < endIndex; i++){
-              points.push(track.points[i]);
-            }
-
-            GPSTools.Map.drawLine(points, true);
-          }
+          drawSelection();
         }
+      });
+
+      $('#graphCanvas').off('click').on('click', function(e){
+        var p = GPSTools.Graph.getPosition('graphCanvas',e.offsetX,0),
+            index = Math.floor(p * track.points.length);
+        console.log(track.points[index]);
       });
 
       $('#clr-slt-btn').off('click').on('click', clearSelection);
@@ -398,6 +399,39 @@
 
       });
 
+      $('#tos-slt-btn').off('click').on('click', function(){
+        GPSTools.Graph.setSelectionStart('graphCanvas', 0);
+        drawSelection();
+      });
+
+      $('#toe-slt-btn').off('click').on('click', function(){
+        GPSTools.Graph.setSelectionEnd('graphCanvas', 1);
+        drawSelection();
+      });
+
+      function drawSelection(){
+        var start = GPSTools.Graph.getSelectionStart('graphCanvas'),
+            end = GPSTools.Graph.getSelectionEnd('graphCanvas'),
+            startIndex = Math.floor(start * track.points.length),
+            endIndex = Math.floor(end * track.points.length),
+            i, points = [];
+
+        if(startIndex == endIndex){
+          clearSelection();
+        }
+        else{
+          for(i = startIndex; i < endIndex; i++){
+            points.push(track.points[i]);
+          }
+
+          GPSTools.Map.drawLine(points, true);
+
+          GPSTools.Graph.drawAnnotations('graphCanvas');
+
+          showStats(new GPSTools.Track(points, "Selection"));
+        }
+      }
+
       function clearSelection(){
         GPSTools.Graph.clear('graphCanvas');
         if(track.hasElevation())
@@ -407,7 +441,7 @@
         GPSTools.Map.clearLine(true);
         GPSTools.Graph.clearSelection();
         GPSTools.Graph.drawAnnotations('graphCanvas');
-        $('#clr-slt-btn, #crp-slt-btn').hide();
+        $('#slt-btns').hide();
       }
     }());
 
@@ -608,7 +642,10 @@
               text = formatDate(subtrack.getEndTime(), "HH:i:s");
             break;
           case 5:
-            text = juration.stringify(subtrack.getDuration()); break;
+            try {
+              text = juration.stringify(subtrack.getDuration());
+              break;
+            } catch (e) {}
         }
         if(text)
           $(item).text(text);
@@ -708,11 +745,19 @@
     }
 
     function populateListItem(listItem, track){
+      var trackTime;
+      try {
+        trackTime = juration.stringify(track.getDuration());
+      }
+      catch (e){
+        console.log(track);
+      }
       listItem.css('background-image', 'url('+track.getThumb(64)+')');
       listItem.children('.track-name').text(track.name);
       listItem.children('.track-dist').text(track.getDistance().toFixed() + " km");
+
       listItem.children('.track-time')
-        .text(juration.stringify(track.getDuration()))
+        .text(trackTime)
         .toggle(track.hasTime());
     }
   }
@@ -1048,67 +1093,205 @@
 
   // HUD closure
   $(function(){
-    var canvas = $('#hudModal canvas'),
+    var canvas = $('#hud-preview'),
         ctx = canvas[0].getContext('2d'),
         hudBtn = $('#hud-btn'),
         hudFrameStart = $('#hudFrameStart'),
         hudFrameCount = $('#hudFrameCount'),
+        hudAutoContinue = $('#hudAutoContinue'),
+        hudCustomControls = $('#hudCustomControls'),
         hudWidth = 200,
         hudHeight = 165,
         videoWidth = 1280,
         videoHeight = 720,
         paddingLeft = 20,
+        paddingRight = 20,
         paddingBottom = 20,
-        previewHudButton = $('#prv-hud-btn'),
-        downloadHudButton = $('#dld-hud-btn'),
+        generateHudButton = $('#gen-hud-btn'),
+        stepHudButton = $('#stp-hud-btn'),
+        customiseHudButton = $('#hud-cst-btn'),
+        previewHudButton = $('#hud-prv-btn'),
+        cancelHudButton = $('#cnl-hud-btn'),
+        downloadHudButton = $('<a>'),
         backgroundURL = "hudBackground.png",
         backgroundImage = new Image(),
         headingURL = "hudCompass.png",
         headingImage = new Image(),
+        mapBackgroundURL = "hudMapBackground.png",
+        mapBackgroundImage = new Image(),
         headingImageOffset = 40,
         startDate,
         animationStart,
         fps = 30,
-        frameDuration = 1000/fps;
+        frameDuration = 1000/fps,
+        frameTimes = [],
+        frameTimesSize = 50,
+        status = $('#hud-status'),
+        prevFrameTime,
+        run = false,
+
+        start,
+        count,
+        i,
+        l,
+        startTime,
+        movie;
 
     backgroundImage.src = backgroundURL;
     headingImage.src = headingURL;
+    mapBackgroundImage.src = mapBackgroundURL;
+
+    canvas.hide();
+    canvas[0].width = videoWidth;
+    canvas[0].height = videoHeight;
+
+    hudCustomControls.hide();
+
+    customiseHudButton.click(function(){
+      hudCustomControls.toggle();
+    });
 
     previewHudButton.click(function(){
-      //ctx.save();
-      ctx.translate(0, videoHeight - hudHeight);
-      startDate = currentTrack.getStartTime().getTime();
-      requestAnimationFrame(loop);
-      //ctx.restore();
+      canvas.toggle();
+    })
+
+    cancelHudButton.hide().click(function(){
+      movie = null;
     });
 
-    downloadHudButton.click(function(){
-      var start = parseInt(hudFrameStart.val()),
-          count = parseInt(hudFrameCount.val()),
-          i = start,
-          l = start + count,
-          data,
-          base64,
-          zip = new JSZip();
-      for(;i<l;i++){
-        data = generateFrame(i);
-        base64 = data.substr(22);
-        zip.file("frame"+pad(i,4)+".png", base64, {base64: true});
+    // previewHudButton.click(function(){
+    //   //ctx.save();
+    //   ctx.translate(0, videoHeight - hudHeight);
+    //   startDate = currentTrack.getStartTime().getTime();
+    //   requestAnimationFrame(loop);
+    //   //ctx.restore();
+    // });
+
+    stepHudButton.click(function(){
+      if(!movie){
+        setup(function(){
+          step(true);
+        });
       }
-      downloadHudButton.attr('download', "frames"+pad(start,4)+"-"+pad(l-1,4)+".zip");
-      downloadHudButton.attr('href', "data:application/zip;base64,"+zip.generate());
-      hudFrameStart.val(l);
+      else
+        step(true);
     });
+
+    generateHudButton.click(function(){
+      setup(function(){
+        cancelHudButton.show();
+        status.text("Starting...");
+        step();
+      });
+    });
+
+    function setup(callback){
+      start = parseInt(hudFrameStart.val());
+      count = parseInt(hudFrameCount.val());
+      i = start;
+      l = start + count;
+      startTime = new Date;
+      movie = new movbuilder.MotionJPEGBuilder(new movbuilder.MotionJPEGBuilder.FileBuilder(function(){
+        setProgress(0,count);
+        generateHudButton.attr('disabled', true);
+        downloadHudButton.attr('disabled', true);
+        movie.setup(videoWidth, videoHeight, fps, callback);
+      }, function(e){
+        var msg = "Could not start";
+        if(e.code == FileError.QUOTA_EXCEEDED_ERR)
+          msg += ": Quota Exceeded";
+        status.text(msg);
+      }));
+    }
+
+    function step(singleStep){
+      if(!movie){
+        cleanUp();
+        return;
+      }
+      if(generateFrame(i)){
+        movie.addCanvasFrame(canvas[0], function(){
+          i++;
+          if(!singleStep){
+            if(i<l){
+              step();
+
+              progress();
+            }
+            else{
+              closeFile();
+            }
+          }
+        }, function(e){
+          console.log("Error: "+e.msg);
+          status.text("Error: "+e.msg);
+        }, closeFile);
+      }
+      else {
+        closeFile();
+        hudAutoContinue.removeAttr('checked');
+      }
+    }
+
+    function closeFile(){
+      status.text("Closing File...");
+      filename = "frames"+pad(start,6)+"-"+pad(i-1,6)+".avi",
+      movie.finish(function(url){
+        console.log((i - start) + " frames: "+((new Date) - startTime)/1000 + " seconds");
+        cleanUp();
+        downloadHudButton.attr('download', filename);
+        downloadHudButton.attr('href', url);
+        hudFrameStart.val(i);
+
+        // Only download if more than one frame has been generated
+        if(i - start){
+          var e = document.createEvent('MouseEvents');
+          e.initEvent('click', true, true);
+          downloadHudButton[0].dispatchEvent(e);
+        }
+
+        if(hudAutoContinue.is(':checked')){
+          setTimeout(function(){generateHudButton.trigger('click')},500);
+        }
+      });
+    }
+
+    function progress(){
+      incrementProgress();
+      var delta,
+          rate,
+          remaining,
+          now = Date.now();
+      if(i%frameTimesSize == 0){
+        if(prevFrameTime){
+          delta = (now - prevFrameTime);
+          rate = frameTimesSize/delta;
+          remaining = (l - i)/rate;
+          status.text("Estimated finish time: " + (new Date(now + remaining)));
+        }
+        prevFrameTime = now;
+      }
+    }
+
+    function cleanUp(){
+      status.text("");
+      resetProgress();
+      generateHudButton.removeAttr('disabled');
+      downloadHudButton.removeAttr('disabled');
+      cancelHudButton.hide();
+    }
 
     function generateFrame(id){
-      ctx.save();
-      ctx.translate(paddingLeft, videoHeight - hudHeight - paddingBottom);
-      startDate = currentTrack.getStartTime().getTime();
-      var time = new Date(startDate + id * frameDuration);
       ctx.clearRect(0,0,videoWidth,videoHeight);
-      generateDisplay(time);
-      ctx.restore();
-      return canvas[0].toDataURL();
+      startDate = currentTrack.getStartTime().getTime();
+      var time = new Date(startDate + id * frameDuration),
+          success = false;
+      try{
+        generateDisplay(time);
+        success = true;
+      }
+      catch (e){}
+      return success;
     }
 
     function loop(t){
@@ -1124,23 +1307,31 @@
     function generateDisplay(time){
       var speed,
           heading,
-          altitude;
+          altitude,
+          position;
       // Get Stats
         // Get Speed
       speed = GPSTools.Util.convertToKPH(currentTrack.getInstantSpeed(time));
       heading = (currentTrack.getInstantHeading(time)+360)%360;
       altitude = currentTrack.getInstantAltitude(time);
+      position = currentTrack.getInstantPosition(time);
         // Get Heading
         // Get Altitude
 
-      ctx.drawImage(backgroundImage, 0, 0);
-      drawComponents(speed, heading, altitude, time);
+      drawComponents(speed, heading, altitude, time, position);
     }
-    function drawComponents(speed, heading, altitude, time){
+    function drawComponents(speed, heading, altitude, time, position){
+
+      ctx.save();
+
       // Build up components
       ctx.fillStyle = "#1A1A1A";
       ctx.strokeStyle = "#C4C4C4";
       ctx.lineWidth = 5;
+
+      ctx.translate(paddingLeft, videoHeight - hudHeight - paddingBottom);
+
+      ctx.drawImage(backgroundImage, 0, 0);
 
       // Draw Altitude
       drawAltitude(altitude);
@@ -1153,6 +1344,15 @@
 
       // Draw Time
       drawTime(time);
+
+      ctx.translate(paddingLeft, videoHeight - hudHeight - paddingBottom);
+
+      ctx.restore();
+
+      //ctx.translate(videoWidth - paddingRight - 100, videoHeight - paddingBottom - 100);
+
+      // Draw Map
+      drawMap(position, heading, speed);
     }
     function drawAltitude(altitude){
       var interval = 0.1,
@@ -1234,6 +1434,127 @@
       ctx.font = "12px sans-serif";
       ctx.fillText(formatDate(time, "YYYY-mm-ddTHH:ii:ss"), 58, 147);
       ctx.restore();
+    }
+    function drawMap(position, heading, speed){
+      GPSTools.Map.setCentre(position.lon,position.lat,16);
+      var map = GPSTools.Map.getMap(),
+          layer = map.baseLayer,
+          latLon = map.getCenter(),
+          tileData = layer.getTileData(latLon),
+          tile = tileData.tile,
+          tileCtx = tile.getCanvasContext(),
+          tileCanvas,
+          i = tileData.i,
+          j = tileData.j,
+          r = 55,
+          cx = videoWidth - paddingRight - r,
+          cy = videoHeight - paddingBottom - r,
+          px = map.getViewPortPxFromLonLat(map.getCenter()),
+          midX = px.x,
+          midY = px.y,
+          radHeading = heading*Math.PI/180 - Math.PI/2,
+          moving = speed > 5,
+          backgroundSize = 122,
+          halfBGSize = backgroundSize / 2,
+          drawList = [],
+          oL = i < r,
+          oR = 256-i < r,
+          oT = j < r,
+          oB = 256-j < r,
+          k, l;
+
+      ctx.save();
+
+      ctx.drawImage(mapBackgroundImage, cx - halfBGSize, cy - halfBGSize);
+
+      // ctx.strokeStyle = "#FF0000";
+      // ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI*2, false);
+      ctx.clip();
+
+      ctx.translate(cx,cy);
+      if(moving){
+        ctx.rotate(-radHeading-Math.PI/2);
+      }
+
+      function drawTile(latLon, x, y){
+
+          var tileData = layer.getTileData(latLon),
+              tile = tileData.tile,
+              tileCtx = tile.getCanvasContext();
+
+          if(tileCtx){
+            ctx.drawImage(tileCtx.canvas, x, y);
+          }
+      }
+
+      if(tileCtx){
+        tileCanvas = tileCtx.canvas;
+        ctx.drawImage(tileCanvas,-i,-j);
+
+        // Left Col
+        if(oL){
+
+          drawList.push([-1,0]);
+
+          if(oT){
+            drawList.push([-1,-1]);
+          }
+          else if(oB){
+            drawList.push([-1,1]);
+          }
+        }
+        // Right Col
+        else if(oR){
+
+          drawList.push([1,0]);
+
+          if(oT){
+            drawList.push([1,-1]);
+          }
+          else if(oB){
+            drawList.push([1,1]);
+          }
+        }
+
+        // Middle Col (also catches L & R col overlaps)
+        if(oT){
+          drawList.push([0,-1]);
+        }
+        else if(oB){
+          drawList.push([0,1]);
+        }
+      }
+
+      for(k=0,l=drawList.length;k<l;k++){
+
+          px.x = midX + drawList[k][0] * (r + 1);
+          px.y = midY + drawList[k][1] * (r + 1);
+
+          latLon = map.getLonLatFromViewPortPx(px);
+
+          drawTile(latLon, drawList[k][0]*256-i, drawList[k][1]*256-j);
+
+      }
+
+      ctx.restore();
+
+      ctx.fillStyle = "#2020FF";
+      ctx.beginPath();
+      var a = 6;
+      if(moving){
+        ctx.moveTo(cx, cy-(2*a));
+        ctx.lineTo(cx+a, cy+(2*a));
+        ctx.lineTo(cx, cy+a);
+        ctx.lineTo(cx-a, cy+(2*a));
+        ctx.closePath();
+      }
+      else {
+        ctx.arc(cx, cy, a, 0, Math.PI*2, false);
+      }
+      ctx.fill();
+
     }
     function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
       if (typeof stroke == "undefined" ) {
@@ -1514,7 +1835,7 @@ function formatDate(date, format){
   }
 }
 function pad(n, width, z) {
-  width = width || 0;
+  width = width || 2;
   z = z || '0';
   n = n + '';
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
