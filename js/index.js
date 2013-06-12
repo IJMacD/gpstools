@@ -155,12 +155,19 @@
           };
         $('#save-btn').removeAttr("disabled").on("click", function(){
           // When the save button is clicked
-          var store = db.transaction("tracks", "readwrite").objectStore("tracks");
+          var store = db.transaction("tracks", "readwrite").objectStore("tracks"),
+              total = $('.track').length,
+              count = 0;
           $('.track').each(function(i,item){
             var track = $(item).data("track");
             store.put(GPSTools.Format.JSON.generate(track), track.key).onsuccess = function(event){
               track.key = event.target.result;
-            }
+              count += 1;
+              if(count == total){
+                $('#status-msg-text').text("Saved");
+                $('#status-msg').show().delay(1000).fadeOut("slow");
+              }
+            };
           });
         });
       }

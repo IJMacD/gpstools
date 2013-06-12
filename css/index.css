@@ -270,3 +270,21 @@ p.controls {
   color: #333;
   text-shadow: none;
 }
+#status-msg {
+  background: rgba(17,17,17,0.5);
+  border-radius: 10px;
+  display: none;
+  left: 40%;
+  padding: 10px;
+  position: absolute;
+  top: 50px;
+  width: 20%;
+}
+#status-msg-text {
+  background: #333;
+  border-radius: 5px;
+  color: white;
+  margin: 0;
+  padding: 3px 8px;
+  text-align: center;
+}
