@@ -269,7 +269,7 @@ GPSTools.Format.JSON = (function(GPSTools){
       return true;
     },
     parse: function(string){
-      var obj = JSON.parse(string),
+      var obj = typeof string == "string" ? JSON.parse(string) : string,
           ts = obj.tracks,
           tracks = [],
           track,
