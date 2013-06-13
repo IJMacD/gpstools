@@ -303,6 +303,9 @@ p.controls {
 .cicon-mountain {
   background-position: 0 0;
 }
+.cicon-strava {
+  background-position: -45px 0px;
+}
 .cicon-split {
   background-position: 0 -15px;
 }

@@ -10,15 +10,17 @@
 <body>
 <div id="action-bar">
   <h1>GPSTools</h1>
-  <button id="open-file-btn" class="btn" title="Open Files">
+  <button id="open-file-btn" class="btn btn-small" title="Open Files">
     <i class="icon-folder-open"></i>
   </button>
-  <button id="strava-import-btn" class="btn">Strava Import</button>
-  <button id="save-btn" class="btn" disabled title="Save">
+  <button id="strava-import-btn" class="btn btn-small" title="Strava Import">
+    <i class="cicon-strava"></i>
+  </button>
+  <button id="save-btn" class="btn btn-small" disabled title="Save">
     <i class="icon-hdd"></i>
   </button>
   <div class="btn-group" id="new-trk-grp">
-    <button class="btn dropdown-toggle" data-toggle="dropdown" title="New Track">
+    <button class="btn btn-small dropdown-toggle" data-toggle="dropdown" title="New Track">
       <i class="icon-plus"></i>
       <span class="caret"></span>
     </button>
@@ -27,31 +29,31 @@
       <li><a href="#" id="spr-trk-btn">Super Track</a>
     </ul>
   </div>
-  <button id="fll-scn-btn" class="btn" disabled title="Fullscreen Map">
+  <button id="fll-scn-btn" class="btn btn-small" disabled title="Fullscreen Map">
     <i class="icon-fullscreen"></i>
   </button>
   <div id="cab">
-    <button id="get-ele-btn" class="btn" disabled title="Get Elevation">
+    <button id="get-ele-btn" class="btn btn-small" disabled title="Get Elevation">
       <i class="cicon-mountain"></i>
     </button>
-    <button id="gen-spd-btn" class="btn" disabled title="Generate Speed">
+    <button id="gen-spd-btn" class="btn btn-small" disabled title="Generate Speed">
       <i class="icon-time"></i>
     </button>
-    <button id="mrg-trk-btn" class="btn" disabled title="Merge Tracks">
+    <button id="mrg-trk-btn" class="btn btn-small" disabled title="Merge Tracks">
       <i class="cicon-merge"></i>
     </button>
-    <button id="ato-spl-btn" class="btn" disabled track="Autosplit">
+    <button id="ato-spl-btn" class="btn btn-small" disabled track="Autosplit">
       <i class="cicon-split"></i>
     </button>
-    <button id="hud-btn" class="btn" data-toggle="modal" data-target="#hudModal" title="HUD">
+    <button id="hud-btn" class="btn btn-small" data-toggle="modal" data-target="#hudModal" title="HUD">
       <i class="icon-facetime-video"></i>
     </button>
     <div class="btn-group" id="export-grp">
-      <a id="gen-fmt-btn" class="btn" title="Export">
+      <a id="gen-fmt-btn" class="btn btn-small" title="Export">
         <i class="icon-download-alt"></i>
         <span>GPX</span>
       </a>
-      <button class="btn dropdown-toggle" data-toggle="dropdown">
+      <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu">
