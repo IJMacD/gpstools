@@ -48,7 +48,7 @@
       $(e.target)
         .attr('download', dl.name)
         .attr('href', "data:"+dl.mime+";base64,"+btoa(dl.data));
-      generateFormatBtn.text("Export " + defaultExportFormat.toUpperCase());
+      generateFormatBtn.find("span").text(defaultExportFormat.toUpperCase());
     }
 
     $('#gen-fmt-btn').on('click', exportFormatHandler);

@@ -34,12 +34,12 @@ body,
   vertical-align: middle;
 }
 #cab {
-  border-left: 1px solid rgba(255,255,255,0.6);
   display: inline-block;
+  float: right;
   height: 30px;
   line-height: 30px;
   margin-left: 5px;
-  padding-left: 10px;
+  margin-top: 4px;
 }
 #cab > button,
 #export-grp {
@@ -287,4 +287,28 @@ p.controls {
   margin: 0;
   padding: 3px 8px;
   text-align: center;
+}
+[class^="cicon-"],
+[class*=" cicon-"] {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+  line-height: 14px;
+  vertical-align: text-top;
+  background-image: url("../img/custom-glyphicons-halflings.png?3");
+  background-position: 0 0;
+  background-repeat: no-repeat;
+}
+.cicon-mountain {
+  background-position: 0 0;
+}
+.cicon-split {
+  background-position: 0 -15px;
+}
+.cicon-merge {
+  background-position: -15px -15px;
+}
+.cicon-hud {
+  background-position: -30px -15px;
 }

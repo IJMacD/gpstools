@@ -10,12 +10,16 @@
 <body>
 <div id="action-bar">
   <h1>GPSTools</h1>
-  <button id="open-file-btn" class="btn">Open Files</button>
+  <button id="open-file-btn" class="btn" title="Open Files">
+    <i class="icon-folder-open"></i>
+  </button>
   <button id="strava-import-btn" class="btn">Strava Import</button>
-  <button id="save-btn" class="btn" disabled>Save</button>
+  <button id="save-btn" class="btn" disabled title="Save">
+    <i class="icon-hdd"></i>
+  </button>
   <div class="btn-group" id="new-trk-grp">
-    <button class="btn dropdown-toggle" data-toggle="dropdown">
-      New Track
+    <button class="btn dropdown-toggle" data-toggle="dropdown" title="New Track">
+      <i class="icon-plus"></i>
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
@@ -23,11 +27,30 @@
       <li><a href="#" id="spr-trk-btn">Super Track</a>
     </ul>
   </div>
+  <button id="fll-scn-btn" class="btn" disabled title="Fullscreen Map">
+    <i class="icon-fullscreen"></i>
+  </button>
   <div id="cab">
-    <button id="get-ele-btn" class="btn" disabled>Get Elevation</button>
-    <button id="gen-spd-btn" class="btn" disabled>Fake Speed</button>
+    <button id="get-ele-btn" class="btn" disabled title="Get Elevation">
+      <i class="cicon-mountain"></i>
+    </button>
+    <button id="gen-spd-btn" class="btn" disabled title="Generate Speed">
+      <i class="icon-time"></i>
+    </button>
+    <button id="mrg-trk-btn" class="btn" disabled title="Merge Tracks">
+      <i class="cicon-merge"></i>
+    </button>
+    <button id="ato-spl-btn" class="btn" disabled track="Autosplit">
+      <i class="cicon-split"></i>
+    </button>
+    <button id="hud-btn" class="btn" data-toggle="modal" data-target="#hudModal" title="HUD">
+      <i class="icon-facetime-video"></i>
+    </button>
     <div class="btn-group" id="export-grp">
-      <a id="gen-fmt-btn" class="btn">Export GPX</a>
+      <a id="gen-fmt-btn" class="btn" title="Export">
+        <i class="icon-download-alt"></i>
+        <span>GPX</span>
+      </a>
       <button class="btn dropdown-toggle" data-toggle="dropdown">
         <span class="caret"></span>
       </button>
@@ -38,10 +61,6 @@
         <li><a href="#" id="gen-json-btn">Export JSON</a>
       </ul>
     </div>
-    <button id="mrg-trk-btn" class="btn" disabled>Merge Tracks</button>
-    <button id="ato-spl-btn" class="btn" disabled>Autosplit</button>
-    <button id="hud-btn" class="btn" data-toggle="modal" data-target="#hudModal">HUD</button>
-    <button id="fll-scn-btn" class="btn" disabled>Fullscreen Map</button>
     &nbsp;
   </div>
   <progress value="0"></progress>
