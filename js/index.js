@@ -311,12 +311,17 @@
             return function(data){
               geo[index] = Math.max(parseFloat(data),0);
               points[i].ele = geo[index];
-              if(incrementProgress()) {
-                resetProgress(0);
-                plotElevation(track);
-                plotGradient(track);
-              }
+              stepProgress();
             };
+          },
+          stepProgress = function(){
+            if(incrementProgress()) {
+              resetProgress();
+              plotElevation(track);
+              plotGradient(track);
+              $('#get-ele-btn').hide();
+              $('#details').show();
+            }
           };
       $(this).attr('disabled','');
       setProgress(0, l);
@@ -343,9 +348,7 @@
         }
         else {
           points[i].ele = geo[index];
-          if(incrementProgress()) {
-            resetProgress();
-          }
+          stepProgress();
         }
       }
     });
@@ -1802,7 +1805,9 @@
         progressEvents.trigger("complete");
       }catch(e){}
       resetProgress();
+      return true;
     }
+    return false;
   }
 
   function pseudoProgress(duration){
