@@ -571,6 +571,7 @@
         map.zoomToMaxExtent();
     }
 
+    $('#details').show();
     showStats(track);
     drawMap(track);
 
@@ -625,14 +626,14 @@
         .attr("contenteditable", true)
         .on("blur", function(){
           var startTime = subStartCell.text(),
-              match = startTime.match(/(\d\d):(\d\d):(\d\d)/),
+              match = startTime.match(/(\d\d):(\d\d)(?::(\d\d))?/),
               start = subtrack.getStartTime();
           if(!start)
             start = subtrack.getEndTime() || new Date();
           if(match){
             start.setHours(match[1]);
             start.setMinutes(match[2]);
-            start.setSeconds(match[3]);
+            start.setSeconds(match[3]||0);
             track.setSplitTime(i, start);
           }
         });
@@ -642,14 +643,14 @@
         .attr("contenteditable", true)
         .on("blur", function(){
           var endTime = subEndCell.text(),
-              match = endTime.match(/(\d\d):(\d\d):(\d\d)/),
+              match = endTime.match(/(\d\d):(\d\d)(?::(\d\d))?/),
               end = subtrack.getEndTime();
           if(!end)
             end = subtrack.getStartTime() || new Date();
           if(match){
             end.setHours(match[1]);
             end.setMinutes(match[2]);
-            end.setSeconds(match[3]);
+            end.setSeconds(match[3]||0);
             track.setSplitTime(i+1, end);
           }
         });
