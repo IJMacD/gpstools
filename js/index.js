@@ -269,7 +269,7 @@
     else {
       logging("Track does not have elevation data");
       $('#get-ele-btn').removeAttr('disabled').show();
-      $('#graph, #gradient').hide();
+      $('#details, #graph, #gradient').hide();
     }
 
     if(track.hasTime())
@@ -278,15 +278,17 @@
       var startDate = track.getStart(),
           endDate = track.getEnd();
       if(startDate.getDate() != endDate.getDate()){
-        $('#ato-spl-btn').removeAttr('disabled').show();
+        $('#ato-spl-btn').show();
       }
       else {
         $('#ato-spl-btn').hide();
       }
       plotSpeed(track);
+      $('#details').show();
     }
     else{
       $('#gen-spd-btn').removeAttr('disabled').show();
+      $('#ato-spl-btn').hide();
     }
 
     $('#gen-spd-btn').off('click').click(function(){
@@ -346,7 +348,7 @@
           }
         }
       }
-    }).removeAttr('disabled').show();
+    });
 
     $('#export-grp').css('display', 'inline-block');
 
@@ -494,7 +496,8 @@
     $('#fll-scn-btn').removeAttr('disabled').show();
     $('#hud-btn').removeAttr('disabled').show();
 
-    $('#ato-spl-btn').removeAttr('disabled').show().off('click').on('click', function(){
+    // Gets Shown/Hidden near line 275
+    $('#ato-spl-btn').off('click').on('click', function(){
       var i = 1,
           l = track.points.length,
           p,

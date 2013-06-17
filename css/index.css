@@ -224,7 +224,7 @@ small {
   display: inline;
   margin-left: 3px;
 }
-#mrg-trk-btn {
+#cab > .btn {
   display: none;
 }
 #export-grp {
