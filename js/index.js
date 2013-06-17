@@ -285,10 +285,12 @@
       }
       plotSpeed(track);
       $('#details').show();
+      $('#hud-btn').show();
     }
     else{
       $('#gen-spd-btn').removeAttr('disabled').show();
       $('#ato-spl-btn').hide();
+      $('#hud-btn').hide();
     }
 
     $('#gen-spd-btn').off('click').click(function(){
@@ -497,7 +499,6 @@
     }());
 
     $('#fll-scn-btn').removeAttr('disabled').show();
-    $('#hud-btn').removeAttr('disabled').show();
 
     // Gets Shown/Hidden near line 275
     $('#ato-spl-btn').off('click').on('click', function(){
