@@ -686,6 +686,7 @@ GPSTools.Track.prototype.setEndTime = function(end) {
 };
 /**
  * Get the point immediately before a certain point in time
+ * @param time Date object or integer milliseconds since epoch
  */
 GPSTools.Track.prototype.getPrecedingPointIndex = function(time) {
   if(time < this.getStartTime())
@@ -699,10 +700,14 @@ GPSTools.Track.prototype.getPrecedingPointIndex = function(time) {
       high = this.points.length,
       index = Math.floor(high/2),
       currPoint = this.points[index],
-      prevIndex;
+      prevIndex,
+      isDateObj = (typeof time == "object"),
+      compare;
 
   while(currPoint){
-    if(time > currPoint.getDate()){
+    // Optimise for fewer Date objects if we're only dealing with integers
+    compare = isDateObj ? currPoint.getDate() : currPoint.getDate().getTime();
+    if(time > compare){
       low = index;
     }
     else {
@@ -747,10 +752,11 @@ GPSTools.Track.prototype.getInstantPosition = function(time) {
   // return v12 + b * (v23 - v12);
 }
 GPSTools.Track.prototype.getInstantSpeed = function(time) {
-  var i1 = this.getPrecedingPointIndex(time),
+  var l = this.points.length,
+      i1 = this.getPrecedingPointIndex(time),
       i0 = i1-1,
       i2 = i1+1,
-      i3 = i1+2,
+      i3 = Math.min(i1+2,l-1),
       p0 = this.points[i0],
       p1 = this.points[i1],
       p2 = this.points[i2],

@@ -833,12 +833,48 @@
   }
 
   function plotSpeed(track) {
-    GPSTools.Graph.drawLine('graphCanvas', track.getSpeed(), {color:'red',overlay:true});
+    var target = 'graphCanvas',
+        canvas = $('#'+target),
+        width = canvas[0].width||1,
+        points = track.getSpeed(),
+        time,
+        endTime,
+        duration,
+        step;
+    if(points.length > width && track.hasTime()){
+      time = track.getStartTime().getTime();
+      endTime = track.getEndTime().getTime();
+      duration = endTime - time;
+      step = duration / width;
+      points = [];
+      for(;time<endTime;time+=step){
+        points.push(track.getInstantSpeed(new Date(time)));
+      }
+    }
+    GPSTools.Graph.drawLine('graphCanvas', points, {color:'red',overlay:true});
     $('#graph').show();
   }
 
   function plotElevation(track){
-    GPSTools.Graph.drawFilled('graphCanvas', track.getElevation(), 'blue');
+    var target = 'graphCanvas',
+        canvas = $('#'+target),
+        width = canvas[0].width||1,
+        points = track.getElevation(),
+        time,
+        endTime,
+        duration,
+        step;
+    if(points.length > width && track.hasTime()){
+      time = track.getStartTime().getTime();
+      endTime = track.getEndTime().getTime();
+      duration = endTime - time;
+      step = duration / (width+1);
+      points = [];
+      for(;time<=endTime;time+=step){
+        points.push(track.getInstantAltitude(new Date(time)));
+      }
+    }
+    GPSTools.Graph.drawFilled('graphCanvas', points, 'blue');
     $('#graph').show();
   }
 
