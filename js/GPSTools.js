@@ -208,7 +208,26 @@ GPSTools.Format.KML = function(){
       logging(points.length + " points loaded");
       return new GPSTools.Track(points);
     },
-    generate: function (track) {}
+    generate: function (track) {
+      var doc = $.parseXML($('#kml-tmpl').text()),
+          kml = $(doc).find('kml'),
+          name = $(doc).find('name').not("author name"),
+          points = track.getPoints(),
+          l = points.length,
+          i = 0,
+          p, trkpt, ele,
+          hasTime = track.hasTime(),
+          hasEle = track.hasElevation(),
+          lineString = [],
+          coordinates = $(doc).find('coordinates');
+      name.text(track.name);
+      for(;i<l;i++) {
+        p = points[i];
+        lineString.push(p.lon+","+p.lat+","+(p.ele||0));
+      }
+      coordinates.text(lineString.join(" "));
+      return (new XMLSerializer()).serializeToString(doc);
+    }
   };
 }();
 GPSTools.Format.TCX = function(){
