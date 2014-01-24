@@ -315,3 +315,7 @@ p.controls {
 .cicon-hud {
   background-position: -30px -15px;
 }
+#hud-preview {
+  border: 1px solid #CCC;
+  width: 100%;
+}
