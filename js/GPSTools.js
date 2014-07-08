@@ -43,7 +43,7 @@ var GPSTools = (function(){
       },
       mergeTracks = function(tracks){
         var points, track, name;
-        if(tracks[0].points[0].time <
+        if(tracks[0].points[0].time <=
           tracks[1].points[0].time){
           points = tracks[0].points.concat(tracks[1].points);
           name = tracks[0].name;
@@ -363,7 +363,7 @@ GPSTools.Format.CSV = (function(GPSTools){
           latitudeIndex = 3,
           longitudeIndex = 4,
           altitudeIndex = 5;
-      
+
       for(i = 1, l = lines.length - 1; i < l; i += 1){
         values = lines[i].substr(1,l-2).split("\",\"");
         name = values[nameIndex];
