@@ -39,21 +39,40 @@ var GPSTools = (function(){
         return newTrack;
       },
       areMergeable = function(tracks){
-        return tracks.length == 2;
+        var mergeable = true;
+
+        tracks.forEach(function(track){
+          if(!track.hasTime()){
+            mergeable = false;
+            return false;
+          }
+        });
+
+        return mergeable;
       },
       mergeTracks = function(tracks){
-        var points, track, name;
-        if(tracks[0].points[0].time <=
-          tracks[1].points[0].time){
-          points = tracks[0].points.concat(tracks[1].points);
-          name = tracks[0].name;
-        }
-        else{
-          points = tracks[1].points.concat(tracks[0].points);
-          name = tracks[1].name;
-        }
+        var points = [], track, endTime;
+
+        tracks.sort(function(a,b){
+          return a.points[0].time <= b.points[0].time ? -1 : 1;
+        });
+
+        tracks.forEach(function(track, i){
+          if(i==0){
+            endTime = track.getEnd();
+          }
+          else if(track.getStart() < endTime) {
+            alert("Unable to Merge: Tracks Times Overlap")
+            throw new Error("Tracks overlap");
+          }
+
+          points = points.concat(track.points);
+
+          endTime = track.getEnd();
+        });
+
         track = new GPSTools.Track(points);
-        track.name = name + " (Merged)";
+        track.name = tracks[0].name + " (Merged "+tracks.length+")";
         return track;
       };
 
