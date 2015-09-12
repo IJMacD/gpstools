@@ -155,18 +155,18 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.1706033"
-     inkscape:cx="514.81759"
-     inkscape:cy="652.07811"
+     inkscape:cx="219.21995"
+     inkscape:cy="200.17438"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:window-width="829"
-     inkscape:window-height="504"
-     inkscape:window-x="1263"
-     inkscape:window-y="4"
-     inkscape:window-maximized="0" />
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -183,6 +183,13 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="rect3130"
+       width="610.79614"
+       height="211.0023"
+       x="-62.361015"
+       y="567.14227" />
     <g
        transform="matrix(1.0517091,0,0,1.1841536,-12.000516,-620.11429)"
        id="g3907-3"
@@ -727,7 +734,7 @@
          sodipodi:role="line"
          id="tspan4346"
          x="119.81431"
-         y="860.1781">W</tspan></text>
+         y="860.1781">E</tspan></text>
     <text
        transform="scale(0.99966351,1.0003366)"
        sodipodi:linespacing="125%"
@@ -757,7 +764,7 @@
          sodipodi:role="line"
          id="tspan4354"
          x="302.77664"
-         y="860.1781">E</tspan></text>
+         y="860.1781">W</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:11.80215931px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
@@ -772,7 +779,7 @@
          sodipodi:role="line"
          id="tspan4358"
          x="77.9431"
-         y="856.29944">NW</tspan></text>
+         y="856.29944">NE</tspan></text>
     <text
        transform="scale(0.99966351,1.0003366)"
        sodipodi:linespacing="125%"
@@ -787,7 +794,7 @@
          y="856.3147"
          x="169.26308"
          id="tspan4362"
-         sodipodi:role="line">SW</tspan></text>
+         sodipodi:role="line">SE</tspan></text>
     <text
        transform="scale(0.99966351,1.0003366)"
        sodipodi:linespacing="125%"
@@ -802,7 +809,7 @@
          y="857.23859"
          x="257.763"
          id="tspan4366"
-         sodipodi:role="line">SE</tspan></text>
+         sodipodi:role="line">SW</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:13.81282806px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
@@ -817,7 +824,7 @@
          sodipodi:role="line"
          id="tspan4370"
          x="347.95676"
-         y="856.77777">NE</tspan></text>
+         y="856.77777">NW</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:22.63905334px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
@@ -1049,7 +1056,7 @@
          sodipodi:role="line"
          id="tspan4370-6"
          x="-10.490496"
-         y="857.1535">NE</tspan></text>
+         y="857.1535">NW</tspan></text>
     <path
        transform="matrix(0.19418645,0,0,0.19418645,-18.333335,676.00771)"
        d="m 238.60231,913.32056 a 7.724535,7.724535 0 1 1 -15.44907,0 7.724535,7.724535 0 1 1 15.44907,0 z"

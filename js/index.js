@@ -1189,6 +1189,7 @@
         hudFrameStart = $('#hudFrameStart'),
         hudFrameCount = $('#hudFrameCount'),
         hudAutoContinue = $('#hudAutoContinue'),
+        hudOrientateMap = $('#hudOrientateMap'),
         hudCustomControls = $('#hudCustomControls'),
         hudWidth = 200,
         hudHeight = 165,
@@ -1546,6 +1547,7 @@
           moving = speed > 5,
           backgroundSize = 122,
           halfBGSize = backgroundSize / 2,
+          orientateMap = hudOrientateMap.is(":checked"),
           drawList = [],
           oL = i < r,
           oR = 256-i < r,
@@ -1564,7 +1566,8 @@
       ctx.clip();
 
       ctx.translate(cx,cy);
-      if(moving){
+
+      if(moving && orientateMap){
         ctx.rotate(-radHeading-Math.PI/2);
       }
 
@@ -1630,20 +1633,29 @@
 
       ctx.restore();
 
+      ctx.save();
+
+      ctx.translate(cx, cy);
+
       ctx.fillStyle = "#2020FF";
       ctx.beginPath();
       var a = 6;
       if(moving){
-        ctx.moveTo(cx, cy-(2*a));
-        ctx.lineTo(cx+a, cy+(2*a));
-        ctx.lineTo(cx, cy+a);
-        ctx.lineTo(cx-a, cy+(2*a));
+        if(!orientateMap){
+          ctx.rotate(radHeading+Math.PI/2);
+        }
+        ctx.moveTo(0, -(2*a));
+        ctx.lineTo(a, (2*a));
+        ctx.lineTo(0, a);
+        ctx.lineTo(-a, (2*a));
         ctx.closePath();
       }
       else {
-        ctx.arc(cx, cy, a, 0, Math.PI*2, false);
+        ctx.arc(0, 0, a, 0, Math.PI*2, false);
       }
       ctx.fill();
+
+      ctx.restore();
 
     }
     function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
