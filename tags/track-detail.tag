@@ -1,6 +1,6 @@
 <track-detail>
 
-  <div id="summary">
+  <div id="summary" class="panel">
     <h1 id="track-title" contentEditable="true"></h1>
     <output id="gps">
       Distance (km): { distance }<br>

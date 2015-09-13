@@ -28,14 +28,21 @@
           //   //new ol.control.LayerSwitcher()
           // ]
           layers: [
-            new ol.layer.Tile({
-              title: 'MapQuest',
-              source: new ol.source.MapQuest({layer: 'sat'})
-            }),
-            new ol.layer.Tile({
-              title: 'OSM',
-              source: new ol.source.OSM()
-            })
+            new ol.layer.Group({
+                'title': 'Base maps',
+                layers: [
+                  new ol.layer.Tile({
+                    title: 'MapQuest',
+                    type: 'base',
+                    source: new ol.source.MapQuest({layer: 'sat'})
+                  }),
+                  new ol.layer.Tile({
+                    title: 'OSM',
+                    type: 'base',
+                    source: new ol.source.OSM()
+                  })
+                ]
+              })
           ],
           view: new ol.View({
             center: ol.proj.transform([114, 22], 'EPSG:4326', 'EPSG:3857'),
@@ -278,6 +285,9 @@
       },
       getMap: function(){
         return map;
+      },
+      updateSize: function(){
+        map.updateSize();
       }
     }
   }()

@@ -48,29 +48,25 @@ body,
 #files {
   display: none;
 }
-#sidebar {
-  background: rgba(0,0,0,0.9);
-  bottom: 0;
-  border: 3px dashed transparent;
-  box-sizing: border-box;
-  display: inline-block;
-  position: fixed;
-  top: 40px;
-  vertical-align: top;
-  width: 30%;
-  z-index: 1000;
+.panel {
+  background: rgba(0,0,0,0.4);
+  border-radius: 20px;
+  border: 1px solid #333333;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.55);
 }
 #tracks-list {
-  bottom: 250px;
+  top: 4em;
   box-sizing: border-box;
-  overflow-x: hidden;
+  bottom: 280px;
   overflow-y: auto;
+  padding: 10px 20px;
   position: absolute;
-  top: 0;
+  width: 350px;
+  left: 20px;
   user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
-  width: 100%;
+  margin: 0;
 }
 #track-detail {
   box-sizing: border-box;
@@ -134,11 +130,7 @@ body,
   padding: 10px 20px;
   position: absolute;
   width: 350px;
-  background: rgba(0,0,0,0.4);
-  border-radius: 20px;
   left: 20px;
-  border: 1px solid #333333;
-  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.55);
 }
 #details {
   cursor: pointer;
@@ -203,25 +195,24 @@ small {
   padding: 10px;
 }
 #map {
+  top: 0;
+  right: 0;
   bottom: 0;
   left: 0;
   position: fixed;
-  right: 0;
-  top: 0;
 }
-#mapCanvas {
-  height: 100%;
-}
-#mapCanvas:-webkit-full-screen {
-  height: 100%;
-  width: 100%;
+#map.panel {
+  top: 4em;
+  bottom: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: absolute;
+  left: 380px;
+  right: 20px;
+  transform: translate3d(0,0,0);
 }
 #map img {
   max-width: none;
-}
-#map label {
-  display: inline;
-  margin-left: 3px;
 }
 #cab > .btn {
   display: none;
@@ -249,17 +240,8 @@ p.controls {
 #strava-ride-details {
   display: none;
 }
-#mapCanvas .olControlZoom {
-  left: 30%;
-  margin: 8px 0 0 8px;
-  top: 40px;
-}
-#mapCanvas:-webkit-full-screen .olControlZoom {
-  left: 0;
-  top: 0;
-}
-#mapCanvas .olControlLayerSwitcher {
-  top: 65px;
+.ol-zoom {
+  top: 3em;
 }
 #speedModal,
 #importModal {
