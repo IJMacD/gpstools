@@ -1,4 +1,4 @@
-riot.tag('gpstools-app', '<gpstools-menu ></gpstools-menu> <div id="sidebar"> <track-list ></track-list> <track-detail ></track-detail> </div> <input type="file" id="files" name="files" multiple>', function(opts) {
+riot.tag('gpstools-app', '<gpstools-menu ></gpstools-menu> <track-list ></track-list> <track-detail show="{ currentTrack }" track="{ currentTrack }"></track-detail> <track-map ></track-map> <input type="file" id="files" name="files" multiple>', function(opts) {
 
 });
 
@@ -7,7 +7,7 @@ riot.tag('gpstools-menu', '<div id="action-bar"> <h1>GPSTools</h1> <div id="cab"
 
 });
 
-riot.tag('track-detail', '<div id="summary"> <h1 id="track-title" contentEditable="true"></h1> <output id="gps"></output> </div> <div id="track-detail"> <div id="details"> <h2>Details</h2> <div id="super-breakdown"> <table class="table"> <thead> <tr> <th>Segment</th> <th>Name</th> <th>Distance (km)</th> <th>Start Time</th> <th>End Time</th> <th>Duration</th> <th>Actions</th> </tr> </thead> <tbody></tbody> </table> </div> </div> </div>', function(opts) {
+riot.tag('track-detail', '<div id="summary"> <h1 id="track-title" contentEditable="true"></h1> <output id="gps"> Distance (km): { distance }<br> Distance (mi): { GPSTools.Util.convertToMiles( distance ) }<br> <span show="{ time }"> Start: { start }<br> End: { end }<br> Duration: { GPSTools.Util.duration( duration ) }<br> Average Speed (km/h): { GPSTools.Util.convertToKPH( averageSpeed ) }<br> Maximum Speed (km/h): { GPSTools.Util.convertToKPH( maximumSpeed ) }<br> Maximum Speed (mph): { GPSTools.Util.convertToMPH( maximumSpeed ) } </span> <span show="{ heightGain }"> Height Gain (m): { heightGain } </span> </output> </div> <div id="track-detail"> <div id="details"> <h2>Details</h2> <div id="super-breakdown"> <table class="table"> <thead> <tr> <th>Segment</th> <th>Name</th> <th>Distance (km)</th> <th>Start Time</th> <th>End Time</th> <th>Duration</th> <th>Actions</th> </tr> </thead> <tbody></tbody> </table> </div> </div> </div>', function(opts) {
 
 
 });
@@ -16,10 +16,15 @@ riot.tag('track-graph', '<div id="graph"> <h2>Elevation / Speed</h2> <div id="sl
 
 });
 
-riot.tag('track-list', '<div id="tracks-list"></div>', function(opts) {
+riot.tag('track-list', '<ul id="tracks-list"> <li each="{ tracks }" class="track" draggable="true" riot-style="background-image: url({ getThumb(64) })"> <p class="track-name">{ name }</p> <span class="track-dist">{ distance.toFixed() }</p> <span class="track-time" show="{ time }">{ time }</span> </li> </ul>', function(opts) {
 
 });
 
 riot.tag('track-map', '<div id="map"> <div id="mapCanvas"></div> </div>', function(opts) {
+    
+    this.on('mount', function(){
+        GPSTools.Map.create('mapCanvas');
+    });
 
+    
 });

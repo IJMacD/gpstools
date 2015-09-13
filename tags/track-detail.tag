@@ -2,7 +2,21 @@
 
   <div id="summary">
     <h1 id="track-title" contentEditable="true"></h1>
-    <output id="gps"></output>
+    <output id="gps">
+      Distance (km): { distance }<br>
+      Distance (mi): { GPSTools.Util.convertToMiles( distance ) }<br>
+      <span show="{ time }">
+        Start: { start }<br>
+        End: { end }<br>
+        Duration: { GPSTools.Util.duration( duration ) }<br>
+        Average Speed (km/h): { GPSTools.Util.convertToKPH( averageSpeed ) }<br>
+        Maximum Speed (km/h): { GPSTools.Util.convertToKPH( maximumSpeed ) }<br>
+        Maximum Speed (mph): { GPSTools.Util.convertToMPH( maximumSpeed ) }
+      </span>
+      <span show="{ heightGain }">
+        Height Gain (m): { heightGain }
+      </span>
+    </output>
   </div>
 
   <div id="track-detail">

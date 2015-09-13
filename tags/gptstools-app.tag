@@ -1,11 +1,11 @@
 <gpstools-app>
   <gpstools-menu />
 
-  <div id="sidebar">
-    <track-list />
+  <track-list />
 
-    <track-detail />
-  </div>
+  <track-detail show="{ currentTrack }" track={ currentTrack } />
+
+  <track-map />
 
   <input type="file" id="files" name="files" multiple />
 </gpstools-app>

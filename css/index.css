@@ -127,13 +127,18 @@ body,
   min-height: 20px;
 }
 #summary {
-  bottom: 0;
+  bottom: 20px;
   box-sizing: border-box;
   height: 250px;
   overflow-y: auto;
-  padding: 5px;
+  padding: 10px 20px;
   position: absolute;
-  width: 100%;
+  width: 350px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 20px;
+  left: 20px;
+  border: 1px solid #333333;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.55);
 }
 #details {
   cursor: pointer;
@@ -189,12 +194,6 @@ progress {
 }
 small {
   color: #9DA0A4;
-}
-#map,
-#graph,
-#gradient,
-#log {
-  display: none;
 }
 #log ul {
   border: 2px solid #9DA0A4;
