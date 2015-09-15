@@ -4,8 +4,7 @@ body {
 }
 body,
 #details,
-#summary,
-#tracks-list:empty {
+#summary {
   background:
     linear-gradient(27deg, #151515 2px, transparent 2px) 0 2px,
     linear-gradient(207deg, #151515 2px, transparent 2px) 4px 0px,
@@ -49,25 +48,12 @@ body,
   display: none;
 }
 .panel {
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.7);
   border-radius: 20px;
   border: 1px solid #333333;
   box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.55);
 }
-#tracks-list {
-  top: 4em;
-  box-sizing: border-box;
-  bottom: 280px;
-  overflow-y: auto;
-  padding: 10px 20px;
-  position: absolute;
-  width: 350px;
-  left: 20px;
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  margin: 0;
-}
+
 #track-detail {
   box-sizing: border-box;
   display: inline-block;
@@ -130,7 +116,7 @@ body,
   padding: 10px 20px;
   position: absolute;
   width: 350px;
-  left: 20px;
+  left: 40px;
 }
 #details {
   cursor: pointer;
@@ -156,10 +142,10 @@ h4 {
   color: white;
   text-shadow: 2px 2px 5px black;
 }
-#tracks-list.drop-target {
+.drop-target {
   border-color: #3333ff;
 }
-#tracks-list.drop-target:after {
+.drop-target:after {
   border-radius: 5px;
   color: rgba(64,64,255,0.8);
   content: "+ Drop Files Here";
@@ -194,25 +180,23 @@ small {
   min-height: 50px;
   padding: 10px;
 }
-#map {
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  position: fixed;
-}
-#map.panel {
-  top: 4em;
-  bottom: 20px;
-  box-sizing: border-box;
-  overflow: hidden;
+.panel-control {
   position: absolute;
-  left: 380px;
-  right: 20px;
-  transform: translate3d(0,0,0);
+  top: 7.5em;
+  left: 0.5em;
+  text-align: left;
 }
-#map img {
-  max-width: none;
+.panel-control i {
+  color: white;
+}
+.unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 #cab > .btn {
   display: none;
