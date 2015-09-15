@@ -2,9 +2,7 @@ html,
 body {
   height: 100%;
 }
-body,
-#details,
-#summary {
+body {
   background:
     linear-gradient(27deg, #151515 2px, transparent 2px) 0 2px,
     linear-gradient(207deg, #151515 2px, transparent 2px) 4px 0px,
