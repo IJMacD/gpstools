@@ -18,10 +18,12 @@
         tempLonLat,
         lonLatProjection = new ol.proj.get("EPSG:4326");
     return {
-      create: function (id) {
-        id = id || "mapCanvas"
+      create: function (target) {
+        if(typeof target == "string")
+          target = document.querySelector(target);
+
         map = new ol.Map({
-          target: id,
+          target: target,
           // 'controls': [
           //   //new ol.control.Navigation(),
           //   new ol.control.Zoom(),
@@ -49,6 +51,7 @@
             zoom: 8
           })
         });
+
         var layerSwitcher = new ol.control.LayerSwitcher();
         map.addControl(layerSwitcher);
         // osmLayer = new ol.layer.Tile({
