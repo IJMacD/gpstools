@@ -3,9 +3,9 @@
 
   <track-map />
 
-  <track-list tracks="{ [] }" />
+  <track-list />
 
-  <track-detail show="{ currentTrack }" track={ currentTrack } />
+  <track-detail />
 
   <input type="file" id="files" name="files" multiple />
 </gpstools-app>

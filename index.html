@@ -158,12 +158,19 @@
 <script src="./js/RGraph.bar.js"></script>
 <script src="./js/juration.js"></script>
 <script src="./js/mjbuilder.js"></script>
-<!-- <script src="./js/GPSTools.js"></script> -->
+<script src="./js/GPSTools.js"></script>
 <script src="./js/GPSTools.Map.js"></script>
+<script src="./js/TrackStore.js"></script>
+<script src="./js/CurrentTrackStore.js"></script>
 <!-- <script src="./js/index.js"></script> -->
 <script src="js/riot.js"></script>
+<script src="js/RiotControl.js"></script>
 <script src="js/tags.js"></script>
 <script>
+  var trackStore = new TrackStore();
+  var currentTrackStore = new currentTrackStore();
+  RiotControl.addStore(trackStore);
+  RiotControl.addStore(currentTrackStore);
   riot.mount('gpstools-app');
 </script>
 <script id="gpx-tmpl" type="text/plain">
