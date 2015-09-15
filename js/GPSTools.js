@@ -581,7 +581,7 @@ GPSTools.Track.prototype.getGradient = function (){
     for(i=c;i<l;i++){
       p1 = this.points[i-c];
       p2 = this.points[i];
-      dp = p1.distanceTo(p2); // km
+      dp = p1.distanceTo(p2) * 0.001; // km = m * 0.001
       e1 = p1.ele;
       e2 = p2.ele;
       de = e2 - e1; // m
@@ -678,9 +678,9 @@ GPSTools.Track.prototype.setTime = function(start, end) {
   }
   this.points[0].time = start.toISOString();
   for(;i<l;i++){
-    cuml_dist += points[i-1].distanceTo(points[i]); // km
+    cuml_dist += points[i-1].distanceTo(points[i]); // m
     time = cuml_dist / distance * duration + (histAvg ? (grad[i-1] - histAvg)*0.5 : 0); // s
-    date = new Date(+start + time*1000);
+    date = new Date(+start + time*1000); // ms = s * 1000
     this.points[i].time = date.toISOString();
   }
   this.events.trigger('changetime');
@@ -1015,10 +1015,10 @@ GPSTools.Point.prototype.getTime = function(){
   return this.getDate().getTime();
 }
 /**
- * @return Distance in km
+ * @return Distance in m
  */
 GPSTools.Point.prototype.distanceTo = function(){
-  var R = 6371, // km
+  var R = 6371000, // m
       toRad = function(n) {
         return n * Math.PI / 180;
       },
@@ -1246,10 +1246,16 @@ GPSTools.Util = function(){
       return dy + ' days ' + h + ' hours';
     },
     /**
-     * @param s Distance in km
+     * @param s Distance in m
+     */
+    convertToKm: function (s) {
+      return s * 0.001;
+    },
+    /**
+     * @param s Distance in m
      */
     convertToMiles: function (s) {
-      return s * 0.62137119223733;
+      return s * 0.001 * 0.62137119223733;
     },
     /**
      * @param v Speed in (m s^-1)
