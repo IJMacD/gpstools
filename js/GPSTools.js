@@ -1046,7 +1046,7 @@ GPSTools.Point.prototype.distanceTo = function(){
  * @return Speed in (m s^-1)
  */
 GPSTools.Point.prototype.speedTo = function(point) {
-  var s = this.distanceTo(point) * 1000,
+  var s = this.distanceTo(point),
       t = Math.abs(new Date(this.time) - new Date(point.time)) / 1000;
   return s / t;
 };
