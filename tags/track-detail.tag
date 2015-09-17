@@ -1,11 +1,11 @@
 <track-detail>
 
   <div id="summary" class="panel" show={ currentTrack }>
-    <h1 id="track-title" contentEditable="true">{ currentTrack.name }</h1>
+    <input type="text" class="track-title" onkeyup="{ editName }" value="{ currentTrack.name }" />
     <output id="gps">
-      Distance (km): { GPSTools.Util.convertToKm( currentTrack.distance ) }<br>
-      Distance (mi): { GPSTools.Util.convertToMiles( currentTrack.distance ) }<br>
-      <span show="{ time }">
+      Distance (km): { GPSTools.Util.convertToKm( currentTrack.distance ).toFixed(3) }<br>
+      Distance (mi): { GPSTools.Util.convertToMiles( currentTrack.distance ).toFixed(3) }<br>
+      <span show="{ currentTrack.duration }">
         Start: { currentTrack.start }<br>
         End: { currentTrack.end }<br>
         Duration: { GPSTools.Util.duration( currentTrack.duration ) }<br>
@@ -48,6 +48,30 @@
     RiotControl.on('current_changed', track => {
       this.update({currentTrack: track})
     })
+
+    editName(e){
+      if(this.currentTrack)
+        this.currentTrack.name = e.target.value
+
+      RiotControl.trigger('track_edit', this.currentTrack);
+    }
   </script>
+
+  <style scoped>
+    .track-title {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 2em;
+      height: initial;
+      padding: 0;
+      width: 100%;
+    }
+    .track-title:focus {
+      outline: none;
+      border: 0;
+      box-shadow: none;
+    }
+  </style>
 
 </track-detail>

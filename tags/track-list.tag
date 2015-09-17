@@ -1,20 +1,20 @@
 <track-list>
   <ul id="tracks-list" class="panel" onclick="{ addTrack }">
-    <li each={ tracks } class="track { selected: currentTrack == _item }"
+    <li each={ track in tracks } class="track { selected: currentTrack == track }"
         draggable="true" onclick="{ setCurrent }"
-        style="background-image: url({ getThumb(64) })">
-      <p class="track-name">{ name }</p>
-      <span class="track-dist">{ GPSTools.Util.convertToKm( distance ).toFixed(2) } km</span>
-      <span class="track-time" show="{ duration }">{ GPSTools.Util.duration( duration ) }</span>
+        style="background-image: url({ track.getThumb(64) })">
+      <button class="close" onclick="{ removeTrack }"><i class="icon-remove icon-white"></i></button>
+      <p class="track-name">{ track.name }</p>
+      <span class="track-dist">{ GPSTools.Util.convertToKm( track.distance ).toFixed(2) } km</span>
+      <span class="track-time" show="{ track.duration }">{ GPSTools.Util.duration( track.duration ) }</span>
     </li>
     <p show="{ !tracks.length }" class="unselectable">Import a track using the buttons above or drag‑n‑drop.</p>
   </ul>
 
   <script>
     this.tracks = []
-    this.currentTrack = {}
 
-    var i = 3
+    var i = 1
 
     RiotControl.on('track_changed', tracks => {
       this.update({tracks: tracks})
@@ -35,19 +35,21 @@
     }
 
     setCurrent(e) {
-      console.log(e)
-
-      if(e.ctrlKey)
-        return this.removeTrack(e)
-
       e.stopPropagation()
-      RiotControl.trigger('current_set', e.item)
+
+      var track = e.item.track
+
+      RiotControl.trigger('current_set', track)
     }
 
     removeTrack(e) {
       e.stopPropagation()
-      RiotControl.trigger('track_remove', e.item)
-      if(this.currentTrack == e.item){
+
+      var track = e.item.track
+
+      RiotControl.trigger('track_remove', track)
+
+      if(this.currentTrack == track){
         RiotControl.trigger('current_set', null)
       }
     }

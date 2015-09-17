@@ -7,12 +7,19 @@ riot.tag('gpstools-menu', '<div id="action-bar"> <h1>GPSTools</h1> <div id="cab"
 
 });
 
-riot.tag('track-detail', '<div id="summary" class="panel" show="{ currentTrack }"> <h1 id="track-title" contentEditable="true">{ currentTrack.name }</h1> <output id="gps"> Distance (km): { GPSTools.Util.convertToKm( currentTrack.distance ) }<br> Distance (mi): { GPSTools.Util.convertToMiles( currentTrack.distance ) }<br> <span show="{ time }"> Start: { currentTrack.start }<br> End: { currentTrack.end }<br> Duration: { GPSTools.Util.duration( currentTrack.duration ) }<br> Average Speed (km/h): { GPSTools.Util.convertToKPH( currentTrack.averageSpeed ) }<br> Maximum Speed (km/h): { GPSTools.Util.convertToKPH( currentTrack.maximumSpeed ) }<br> Maximum Speed (mph): { GPSTools.Util.convertToMPH( currentTrack.maximumSpeed ) } </span> <span show="{ heightGain }"> Height Gain (m): { currentTrack.heightGain } </span> </output> </div> <div id="track-detail" style="display: none;"> <div id="details"> <h2>Details</h2> <div id="super-breakdown"> <table class="table"> <thead> <tr> <th>Segment</th> <th>Name</th> <th>Distance (km)</th> <th>Start Time</th> <th>End Time</th> <th>Duration</th> <th>Actions</th> </tr> </thead> <tbody></tbody> </table> </div> </div> </div>', function(opts) {
+riot.tag('track-detail', '<div id="summary" class="panel" show="{ currentTrack }"> <input type="text" class="track-title" onkeyup="{ editName }" value="{ currentTrack.name }"> <output id="gps"> Distance (km): { GPSTools.Util.convertToKm( currentTrack.distance ).toFixed(3) }<br> Distance (mi): { GPSTools.Util.convertToMiles( currentTrack.distance ).toFixed(3) }<br> <span show="{ currentTrack.duration }"> Start: { currentTrack.start }<br> End: { currentTrack.end }<br> Duration: { GPSTools.Util.duration( currentTrack.duration ) }<br> Average Speed (km/h): { GPSTools.Util.convertToKPH( currentTrack.averageSpeed ) }<br> Maximum Speed (km/h): { GPSTools.Util.convertToKPH( currentTrack.maximumSpeed ) }<br> Maximum Speed (mph): { GPSTools.Util.convertToMPH( currentTrack.maximumSpeed ) } </span> <span show="{ heightGain }"> Height Gain (m): { currentTrack.heightGain } </span> </output> </div> <div id="track-detail" style="display: none;"> <div id="details"> <h2>Details</h2> <div id="super-breakdown"> <table class="table"> <thead> <tr> <th>Segment</th> <th>Name</th> <th>Distance (km)</th> <th>Start Time</th> <th>End Time</th> <th>Duration</th> <th>Actions</th> </tr> </thead> <tbody></tbody> </table> </div> </div> </div>', 'track-detail .track-title, [riot-tag="track-detail"] .track-title{ background: none; border: none; color: white; font-size: 2em; height: initial; padding: 0; width: 100%; } track-detail .track-title:focus, [riot-tag="track-detail"] .track-title:focus{ outline: none; border: 0; box-shadow: none; }', function(opts) {
     this.currentTrack = null
 
     RiotControl.on('current_changed', track => {
       this.update({currentTrack: track})
     })
+
+    this.editName = function(e) {
+      if(this.currentTrack)
+        this.currentTrack.name = e.target.value
+
+      RiotControl.trigger('track_edit', this.currentTrack);
+    }.bind(this);
   
 });
 
@@ -20,11 +27,10 @@ riot.tag('track-graph', '<div id="graph"> <h2>Elevation / Speed</h2> <div id="sl
 
 });
 
-riot.tag('track-list', '<ul id="tracks-list" class="panel" onclick="{ addTrack }"> <li each="{ tracks }" class="track { selected: currentTrack == _item }" draggable="true" onclick="{ setCurrent }" riot-style="background-image: url({ getThumb(64) })"> <p class="track-name">{ name }</p> <span class="track-dist">{ GPSTools.Util.convertToKm( distance ).toFixed(2) } km</span> <span class="track-time" show="{ duration }">{ GPSTools.Util.duration( duration ) }</span> </li> <p show="{ !tracks.length }" class="unselectable">Import a track using the buttons above or drag‑n‑drop.</p> </ul>', 'track-list ul, [riot-tag="track-list"] ul{ top: 4em; box-sizing: border-box; bottom: 280px; overflow-y: auto; padding: 5px; position: absolute; width: 350px; left: 40px; user-select: none; -moz-user-select: none; -webkit-user-select: none; margin: 0; list-style: none; } track-list ul > p, [riot-tag="track-list"] ul > p{ color: rgba(255, 255, 255, 0.6); text-align: center; } track-list li, [riot-tag="track-list"] li{ border-radius: 5px; transition: all 0.5s; } track-list li:hover, [riot-tag="track-list"] li:hover{ background: rgba(128,128,128,0.5); }', function(opts) {
+riot.tag('track-list', '<ul id="tracks-list" class="panel" onclick="{ addTrack }"> <li each="{ track in tracks }" class="track { selected: currentTrack == track }" draggable="true" onclick="{ setCurrent }" riot-style="background-image: url({ track.getThumb(64) })"> <button class="close" onclick="{ removeTrack }"><i class="icon-remove icon-white"></i></button> <p class="track-name">{ track.name }</p> <span class="track-dist">{ GPSTools.Util.convertToKm( track.distance ).toFixed(2) } km</span> <span class="track-time" show="{ track.duration }">{ GPSTools.Util.duration( track.duration ) }</span> </li> <p show="{ !tracks.length }" class="unselectable">Import a track using the buttons above or drag‑n‑drop.</p> </ul>', 'track-list ul, [riot-tag="track-list"] ul{ top: 4em; box-sizing: border-box; bottom: 280px; overflow-y: auto; padding: 5px; position: absolute; width: 350px; left: 40px; user-select: none; -moz-user-select: none; -webkit-user-select: none; margin: 0; list-style: none; } track-list ul > p, [riot-tag="track-list"] ul > p{ color: rgba(255, 255, 255, 0.6); text-align: center; } track-list li, [riot-tag="track-list"] li{ border-radius: 5px; transition: all 0.5s; } track-list li:hover, [riot-tag="track-list"] li:hover{ background: rgba(128,128,128,0.5); }', function(opts) {
     this.tracks = []
-    this.currentTrack = {}
 
-    var i = 3
+    var i = 1
 
     RiotControl.on('track_changed', tracks => {
       this.update({tracks: tracks})
@@ -45,19 +51,21 @@ riot.tag('track-list', '<ul id="tracks-list" class="panel" onclick="{ addTrack }
     }.bind(this);
 
     this.setCurrent = function(e) {
-      console.log(e)
-
-      if(e.ctrlKey)
-        return this.removeTrack(e)
-
       e.stopPropagation()
-      RiotControl.trigger('current_set', e.item)
+
+      var track = e.item.track
+
+      RiotControl.trigger('current_set', track)
     }.bind(this);
 
     this.removeTrack = function(e) {
       e.stopPropagation()
-      RiotControl.trigger('track_remove', e.item)
-      if(this.currentTrack == e.item){
+
+      var track = e.item.track
+
+      RiotControl.trigger('track_remove', track)
+
+      if(this.currentTrack == track){
         RiotControl.trigger('current_set', null)
       }
     }.bind(this);

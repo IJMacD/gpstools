@@ -1,14 +1,7 @@
 function TrackStore(){
   riot.observable(this)
 
-  this.tracks = [{
-    name: 'Track 1',
-    distance: 12342.52345
-  },{
-    name: 'Track 2',
-    distance: 75234.5,
-    duration: 29138
-  }]
+  this.tracks = []
 
   this.on('track_init', () => {
     this.trigger('track_changed', this.tracks)
@@ -27,5 +20,9 @@ function TrackStore(){
     else
       this.tracks.pop()
     this.trigger('todo_changed', this.tracks)
+  })
+
+  this.on('track_edit', track => {
+    this.trigger('track_changed', this.tracks);
   })
 }
