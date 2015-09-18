@@ -13,7 +13,7 @@
         Maximum Speed (km/h): { GPSTools.Util.convertToKPH( currentTrack.maximumSpeed ) }<br>
         Maximum Speed (mph): { GPSTools.Util.convertToMPH( currentTrack.maximumSpeed ) }
       </span>
-      <span show="{ heightGain }">
+      <span show="{ currentTrack.heightGain }">
         Height Gain (m): { currentTrack.heightGain }
       </span>
     </output>
@@ -50,6 +50,8 @@
     })
 
     editName(e){
+      e.preventUpdate = true
+
       if(this.currentTrack)
         this.currentTrack.name = e.target.value
 
