@@ -21,7 +21,7 @@ module.exports = function(grunt) {
     smash: {
       dist: {
         src: 'src/GPSTools/gpstools.js',
-        dest: 'dist/tmp/gpstools.js'
+        dest: 'dist/js/<%= pkg.name %>.js'
       }
     },
     riot: {
@@ -30,13 +30,13 @@ module.exports = function(grunt) {
       },
       dist: {
         src: 'src/tags/*.tag',
-        dest: 'dist/tmp/tags.js'
+        dest: 'dist/js/tags.js'
       }
     },
     concat: {
       dist: {
-        src: ['src/stores/*.js', '<%= riot.dist.dest %>', '<%= smash.dist.dest %>'],
-        dest: 'dist/<%= pkg.name %>.js'
+        src: ['src/stores/*.js', '<%= riot.dist.dest %>'],
+        dest: 'dist/js/index.js'
       }
     },
     uglify: {
