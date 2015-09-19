@@ -71,7 +71,7 @@ $(function(){
 	var point2 = new GPSTools.Point(1,1,1,"2013-05-25T20:20:00Z")
 	test("GPSTools.Point.distanceTo", function(){
 		var d = point.distanceTo(point2);
-		return round(d,1) == 157.2;
+		return Math.round(d) == 157249;
 	});
 
 	test("GPSTools.Point.speedTo", function(){
@@ -144,7 +144,7 @@ $(function(){
 
 	testEqual("GPSTools.Track.getDuration", track.getDuration(), 30 * 60);
 
-	testEqual("GPSTools.Track.getDistance", track.getDistance(), 379.6, 1);
+	testEqual("GPSTools.Track.getDistance", track.getDistance(), 379571.5, 1);
 
 	//test("GPSTools.Track.getElevation", function(){});
 	testEqual("GPSTools.Track.getHeightGain", track.getHeightGain(), 2);
