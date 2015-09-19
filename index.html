@@ -7,7 +7,9 @@
 <!-- <link rel="stylesheet" href="./theme/default/style.css" type="text/css"> -->
 <link rel="stylesheet" href="lib/ol3/ol.css">
 <link rel="stylesheet" href="lib/ol3/ol3-layerswitcher.css">
+<!-- build:css css/index.css -->
 <link rel="stylesheet" href="assets/css/index.css">
+<!-- /build -->
 </head>
 <body>
 
@@ -69,7 +71,9 @@
       <label for="rideid_txt" class="control-label">Ride ID or URL:</label>
       <div class="controls">
         <input type="text" id="rideid_txt">
+        <!-- build:[src] img/loading.gif -->
         <img id="strava-loading" class="loading" src="assets/img/loading.gif" />
+        <!-- /build -->
       </div>
     </div>
     <div id="strava-ride-details">
@@ -159,12 +163,38 @@
 <script src="lib/RGraph/RGraph.bar.js"></script>
 <script src="lib/juration.js"></script>
 <script src="lib/mjbuilder.js"></script>
-<script src="lib/riot/riot.js"></script>
+<script src="lib/riot/riot.min.js"></script>
 <script src="lib/RiotControl.js"></script>
 
-<script src="dist/GPSTools.js"></script>
-<script src="dist/stores.js"></script>
-<script src="dist/tags.js"></script>
+<!-- build:remove -->
+<script src="src/tags/gpstools-app.tag" type="riot/tag"></script>
+<script src="src/tags/menu-bar.tag" type="riot/tag"></script>
+<script src="src/tags/track-detail.tag" type="riot/tag"></script>
+<script src="src/tags/track-graph.tag" type="riot/tag"></script>
+<script src="src/tags/track-list.tag" type="riot/tag"></script>
+<script src="src/tags/track-map.tag" type="riot/tag"></script>
+
+<script src="lib/riot/riot+compiler.js"></script>
+<!-- /build -->
+
+<!-- build:js GPSTools.js -->
+
+<script src="src/GPSTools/core.js"></script>
+<script src="src/GPSTools/format/gpx.js"></script>
+<script src="src/GPSTools/format/kml.js"></script>
+<script src="src/GPSTools/format/tcx.js"></script>
+<script src="src/GPSTools/format/json.js"></script>
+<script src="src/GPSTools/format/csv.js"></script>
+<script src="src/GPSTools/track.js"></script>
+<script src="src/GPSTools/supertrack.js"></script>
+<script src="src/GPSTools/point.js"></script>
+<script src="src/GPSTools/map.js"></script>
+<script src="src/GPSTools/graph.js"></script>
+<script src="src/GPSTools/util.js"></script>
+<script src="src/stores/TrackStore.js"></script>
+<script src="src/stores/CurrentTrackStore.js"></script>
+<!-- /build -->
+
 <script>
   var trackStore = new TrackStore();
   var currentTrackStore = new CurrentTrackStore();

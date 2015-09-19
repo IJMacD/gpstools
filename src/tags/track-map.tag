@@ -26,7 +26,7 @@
       var tag = options.tag;
 
       var getClassName = function(){
-        return (tag.isPanel ? "icon-resize-full" : "icon-resize-small");
+        return (tag.isPanel ? "icon-resize-full icon-white" : "icon-resize-small icon-white");
       }
 
       var button = document.createElement('button');
