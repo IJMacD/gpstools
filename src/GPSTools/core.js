@@ -1,6 +1,6 @@
 var GPSTools = (function(){
   var parseTrack = function(string) {
-        for(fmt in GPSTools.Format){
+        for(var fmt in GPSTools.Format){
           if(GPSTools.Format[fmt].isValid(string)){
             return GPSTools.Format[fmt].parse(string);
           }
@@ -11,25 +11,29 @@ var GPSTools = (function(){
             ps = track.getPoints(),
             l = ps.length,
             p;
+
         for (;i<l;i++) {
           p = ps[i];
-          if(p.lat != 0 || p.lon != 0){
+          if(p.lat !== 0 || p.lon !== 0){
             break;
           }
-        };
-        if(i != 0){
+        }
+
+        if(i !== 0){
           ps = ps.splice(0, i);
         }
+
         if(i != l){
           i = ps.length - 1;
           for(;i>=0;i--){
             p = ps[i];
-            if(p.lat != 0 || ps.lon != 0){
+            if(p.lat !== 0 || ps.lon !== 0){
               break;
             }
           }
           ps = ps.length = i;
         }
+
         track.setPoints(ps);
       },
       cropTrack = function(track, start, end){
@@ -58,7 +62,7 @@ var GPSTools = (function(){
         });
 
         tracks.forEach(function(track, i){
-          if(i==0){
+          if(i === 0){
             endTime = track.getEnd();
           }
           else if(track.getStart() < endTime) {
@@ -80,7 +84,8 @@ var GPSTools = (function(){
     areMergeable: areMergeable,
     cropTrack: cropTrack,
     mergeTracks: mergeTracks,
-    parseTrack: parseTrack
+    parseTrack: parseTrack,
+    trimTrack: trimTrack
   };
 }());
 GPSTools.Format = {};

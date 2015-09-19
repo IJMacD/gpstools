@@ -41,6 +41,8 @@ GPSTools.Format.TCX = function(){
       logging(points.length + " points loaded");
       return new GPSTools.Track(points);
     },
-    generate: function (track) {}
+    generate: function (/*track*/) {
+      throw Error('Not Implemented.');
+    }
   };
 }();

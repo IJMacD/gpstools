@@ -30,7 +30,7 @@ GPSTools.Format.GPX = function(){
             logging("GPX file with Track");
             pts = doc.find('trkpt');
             logging(pts.length + " track points");
-            pts.each(function(i) {
+            pts.each(function() {
               var item = $(this),
                   lat = item.attr('lat'),
                   lon = item.attr('lon'),
@@ -48,7 +48,7 @@ GPSTools.Format.GPX = function(){
             logging("GPX file with Route");
             pts = doc.find('rtept');
             logging(pts.length + " route points");
-            pts.each(function(i) {
+            pts.each(function() {
               var item = $(this),
                   lat = item.attr('lat'),
                   lon = item.attr('lon'),

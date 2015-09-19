@@ -20,9 +20,6 @@ GPSTools.Point.prototype.distanceTo = function(){
   var R = 6371000, // m
       toRad = function(n) {
         return n * Math.PI / 180;
-      },
-      toDeg = function(n) {
-        return n * 180 / Math.PI;
       };
   return function(point) {
     if(!point){
@@ -60,8 +57,6 @@ GPSTools.Point.prototype.bearingTo = (function() {
     var dLon = toRad(point.lon - this.lon),
         lat1 = toRad(this.lat),
         lat2 = toRad(point.lat),
-        lon1 = toRad(this.lon),
-        lon2 = toRad(point.lon),
         y = Math.sin(dLon) * Math.cos(lat2),
         x = Math.cos(lat1)*Math.sin(lat2) -
             Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);

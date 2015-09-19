@@ -65,7 +65,7 @@ GPSTools.Graph = (function(){
     clear: function(id){
       RGraph.Clear($('#'+id)[0]);
     },
-    getPosition: function(id,x,y){
+    getPosition: function(id,x){
       var canvas = $('#'+id)[0],
           width = canvas.width,
           fracX = (x - gutterWidth) / (width - gutterWidth * 2);
@@ -109,7 +109,7 @@ GPSTools.Graph = (function(){
         selectionEnd = x;
       }
     },
-    clearSelection: function(id){
+    clearSelection: function(){
       selectionStart = selectionEnd = 0;
     },
     getSelectionStart: function(id){

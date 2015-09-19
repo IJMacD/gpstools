@@ -22,11 +22,11 @@ function TrackStore(){
     this.trigger('track_changed', this.tracks)
   })
 
-  this.on('track_edit', track => {
+  this.on('track_edit', () => {
     this.trigger('track_changed', this.tracks);
   })
 
-  this.on('track_changed', tracks => {
+  this.on('track_changed', () => {
     localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(this.tracks))
   })
 }

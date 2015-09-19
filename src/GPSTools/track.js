@@ -159,6 +159,7 @@ GPSTools.Track.prototype.getGradient = function (){
     if(!this.hasElevation())
         throw "No Elevation data asccociated with this track";
     var grd = [],
+        i,
         l = this.points.length,
         p1, p2, dp,
         e1, e2, de,
@@ -194,7 +195,8 @@ GPSTools.Track.prototype.getGradientHistogram = function() {
     if(!hist[val])
       hist[val] = 0
     hist[val]++;
-  };
+  }
+
   return hist;
 };
 GPSTools.Track.prototype.getSpeed = function (){
@@ -258,7 +260,7 @@ GPSTools.Track.prototype.setTime = function(start, end) {
     grad = this.getGradient();
     histSum = 0;
     hist = this.getGradientHistogram();
-    for(key in hist){
+    for(var key in hist){
       histSum += key * hist[key];
     }
     histAvg = histSum / (distance * 10);
@@ -398,9 +400,10 @@ GPSTools.Track.prototype.getInstantAltitude = function(time) {
     console.log(t0 + "[" + time + "]" + t1);
   return e0 + a * (e1 - e0);
 }
-GPSTools.Track.prototype.getInstantDistance = function(time) {
-  var i0 = this.getPrecedingPointIndex(time);
-  //return this.points[i0].speedTo(this.points[i0+1]);
+GPSTools.Track.prototype.getInstantDistance = function(/*time*/) {
+  throw Error('Not Implemented')
+  // var i0 = this.getPrecedingPointIndex(time);
+  // return this.points[i0].speedTo(this.points[i0+1]);
 }
 GPSTools.Track.prototype.getInstantHeading = function(time) {
   var i1 = this.getPrecedingPointIndex(time),

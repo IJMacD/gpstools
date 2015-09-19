@@ -30,6 +30,9 @@ body {
   text-shadow: 1px 1px 2px black;
   vertical-align: middle;
 }
+#action-bar button {
+    margin: 0 2px;
+}
 #cab {
   display: inline-block;
   float: right;

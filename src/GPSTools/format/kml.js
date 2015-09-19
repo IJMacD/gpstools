@@ -43,14 +43,11 @@ GPSTools.Format.KML = function(){
     },
     generate: function (track) {
       var doc = $.parseXML($('#kml-tmpl').text()),
-          kml = $(doc).find('kml'),
           name = $(doc).find('name').not("author name"),
           points = track.getPoints(),
           l = points.length,
           i = 0,
-          p, trkpt, ele,
-          hasTime = track.hasTime(),
-          hasEle = track.hasElevation(),
+          p,
           lineString = [],
           coordinates = $(doc).find('coordinates');
       name.text(track.name);

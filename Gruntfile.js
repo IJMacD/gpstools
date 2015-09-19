@@ -53,6 +53,24 @@ module.exports = function(grunt) {
         }
       }
     },
+    jshint: {
+      files: ['src/GPSTools/*', 'src/stores/*'],
+      options: {
+        browser: true,
+        devel: true,
+        globals: {
+          'GPSTools': true,
+          '$': false,
+          'ol': false,
+          'riot': false,
+          'logging': true,
+          'RGraph': false
+        },
+        esnext: true,
+        asi: true,
+        undef: true
+      }
+    }
   });
 
   grunt.loadNpmTasks('grunt-smash')
@@ -61,6 +79,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-riot')
   grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-processhtml')
+  grunt.loadNpmTasks('grunt-contrib-jshint')
 
-  grunt.registerTask('default', ['copy', 'smash', 'riot', 'concat', 'processhtml'])
+  grunt.registerTask('default', ['jshint', 'copy', 'smash', 'riot', 'concat', 'processhtml'])
 };
