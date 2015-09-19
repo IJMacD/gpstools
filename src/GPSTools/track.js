@@ -216,7 +216,7 @@ GPSTools.Track.prototype.getSpeed = function (){
  */
 GPSTools.Track.prototype.getAvgSpeed = function () {
   if(!this.avgSpeed) {
-    this.avgSpeed = this.getDistance() / this.getDuration() * 1000;
+    this.avgSpeed = this.getDistance() / this.getDuration();
   }
   return this.avgSpeed;
 };
