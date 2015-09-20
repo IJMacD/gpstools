@@ -70,6 +70,16 @@ module.exports = function(grunt) {
         asi: true,
         undef: true
       }
+    },
+    clean: {
+      dist: ['dist/js/tags.js']
+    },
+    notify: {
+      dist: {
+        options: {
+          message: "Build Complete"
+        }
+      }
     }
   });
 
@@ -80,6 +90,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-processhtml')
   grunt.loadNpmTasks('grunt-contrib-jshint')
+  grunt.loadNpmTasks('grunt-contrib-clean')
+  grunt.loadNpmTasks('grunt-notify')
 
-  grunt.registerTask('default', ['jshint', 'copy', 'smash', 'riot', 'concat', 'processhtml'])
+  grunt.registerTask('default', ['jshint', 'copy', 'smash', 'riot', 'concat', 'processhtml', 'clean', 'notify'])
 };
