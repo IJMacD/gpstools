@@ -27,11 +27,7 @@
     RiotControl.trigger('track_init')
 
     addTrack() {
-      RiotControl.trigger('track_add', {
-        name: 'Track '+ i++,
-        distance: 100000 * Math.random(),
-        duration: 86400 * Math.random()
-      })
+      RiotControl.trigger('file_open')
     }
 
     setCurrent(e) {

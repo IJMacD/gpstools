@@ -8,6 +8,7 @@
         // osLayer,
         // googStreetLayer,
         // googSatLayer,
+        lineSource,
         lineLayer,
         // drawLayer,
         drawControl,
@@ -90,10 +91,16 @@
         //         graphicZIndex: 2
         //     })
         // });
-        // lineLayer = new ol.Layer.Vector("Line Layer", {
-        //   styleMap: myStyles,
-        //   renderers: ["Canvas", "SVG", "VML"]
-        // });
+        lineSource = new ol.source.Vector();
+        lineLayer = new ol.layer.Vector({
+          source: lineSource,
+          style: new ol.style.Style({
+            stroke: new ol.style.Stroke({
+              color: "#ff0000",
+              width: 3
+            })
+          })
+        });
         // drawLayer = new ol.Layer.Vector("Draw Layer", {styleMap: myStyles});
         // drawControl = new ol.Control.DrawFeature(drawLayer, ol.Handler.Path);
         // drawControl.events.register('featureadded', null, function(){
@@ -122,7 +129,7 @@
         // map.addLayer(osLayer);
         // map.addLayer(googStreetLayer);
         // map.addLayer(googSatLayer);
-        // map.addLayer(lineLayer);
+        map.addLayer(lineLayer);
         // map.addLayer(drawLayer);
 
         // map.zoomToMaxExtent();
@@ -165,52 +172,12 @@
       },
       // Used to be function (Points[] points, bool highlight)
       drawLine: function (points, options) {
-        if(!map){
-          $('#map').show();
-          GPSTools.Map.create();
-        }
-        if(typeof options != "object"){
-          options = {highlight: !!options};
-        }
-        var olPoints = [],
-            i,
-            olLine,
-            olBounds,
-            olStyle,
-            olFeature,
-            fromProjection = lonLatProjection,
-            toProjection = map.getProjectionObject();
-        logging("Drawing line" + (options.highlight ? " (highlight)" : ""));
-        for(i=0;i<points.length;i++){
-          if(isNaN(points[i].lat) || isNaN(points[i].lon))
-            console.log("Bad Point: " + points[i].time);
-          else
-            olPoints.push(new ol.Geometry.Point(points[i].lon,points[i].lat).transform(fromProjection, toProjection));
-        }
-        olLine = new ol.Geometry.LineString(olPoints);
-        logging("Conversion of points finished");
-        olBounds = olLine.getBounds();
-        olStyle = {
-          strokeColor: options.color || (options.highlight ? '#ff0000': '#0000ff'),
-          strokeOpacity: options.opacity || 0.5,
-          strokeWidth: options.width || 5
-        };
-        // I tried to reuse Vector Feature!
-        // I did I promise, it just displayed buggily
-        olFeature = new ol.Feature.Vector(olLine, null, olStyle);
-
-        if(options.highlight){
-          if(lineHighlight)
-            lineLayer.removeFeatures([lineHighlight]);
-          lineHighlight = olFeature;
-        }
-        else{
-          bounds = olBounds;
-        }
-
-        lineLayer.addFeatures([olFeature]);
-
-        map.zoomToExtent(olBounds);
+        var olCoordinates = points.map(point => ol.proj.transform([point.lon, point.lat], 'EPSG:4326', 'EPSG:3857')),
+            olLineString = new ol.geom.LineString(olCoordinates),
+            olFeature = new ol.Feature(olLineString)
+        lineSource.clear()
+        lineSource.addFeature(olFeature)
+        map.getView().fit(lineSource.getExtent(), map.getSize())
       },
       mark: function(point){
         var lonlat = new ol.LonLat(point.lon,point.lat).transform(lonLatProjection, map.getProjectionObject()),

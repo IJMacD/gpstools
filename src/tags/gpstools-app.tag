@@ -33,6 +33,7 @@
         .then(files => {
           files.forEach(track => {
             RiotControl.trigger('track_add', track)
+            RiotControl.trigger('current_set', track)
           })
         })
 

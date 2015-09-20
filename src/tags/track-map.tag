@@ -15,6 +15,10 @@
       GPSTools.Map.updateSize()
     })
 
+    RiotControl.on("current_changed", track => {
+      GPSTools.Map.drawLine(track.points)
+    })
+
     /**
      * @constructor
      * @extends {ol.control.Control}
