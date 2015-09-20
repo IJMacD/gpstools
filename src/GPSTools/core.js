@@ -1,5 +1,26 @@
 var GPSTools = (function(){
-  var parseTrack = function(string) {
+  var importFile = function (file) {
+        return new Promise(function(resolve, reject) {
+
+          var reader = new FileReader();
+
+          // Closure to capture the file information.
+          reader.onload = function(e) {
+            var track = GPSTools.parseTrack(e.target.result);
+
+            if(track){
+              if(!track.name || track.name == "Track")
+                track.setName(file.name);
+
+              resolve(track);
+            }
+          }
+
+          // Read in the file as text.
+          reader.readAsText(file);
+        })
+      },
+      parseTrack = function(string) {
         for(var fmt in GPSTools.Format){
           if(GPSTools.Format[fmt].isValid(string)){
             return GPSTools.Format[fmt].parse(string);
@@ -81,6 +102,7 @@ var GPSTools = (function(){
       };
 
   return {
+    importFile: importFile,
     areMergeable: areMergeable,
     cropTrack: cropTrack,
     mergeTracks: mergeTracks,

@@ -1,43 +1,11 @@
 GPSTools.Track = function (points, name) {
   this.points = points || [];
   this.name = name || "Track";
-  var events = this.events = $({}),
-      suspendChangeEvent = false,
-      that = this;
-  events.on('changename', function(){
-    if(!suspendChangeEvent)
-      events.trigger('change');
-  });
-  events.on('changepoints', function(){
-
-    that.distance = 0;
-    that.elevation = 0;
-    that.gradient = 0;
-
-    var sce = suspendChangeEvent;
-    suspendChangeEvent = true;
-    events.trigger('changetime');
-    suspendChangeEvent = sce;
-
-    if(!suspendChangeEvent)
-      events.trigger('change');
-  });
-  events.on('changetime', function(){
-
-    that.start = null;
-    that.end = null;
-    that.speed = 0;
-    that.avgSpeed = 0;
-    that.maxSpeed = 0;
-    that.duration = 0;
-
-    if(!suspendChangeEvent)
-      events.trigger('changepoints');
-  });
+  this.getDistance();
+  this.getDuration();
 };
 GPSTools.Track.prototype.setName = function(name) {
   this.name = name.replace(/_/g, " ").replace(/\.[a-z]{3,4}$/,"");
-  this.events.trigger('changename');
 }
 GPSTools.Track.prototype.hasTime = function (){
   var p = this.points;
@@ -272,7 +240,6 @@ GPSTools.Track.prototype.setTime = function(start, end) {
     date = new Date(+start + time*1000); // ms = s * 1000
     this.points[i].time = date.toISOString();
   }
-  this.events.trigger('changetime');
 };
 GPSTools.Track.prototype.setStartTime = function(start) {
   var end = this.getEndTime();
@@ -280,7 +247,6 @@ GPSTools.Track.prototype.setStartTime = function(start) {
     this.setTime(start, end);
   else{
     this.points[0].time = start.toISOString();
-    this.events.trigger('changetime');
   }
 };
 GPSTools.Track.prototype.setEndTime = function(end) {
@@ -289,7 +255,6 @@ GPSTools.Track.prototype.setEndTime = function(end) {
     this.setTime(start, end);
   else {
     this.points[this.points.length-1].time = end.toISOString();
-    this.events.trigger('changetime');
   }
 };
 /**

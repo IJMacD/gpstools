@@ -3,6 +3,6 @@ function CurrentTrackStore(){
 
   this.on('current_set', track => {
     this.currentTrack = track
-    this.trigger('current_changed', this.currentTrack)
+    RiotControl.trigger('current_changed', this.currentTrack)
   })
 }

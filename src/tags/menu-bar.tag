@@ -1,7 +1,7 @@
 <gpstools-menu>
   <div id="action-bar">
     <h1>GPSTools</h1>
-    <div id="cab">
+    <div id="cab" show="{ currentTrack }">
       <button id="get-ele-btn" class="btn btn-small" title="Get Elevation">
         <i class="cicon-mountain"></i>
       </button>
@@ -34,7 +34,7 @@
       </div>
       &nbsp;
     </div>
-    <button id="open-file-btn" class="btn btn-small" title="Open Files">
+    <button id="open-file-btn" class="btn btn-small" title="Open Files" onclick="{ openFile }">
       <i class="icon-folder-open"></i>
     </button>
     <button id="strava-import-btn" class="btn btn-small" title="Strava Import">
@@ -58,5 +58,18 @@
     </button>
     <progress value="0"></progress>
   </div>
+
+  <script>
+    this.currentTrack = null;
+
+    RiotControl.on('current_changed', track => {
+      this.update({currentTrack: track})
+    })
+
+    openFile () {
+      console.log('openFile');
+      RiotControl.trigger('file_open')
+    }
+  </script>
 
 </gpstools-menu>
