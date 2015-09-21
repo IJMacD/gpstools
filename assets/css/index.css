@@ -41,10 +41,6 @@ body {
   margin-left: 5px;
   margin-top: 4px;
 }
-#cab > button,
-#export-grp {
-  display: none;
-}
 #files {
   display: none;
 }
@@ -198,9 +194,6 @@ small {
   -ms-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-}
-#cab > .btn {
-  display: none;
 }
 #export-grp {
   vertical-align: middle;

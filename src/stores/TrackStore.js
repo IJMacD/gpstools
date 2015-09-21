@@ -2,7 +2,7 @@ function TrackStore(){
   riot.observable(this)
 
   const LOCALSTORAGE_KEY = 'gpstools-track-index'
-  this.tracks = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || []
+  this.tracks = loadTracks()
 
   this.on('track_init', () => {
     RiotControl.trigger('track_changed', this.tracks)
@@ -29,4 +29,9 @@ function TrackStore(){
   this.on('track_changed', () => {
     localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(this.tracks))
   })
+
+  function loadTracks() {
+    return JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY) || "[]")
+      .map(jsonTrack => new GPSTools.Track(jsonTrack))
+  }
 }

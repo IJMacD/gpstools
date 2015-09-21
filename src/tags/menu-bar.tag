@@ -2,13 +2,16 @@
   <div id="action-bar">
     <h1>GPSTools</h1>
     <div id="cab" show="{ currentTrack }">
-      <button id="get-ele-btn" class="btn btn-small" title="Get Elevation">
+      <button id="get-ele-btn" class="btn btn-small" title="Get Elevation"
+         show="{ !currentTrack.hasElevtion() }">
         <i class="cicon-mountain"></i>
       </button>
-      <button id="gen-spd-btn" class="btn btn-small" title="Generate Speed">
+      <button id="gen-spd-btn" class="btn btn-small" title="Generate Speed"
+         show="{ !currentTrack.hasTime() }">
         <i class="icon-time"></i>
       </button>
-      <button id="mrg-trk-btn" class="btn btn-small" title="Merge Tracks">
+      <button id="mrg-trk-btn" class="btn btn-small" title="Merge Tracks"
+         show="{ currentTrack.length }">
         <i class="cicon-merge"></i>
       </button>
       <button id="ato-spl-btn" class="btn btn-small" track="Autosplit">
@@ -17,7 +20,7 @@
       <button id="hud-btn" class="btn btn-small" data-toggle="modal" data-target="#hudModal" title="HUD">
         <i class="icon-facetime-video"></i>
       </button>
-      <div class="btn-group" id="export-grp">
+      <span class="btn-group" id="export-grp">
         <a id="gen-fmt-btn" class="btn btn-small" title="Export">
           <i class="icon-download-alt"></i>
           <span>GPX</span>
@@ -31,8 +34,7 @@
           <li><a href="#" id="gen-tcx-btn">Export TCX</a>
           <li><a href="#" id="gen-json-btn">Export JSON</a>
         </ul>
-      </div>
-      &nbsp;
+      </span>
     </div>
     <button id="open-file-btn" class="btn btn-small" title="Open Files" onclick="{ openFile }">
       <i class="icon-folder-open"></i>
