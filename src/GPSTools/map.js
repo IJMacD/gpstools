@@ -8,7 +8,7 @@
         // osLayer,
         // googStreetLayer,
         // googSatLayer,
-        lineSource,
+        lineSource = new ol.source.Vector(),
         lineLayer,
         // drawLayer,
         drawControl,
@@ -35,14 +35,42 @@
                 'title': 'Base maps',
                 layers: [
                   new ol.layer.Tile({
-                    title: 'MapQuest',
+                    title: 'Bing',
                     type: 'base',
-                    source: new ol.source.MapQuest({layer: 'sat'})
+                    source: new ol.source.BingMaps({
+                      key: 'AnAvwFeZFUyC15cF3frJiEgWVLsBwn8C3pKsNsfkGsFnk2SE_QD1mMiyMKKRFiz9',
+                      imagerySet: 'AerialWithLabels',
+                      maxZoom: 19
+                    })
+                  }),
+                  new ol.layer.Tile({
+                    title: 'Ordnance Survey',
+                    type: 'base',
+                    source: new ol.source.BingMaps({
+                      key: 'AnAvwFeZFUyC15cF3frJiEgWVLsBwn8C3pKsNsfkGsFnk2SE_QD1mMiyMKKRFiz9',
+                      imagerySet: 'ordnanceSurvey'
+                    })
+                  }),
+                  new ol.layer.Tile({
+                    title: "OpenCycleMap",
+                    type: 'base',
+                    source: new ol.source.XYZ({
+                      url: "http://{a-c}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png"
+                    })
                   }),
                   new ol.layer.Tile({
                     title: 'OSM',
                     type: 'base',
                     source: new ol.source.OSM()
+                  }),
+                  new ol.layer.Vector({
+                    source: lineSource,
+                    style: new ol.style.Style({
+                      stroke: new ol.style.Stroke({
+                        color: "#ff0000",
+                        width: 3
+                      })
+                    })
                   })
                 ]
               })
@@ -55,26 +83,7 @@
 
         var layerSwitcher = new ol.control.LayerSwitcher();
         map.addControl(layerSwitcher);
-        // osmLayer = new ol.layer.Tile({
-        //   source: ol.source.OSM()
-        // });
-        // cycleLayer = new ol.Layer.OSM("OpenCycleMap",
-        //   ["http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
-        //    "http://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
-        //    "http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"]);
-        // osLayer = new ol.Layer.Bing({
-        //   name: "Ordnance Survey (UK)",
-        //   key: "AnAvwFeZFUyC15cF3frJiEgWVLsBwn8C3pKsNsfkGsFnk2SE_QD1mMiyMKKRFiz9",
-        //   type: "ordnanceSurvey"
-        // });
-        // googStreetLayer = new ol.Layer.Google(
-        //     "Google Streets", // the default
-        //     {numZoomLevels: 20}
-        // );
-        // googSatLayer = new ol.Layer.Google(
-        //     "Google Hybrid",
-        //     {type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
-        // );
+
         // var myStyles = new ol.StyleMap({
         //     "default": new ol.Style({
         //         fillColor: "#ffcc66",
@@ -91,16 +100,6 @@
         //         graphicZIndex: 2
         //     })
         // });
-        lineSource = new ol.source.Vector();
-        lineLayer = new ol.layer.Vector({
-          source: lineSource,
-          style: new ol.style.Style({
-            stroke: new ol.style.Stroke({
-              color: "#ff0000",
-              width: 3
-            })
-          })
-        });
         // drawLayer = new ol.Layer.Vector("Draw Layer", {styleMap: myStyles});
         // drawControl = new ol.Control.DrawFeature(drawLayer, ol.Handler.Path);
         // drawControl.events.register('featureadded', null, function(){
@@ -123,16 +122,7 @@
         //   drawControl.deactivate();
         // });
         // map.addControl(drawControl);
-        //map.addLayers([osmLayer,cycleLayer,osLayer,lineLayer]);
-        // map.addLayer(osmLayer);
-        // map.addLayer(cycleLayer);
-        // map.addLayer(osLayer);
-        // map.addLayer(googStreetLayer);
-        // map.addLayer(googSatLayer);
-        map.addLayer(lineLayer);
         // map.addLayer(drawLayer);
-
-        // map.zoomToMaxExtent();
 
         // ol.Event.observe(document, "keydown", function(evt) {
         //     var handled = false;
