@@ -5,7 +5,7 @@
     text-align: left;
 }
 
-.layer-switcher .panel {
+.layer-switcher .ls-panel {
     padding-right: 50px;
     border: 1px solid #cccccc;
     background-color: white;
@@ -13,7 +13,7 @@
     display: none;
 }
 
-.layer-switcher.shown .panel {
+.layer-switcher.shown .ls-panel {
     display: block;
 }
 
@@ -35,6 +35,7 @@
 .layer-switcher ul {
     padding-left: 1em;
     list-style: none;
+    margin: 0 0 10px 0;
 }
 
 .layer-switcher li.group {
@@ -43,6 +44,10 @@
 
 .layer-switcher li.group > label {
     font-weight: bold;
+}
+
+.layer-switcher label {
+    display: inline-block;
 }
 
 .layer-switcher input {
