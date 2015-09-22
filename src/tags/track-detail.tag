@@ -55,7 +55,7 @@
       if(this.currentTrack)
         this.currentTrack.name = e.target.value
 
-      RiotControl.trigger('track_edit', this.currentTrack);
+      TrackActions.edit(this.currentTrack);
     }
   </script>
 

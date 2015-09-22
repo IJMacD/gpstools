@@ -4,13 +4,18 @@ function TrackStore(){
   const LOCALSTORAGE_KEY = 'gpstools-track-index'
   this.tracks = loadTracks()
 
-  this.on('track_init', () => {
+  var emitChange = () => {
     RiotControl.trigger('track_changed', this.tracks)
-  })
+  }
 
-  this.on('track_add', track => {
-    this.tracks.push(track)
-    RiotControl.trigger('track_changed', this.tracks)
+  this.on('track_init', emitChange)
+
+  this.on('track_add', tracks => {
+    if(!Array.isArray(tracks))
+      tracks = [tracks]
+
+    tracks.forEach(track => this.tracks.push(track))
+    emitChange()
   })
 
   this.on('track_remove', track => {
@@ -19,13 +24,12 @@ function TrackStore(){
       this.tracks.splice(index, 1)
     else
       this.tracks.pop()
-    RiotControl.trigger('track_changed', this.tracks)
+    emitChange()
   })
 
-  this.on('track_edit', () => {
-    RiotControl.trigger('track_changed', this.tracks);
-  })
+  this.on('track_edit', emitChange)
 
+  // Is this allowed? listening to our own change event?
   this.on('track_changed', () => {
     localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(this.tracks))
   })

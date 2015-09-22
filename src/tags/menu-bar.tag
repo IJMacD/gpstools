@@ -69,8 +69,7 @@
     })
 
     openFile () {
-      console.log('openFile');
-      RiotControl.trigger('file_open')
+      FileActions.pick()
     }
   </script>
 

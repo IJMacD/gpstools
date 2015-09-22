@@ -24,29 +24,31 @@
       this.update({currentTrack: track})
     })
 
-    RiotControl.trigger('track_init')
+    TrackActions.init()
 
     addTrack() {
-      RiotControl.trigger('file_open')
+      FileActions.pick()
     }
 
     setCurrent(e) {
+      // Need to stop propagation because the list below also listens for click events
       e.stopPropagation()
 
       var track = e.item.track
 
-      RiotControl.trigger('current_set', track)
+      CurrentActions.set(track)
     }
 
     removeTrack(e) {
+      // Need to stop propagation because the list below also listens for click events
       e.stopPropagation()
 
       var track = e.item.track
 
-      RiotControl.trigger('track_remove', track)
+      TrackActions.remove(track)
 
       if(this.currentTrack == track){
-        RiotControl.trigger('current_set', null)
+        CurrentActions.clear()
       }
     }
 
