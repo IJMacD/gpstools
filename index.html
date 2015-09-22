@@ -199,8 +199,8 @@
 <script>
   var trackStore = new TrackStore();
   var currentTrackStore = new CurrentTrackStore();
-  RiotControl.addStore("track", trackStore);
-  RiotControl.addStore("current", currentTrackStore);
+  RiotControl.addStore(trackStore);
+  RiotControl.addStore(currentTrackStore);
   riot.mount('gpstools-app');
   var logging = msg => { console.log((Date.now() - _startTime) + ": " + msg) },
       _startTime = 0,
