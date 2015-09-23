@@ -45,8 +45,8 @@
   <script>
     this.currentTrack = null
 
-    RiotControl.on('current_changed', track => {
-      this.update({currentTrack: track})
+    CurrentTrackStore.on('change', () => {
+      this.update({currentTrack: CurrentTrackStore.getCurrent()})
     })
 
     editName(e){

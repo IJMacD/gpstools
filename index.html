@@ -192,6 +192,8 @@
 <script src="src/GPSTools/util.js"></script>
 <!-- /build -->
 <!-- build:js js/index.js -->
+<script src="src/util.js"></script>
+<script src="src/stores/Store.js"></script>
 <script src="src/stores/TrackStore.js"></script>
 <script src="src/stores/CurrentTrackStore.js"></script>
 <script src="src/actions/TrackActions.js"></script>
@@ -200,10 +202,8 @@
 <!-- /build -->
 
 <script>
-  var trackStore = new TrackStore();
-  var currentTrackStore = new CurrentTrackStore();
-  RiotControl.addStore(trackStore);
-  RiotControl.addStore(currentTrackStore);
+  RiotControl.addStore(TrackStore);
+  RiotControl.addStore(CurrentTrackStore);
   riot.mount('gpstools-app');
   var logging = msg => { console.log((Date.now() - _startTime) + ": " + msg) },
       _startTime = 0,

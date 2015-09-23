@@ -16,12 +16,12 @@
 
     var i = 1
 
-    RiotControl.on('track_changed', tracks => {
-      this.update({tracks: tracks})
+    TrackStore.on('change', () => {
+      this.update({tracks: TrackStore.getTracks()})
     })
 
-    RiotControl.on('current_changed', track => {
-      this.update({currentTrack: track})
+    CurrentTrackStore.on('change', () => {
+      this.update({currentTrack: CurrentTrackStore.getCurrent()})
     })
 
     TrackActions.init()
@@ -34,9 +34,7 @@
       // Need to stop propagation because the list below also listens for click events
       e.stopPropagation()
 
-      var track = e.item.track
-
-      CurrentActions.set(track)
+      CurrentActions.set(e.item.track)
     }
 
     removeTrack(e) {

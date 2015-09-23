@@ -15,8 +15,12 @@
       GPSTools.Map.updateSize()
     })
 
-    RiotControl.on("current_changed", track => {
-      GPSTools.Map.drawLine(track.points)
+    CurrentTrackStore.on("change", () => {
+      var track = CurrentTrackStore.getCurrent()
+      if(track)
+        GPSTools.Map.drawLine(track.points)
+      else
+        GPSTools.Map.clearLine()
     })
 
     /**

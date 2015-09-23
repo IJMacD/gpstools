@@ -221,6 +221,7 @@ GPSTools.Track.prototype.getMaxSpeed = function () {
 // but currently it is expected to only be called at times when the main map
 // will be in a state of transition e.g.
 GPSTools.Track.prototype.getThumb = function(size) {
+  throw Error('Not Implemented')
   GPSTools.Map.clearLine();
   GPSTools.Map.drawLine(this.points, {opacity:1,width:10});
   var thumb = GPSTools.Map.getLineThumb(size);

@@ -150,15 +150,11 @@
         // });
       },
       clearLine: function(highlight) {
-        if(!map){
-          $('#map').show();
-          GPSTools.Map.create();
-        }
         if(highlight){
-          lineLayer.removeFeatures([lineHighlight]);
+          lineSource.removeFeature(lineHighlight);
           map.zoomToExtent(bounds);
         }else
-          lineLayer.removeAllFeatures();
+          lineSource.clear();
       },
       // Used to be function (Points[] points, bool highlight)
       drawLine: function (points, options) {

@@ -22,5 +22,6 @@ var FileActions = {
     Promise
       .all(files.map(GPSTools.importFile))
       .then(TrackActions.add)
+      .catch(e => { console.error(e) })
   }
 }

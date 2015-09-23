@@ -1,12 +1,9 @@
-function CurrentTrackStore(){
-  riot.observable(this)
-
-  var emitChange = () => {
-    RiotControl.trigger('current_changed', this.currentTrack)
-  }
-
+var CurrentTrackStore = new Store({
+  currentTrack: null,
+  getCurrent: function(){ return this.currentTrack }
+}, function() {
   this.on('current_set', track => {
     this.currentTrack = track
-    emitChange()
+    this.emitChange()
   })
-}
+})
