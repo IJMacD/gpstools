@@ -9,13 +9,20 @@ GPSTools.Track = function (points, name) {
     this.name = track.name
     this.distance = track.distance
     this.duration = track.duration
-    return
+    this.averageSpeed = track.averageSpeed
+    this.maximumSpeed = track.maximumSpeed
   }
-
-  this.points = points || [];
-  this.name = name || "Track";
-  this.getDistance();
-  this.getDuration();
+  else
+  {
+    this.points = points || [];
+    this.name = name || "Track";
+    this.getDistance()
+    this.getDuration()
+    this.getAvgSpeed()
+    this.getMaxSpeed()
+  }
+  this.getStart()
+  this.getEnd()
 };
 GPSTools.Track.prototype.setName = function(name) {
   this.name = name.replace(/_/g, " ").replace(/\.[a-z]{3,4}$/,"");
@@ -198,24 +205,24 @@ GPSTools.Track.prototype.getSpeed = function (){
  * @return Average speed in (m s^-1)
  */
 GPSTools.Track.prototype.getAvgSpeed = function () {
-  if(!this.avgSpeed) {
-    this.avgSpeed = this.getDistance() / this.getDuration();
+  if(!this.averageSpeed) {
+    this.averageSpeed = this.getDistance() / this.getDuration();
   }
-  return this.avgSpeed;
+  return this.averageSpeed;
 };
 /**
  * @return Maximum speed in (m s^-1)
  */
 GPSTools.Track.prototype.getMaxSpeed = function () {
-  if(!this.maxSpeed) {
+  if(!this.maximumSpeed) {
     var max = 0,
         i = 1,
         l = this.points.length;
     for(;i<l;i++)
       max = Math.max(this.points[i].speedTo(this.points[i-1]),max);
-    this.maxSpeed = max;
+    this.maximumSpeed = max;
   }
-  return this.maxSpeed;
+  return this.maximumSpeed;
 };
 // This could be better implemented without corrupting the state of the main map
 // but currently it is expected to only be called at times when the main map

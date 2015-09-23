@@ -9,9 +9,9 @@
         Start: { currentTrack.start }<br>
         End: { currentTrack.end }<br>
         Duration: { GPSTools.Util.duration( currentTrack.duration ) }<br>
-        Average Speed (km/h): { GPSTools.Util.convertToKPH( currentTrack.averageSpeed ) }<br>
-        Maximum Speed (km/h): { GPSTools.Util.convertToKPH( currentTrack.maximumSpeed ) }<br>
-        Maximum Speed (mph): { GPSTools.Util.convertToMPH( currentTrack.maximumSpeed ) }
+        Average Speed (km/h): { GPSTools.Util.convertToKPH( currentTrack.averageSpeed ).toFixed(3) }<br>
+        Maximum Speed (km/h): { GPSTools.Util.convertToKPH( currentTrack.maximumSpeed ).toFixed(3) }<br>
+        Maximum Speed (mph): { GPSTools.Util.convertToMPH( currentTrack.maximumSpeed ).toFixed(3) }
       </span>
       <span show="{ currentTrack.heightGain }">
         Height Gain (m): { currentTrack.heightGain }
