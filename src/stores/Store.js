@@ -5,7 +5,11 @@ function Store(opts, init){
   util.extend(this, opts)
 
   this.emitChange = () => {
-    this.trigger('change')
+    // Was getting problems with views responding to Store change events before
+    // all the stores had got to handle the action. This ensures all change
+    // events are queued up at the end, after the Stores have all had their turn
+    // dealing with the action.
+    setTimeout(() => this.trigger('change'),0)
   }
 
   if(typeof init == "function")

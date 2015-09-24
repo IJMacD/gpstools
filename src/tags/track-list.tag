@@ -1,6 +1,6 @@
 <track-list>
   <ul id="tracks-list" class="panel" onclick="{ addTrack }">
-    <li each={ track in tracks } class="track { selected: currentTrack == track }"
+    <li each={ track in tracks } class="track { selected: track.active }"
         draggable="true" onclick="{ setCurrent }"
         style="background-image: url({ track.getThumb(64) })">
       <button class="close" onclick="{ removeTrack }"><i class="icon-remove icon-white"></i></button>
@@ -20,10 +20,6 @@
       this.update({tracks: TrackStore.getTracks()})
     })
 
-    CurrentTrackStore.on('change', () => {
-      this.update({currentTrack: CurrentTrackStore.getCurrent()})
-    })
-
     TrackActions.init()
 
     addTrack() {
@@ -34,7 +30,10 @@
       // Need to stop propagation because the list below also listens for click events
       e.stopPropagation()
 
-      CurrentActions.set(e.item.track)
+      if(!e.ctrlKey)
+        ActiveActions.clear()
+
+      ActiveActions.set(e.item.track)
     }
 
     removeTrack(e) {
@@ -46,7 +45,7 @@
       TrackActions.remove(track)
 
       if(this.currentTrack == track){
-        CurrentActions.clear()
+        ActiveActions.clear()
       }
     }
 

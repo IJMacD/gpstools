@@ -7,4 +7,6 @@
 
   <track-detail />
 
+  <div id="status-msg"><p id="status-msg-text"></p></div>
+
 </gpstools-app>

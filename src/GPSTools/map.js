@@ -161,7 +161,6 @@
         var olCoordinates = points.map(point => ol.proj.transform([point.lon, point.lat], 'EPSG:4326', 'EPSG:3857')),
             olLineString = new ol.geom.LineString(olCoordinates),
             olFeature = new ol.Feature(olLineString)
-        lineSource.clear()
         lineSource.addFeature(olFeature)
         map.getView().fit(lineSource.getExtent(), map.getSize())
       },

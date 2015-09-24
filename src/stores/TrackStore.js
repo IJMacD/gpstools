@@ -1,6 +1,7 @@
 var TrackStore = new Store({
     tracks: [],
-    getTracks: function(){ return this.tracks }
+    getTracks: function(){ return this.tracks },
+    getActive: function(){ return this.tracks.filter(track => track.active) }
   }, function(){
 
     const LOCALSTORAGE_KEY = 'gpstools-track-index'
@@ -28,6 +29,8 @@ var TrackStore = new Store({
     })
 
     this.on('track_edit', this.emitChange)
+
+    this.on('active_set', this.emitChange)
 
     // Is this allowed? listening to our own change event?
     this.on('change', () => {

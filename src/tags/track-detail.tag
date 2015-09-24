@@ -45,8 +45,8 @@
   <script>
     this.currentTrack = null
 
-    CurrentTrackStore.on('change', () => {
-      this.update({currentTrack: CurrentTrackStore.getCurrent()})
+    ActiveStore.on('change', () => {
+      this.update({currentTrack: ActiveStore.getCurrent()})
     })
 
     editName(e){

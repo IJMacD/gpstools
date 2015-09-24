@@ -15,13 +15,15 @@
       GPSTools.Map.updateSize()
     })
 
-    CurrentTrackStore.on("change", () => {
-      var track = CurrentTrackStore.getCurrent()
-      if(track)
-        GPSTools.Map.drawLine(track.points)
-      else
-        GPSTools.Map.clearLine()
+    TrackStore.on("change", () => {
+      var tracks = TrackStore.getActive()
+      GPSTools.Map.clearLine()
+      tracks.forEach(drawTrack)
     })
+
+    function drawTrack(track) {
+      GPSTools.Map.drawLine(track.points)
+    }
 
     /**
      * @constructor
