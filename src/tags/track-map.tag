@@ -15,8 +15,8 @@
       GPSTools.Map.updateSize()
     })
 
-    TrackStore.on("change", () => {
-      var tracks = TrackStore.getActive()
+    ActiveStore.on("change", () => {
+      var tracks = ActiveStore.getActive()
       GPSTools.Map.clearLine()
       tracks.forEach(drawTrack)
     })

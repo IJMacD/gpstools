@@ -1,6 +1,6 @@
 <track-list>
   <ul id="tracks-list" class="panel" onclick="{ addTrack }">
-    <li each={ track in tracks } class="track { selected: track.active }"
+    <li each={ track in tracks } class="track { selected: ActiveStore.isActive(track) }"
         draggable="true" onclick="{ setCurrent }"
         style="background-image: url({ track.getThumb(64) })">
       <button class="close" onclick="{ removeTrack }"><i class="icon-remove icon-white"></i></button>
