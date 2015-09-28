@@ -1,20 +1,20 @@
 <track-detail>
 
-  <div id="summary" class="panel" show={ currentTrack }>
-    <input type="text" class="track-title" onkeyup="{ editName }" value="{ currentTrack.name }" />
+  <div id="summary" class="panel" show={ opts.track }>
+    <input type="text" class="track-title" onkeyup="{ editName }" value="{ opts.track.name }" />
     <output id="gps">
-      Distance (km): { GPSTools.Util.convertToKm( currentTrack.distance ).toFixed(3) }<br>
-      Distance (mi): { GPSTools.Util.convertToMiles( currentTrack.distance ).toFixed(3) }<br>
-      <span show="{ currentTrack.duration }">
-        Start: { currentTrack.start }<br>
-        End: { currentTrack.end }<br>
-        Duration: { GPSTools.Util.duration( currentTrack.duration ) }<br>
-        Average Speed (km/h): { GPSTools.Util.convertToKPH( currentTrack.averageSpeed ).toFixed(3) }<br>
-        Maximum Speed (km/h): { GPSTools.Util.convertToKPH( currentTrack.maximumSpeed ).toFixed(3) }<br>
-        Maximum Speed (mph): { GPSTools.Util.convertToMPH( currentTrack.maximumSpeed ).toFixed(3) }
+      Distance (km): { GPSTools.Util.convertToKm( opts.track.distance ).toFixed(3) }<br>
+      Distance (mi): { GPSTools.Util.convertToMiles( opts.track.distance ).toFixed(3) }<br>
+      <span show="{ opts.track.duration }">
+        Start: { opts.track.start }<br>
+        End: { opts.track.end }<br>
+        Duration: { GPSTools.Util.duration( opts.track.duration ) }<br>
+        Average Speed (km/h): { GPSTools.Util.convertToKPH( opts.track.averageSpeed ).toFixed(3) }<br>
+        Maximum Speed (km/h): { GPSTools.Util.convertToKPH( opts.track.maximumSpeed ).toFixed(3) }<br>
+        Maximum Speed (mph): { GPSTools.Util.convertToMPH( opts.track.maximumSpeed ).toFixed(3) }
       </span>
-      <span show="{ currentTrack.heightGain }">
-        Height Gain (m): { currentTrack.heightGain }
+      <span show="{ opts.track.heightGain }">
+        Height Gain (m): { opts.track.heightGain }
       </span>
     </output>
   </div>
@@ -43,19 +43,12 @@
   </div>
 
   <script>
-    this.currentTrack = null
-
-    ActiveStore.on('change', () => {
-      this.update({currentTrack: ActiveStore.getCurrent()})
-    })
-
     editName(e){
       e.preventUpdate = true
 
-      if(this.currentTrack)
-        this.currentTrack.name = e.target.value
+      opts.track.name = e.target.value
 
-      TrackActions.edit(this.currentTrack);
+      this.parent.editTrack(opts.track)
     }
   </script>
 
