@@ -1,23 +1,25 @@
 <gpstools-menu>
   <div id="action-bar">
     <h1>GPSTools</h1>
-    <div id="cab" show="{ currentTrack }">
+    <div id="cab" show="{ opts.track }">
       <button id="get-ele-btn" class="btn btn-small" title="Get Elevation"
-         show="{ !currentTrack.hasElevtion() }">
+         show="{ !opts.track.hasElevation() }">
         <i class="cicon-mountain"></i>
       </button>
       <button id="gen-spd-btn" class="btn btn-small" title="Generate Speed"
-         show="{ !currentTrack.hasTime() }">
+         show="{ opts.track.hasElevation() &amp;&amp; !opts.track.hasTime() }">
         <i class="icon-time"></i>
       </button>
       <button id="mrg-trk-btn" class="btn btn-small" title="Merge Tracks"
-         show="{ currentTrack.length }">
+         show="{ opts.tracks.length > 1 }">
         <i class="cicon-merge"></i>
       </button>
-      <button id="ato-spl-btn" class="btn btn-small" track="Autosplit">
+      <button id="ato-spl-btn" class="btn btn-small" track="Autosplit"
+        show="{ opts.tracks.length == 1 }">
         <i class="cicon-split"></i>
       </button>
-      <button id="hud-btn" class="btn btn-small" data-toggle="modal" data-target="#hudModal" title="HUD">
+      <button id="hud-btn" class="btn btn-small" data-toggle="modal"
+        data-target="#hudModal" title="HUD" show="{ opts.track.hasTime() }">
         <i class="icon-facetime-video"></i>
       </button>
       <span class="btn-group" id="export-grp">
@@ -36,7 +38,7 @@
         </ul>
       </span>
     </div>
-    <button id="open-file-btn" class="btn btn-small" title="Open Files" onclick="{ openFile }">
+    <button id="open-file-btn" class="btn btn-small" title="Open Files" onclick="{ this.parent.pickFile }">
       <i class="icon-folder-open"></i>
     </button>
     <button id="strava-import-btn" class="btn btn-small" title="Strava Import">
@@ -60,17 +62,5 @@
     </button>
     <progress value="0"></progress>
   </div>
-
-  <script>
-    this.currentTrack = null;
-
-    RiotControl.on('current_changed', track => {
-      this.update({currentTrack: track})
-    })
-
-    openFile () {
-      FileActions.pick()
-    }
-  </script>
 
 </gpstools-menu>

@@ -1,5 +1,5 @@
 <gpstools-app>
-  <gpstools-menu />
+  <gpstools-menu tracks={ tracks.filter(isActive) } track={ currentTrack }  />
 
   <track-map tracks={ tracks.filter(isActive) } />
 
@@ -22,7 +22,7 @@
       this.update({currentTrack: ActiveStore.getCurrent()})
     })
 
-    addTrack () {
+    pickFile () {
       FileActions.pick()
     }
 

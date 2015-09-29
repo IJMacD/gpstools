@@ -1,5 +1,5 @@
 <track-list>
-  <ul id="tracks-list" class="panel" onclick="{ this.parent.addTrack }">
+  <ul id="tracks-list" class="panel" onclick="{ this.parent.pickFile }">
     <li each={ track in opts.tracks } class="track { selected: this.parent.parent.isActive(track) }"
         draggable="true" onclick="{ setCurrent }"
         style="background-image: url({ this.parent.getTrackThumb(track, 64) })">
