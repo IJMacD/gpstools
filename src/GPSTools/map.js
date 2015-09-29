@@ -242,7 +242,7 @@
         return map;
       },
       updateSize: function(){
-        map.updateSize();
+        map && map.updateSize();
       }
     }
   }()

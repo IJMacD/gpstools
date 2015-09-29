@@ -7,6 +7,8 @@
 
   <track-detail track={ currentTrack }  />
 
+  <track-graph track={ currentTrack } />
+
   <div id="status-msg"><p id="status-msg-text"></p></div>
 
   <script>

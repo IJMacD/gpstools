@@ -1,6 +1,6 @@
 <track-map>
 
-  <div class="{ panel: isPanel }"></div>
+  <div class="{ panel: isPanel, min: opts.tracks.length }"></div>
 
   <script>
     this.isPanel = true
@@ -16,6 +16,7 @@
     })
 
     this.on("update", () => {
+      GPSTools.Map.updateSize()
       GPSTools.Map.clearLine()
       opts.tracks.forEach(drawTrack)
     })
@@ -81,6 +82,9 @@
       left: 400px;
       right: 20px;
       transform: translate3d(0,0,0);
+    }
+    :scope > div.panel.min {
+      bottom: 220px;
     }
   </style>
 </track-map>
