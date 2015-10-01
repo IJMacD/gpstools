@@ -6,37 +6,67 @@
       <button id="tos-slt-btn" class="btn"><i class="icon-arrow-left"></i></button>
       <button id="toe-slt-btn" class="btn"><i class="icon-arrow-right"></i></button>
     </div>
-    <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+    <svg xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
         viewBox="0 0 1000 200"
         onmousemove="{ moveHandle }"
-        onmouseup="{ unselectHandle }">
+        onmouseup="{ unselectHandle }"
+        onmouseleave="{ unselectHandle }">
+    <defs
+       id="defs4864">
+      <linearGradient
+         inkscape:collect="always"
+         id="linearGradient5447">
+        <stop
+           style="stop-color:#5b5f6c;stop-opacity:1"
+           offset="0"
+           id="stop5449" />
+        <stop
+           style="stop-color:#888993;stop-opacity:1"
+           offset="1"
+           id="stop5451" />
+      </linearGradient>
+      <linearGradient
+         inkscape:collect="always"
+         xlink:href="#linearGradient5447"
+         id="linearGradient5453"
+         x1="0"
+         y1="4.3845406"
+         x2="0"
+         y2="-4.5838375"
+         gradientUnits="userSpaceOnUse" />
+
+    </defs>
 
       <svg
           id="elevation-graph"
           viewBox="{ getViewBox(opts.track) }"
           preserveAspectRatio="none">
+        <g transform="translate(0,-80)" id="markers"></g>
         <g transform="scale(1,-1)">
-          <path d="{ getPath(opts.track) }" fill="#4040ff" />
+          <path d="{ getPath(opts.track) }" fill="#f33" />
         </g>
       </svg>
 
-      <g transform="translate(50,180)">
-        <rect x="0" y="-5" width="900" height="10"
-          rx="5" ry="5"
-          style="fill:#c0c0c0;stroke:#000000;stroke-width:1.5;" />
-        <rect x="0" y="-4" width="900" height="8"
+      <g transform="translate(0,10)">
+        <rect
           id="slider"
           transform="translate(0 0)"
+          x="0" y="-4"
+          width="1000" height="8"
+          rx="3" ry="3"
           onmousedown="{ selectHandle }" />
-        <circle cx="0" cy="0" r="10"
+        <path
           id="start"
           class="grab-handle"
+          d="m 0,8.5 c -10e-6,-3.8069906 6.72575,-4.324487 8.87655,-4.324487 l 0,-8.280933 c -2.79488,0 -9.15258,-0.218586 -9.06057,5.06057 z"
           transform="translate(0 0)"
           onmousedown="{ selectHandle }" />
-        <circle cx="0" cy="0" r="10"
+        <path
           id="end"
           class="grab-handle"
-          transform="translate(900 0)"
+          d="m 0,8.5 c 10e-6,-3.8069906 -6.72575,-4.3244874 -8.87655,-4.3244875 l 0,-8.2809328 c 2.79488,0 9.15258,-0.2185859 9.06057,5.06057003 z"
+          transform="translate(1000 0)"
           onmousedown="{ selectHandle }" />
       </g>
     </svg>
@@ -51,23 +81,30 @@
     let sliderElement
     let startHandle
     let endHandle
+    let markers
+
+    const VIEW_BAR_WIDTH = 1000
 
     let viewStart = 0
-    let viewEnd = 900
+    let viewEnd = VIEW_BAR_WIDTH
 
     this.on("mount", () => {
       elevationGraph = this.root.querySelector('#elevation-graph')
       sliderElement = this.root.querySelector('#slider')
       startHandle = this.root.querySelector('#start')
       endHandle = this.root.querySelector('#end')
+      markers = this.root.querySelector('#markers')
     })
 
     this.on("update", () => {
       // Check if we've been mounted yet and have a track
-      if(elevationGraph &&
+      if(this.isMounted &&
           this.opts.track != lastTrack){
-        this.setCrop(0, 900)
+
+        this.setCrop(0, VIEW_BAR_WIDTH)
         lastTrack = this.opts.track
+
+        this.createMarkers()
        }
     })
 
@@ -76,8 +113,8 @@
         return
 
       let numPoints = track.points.length
-      let cropStart = viewStart / 900 * numPoints
-      let cropEnd = (viewEnd - viewStart) / 900 * numPoints
+      let cropStart = viewStart / VIEW_BAR_WIDTH * numPoints
+      let cropEnd = (viewEnd - viewStart) / VIEW_BAR_WIDTH * numPoints
       let maximumElevation = this.getMaximumElevation(track)
       return cropStart + " -" + maximumElevation + " " + cropEnd + " " + maximumElevation
     }
@@ -109,9 +146,9 @@
 
         if(currentHandle == sliderElement){
           let viewWidth = viewEnd - viewStart
-          let newStart = util.bound(currentTransform + dx, 0, 900 - viewWidth)
+          let newStart = util.bound(currentTransform + dx, 0, VIEW_BAR_WIDTH - viewWidth)
           let newEnd = newStart + viewWidth
-          let fixedEnd = Math.min(newEnd, 900)
+          let fixedEnd = Math.min(newEnd, VIEW_BAR_WIDTH)
           let diffEnd = newEnd - fixedEnd
           this.setCrop(newStart - diffEnd, fixedEnd)
         }
@@ -124,7 +161,7 @@
 
     setCrop(start, end) {
       viewStart = util.bound(start, 0, viewEnd)
-      viewEnd = util.bound(end, viewStart, 900)
+      viewEnd = util.bound(end, viewStart, VIEW_BAR_WIDTH)
 
       startHandle.setAttributeNS(null, "transform", "translate(" + viewStart + " 0)")
       endHandle.setAttributeNS(null, "transform", "translate(" + viewEnd + " 0)")
@@ -140,6 +177,48 @@
       e.preventUpdate = true
       currentHandle = null
     }
+
+    createMarkers () {
+      let length = this.opts.track.points.length
+      let ns = "http://www.w3.org/2000/svg"
+
+      this.removeAllChildren(markers)
+
+      let background = document.createElementNS(ns, "rect")
+      background.setAttributeNS(null, "x", "0")
+      background.setAttributeNS(null, "y", "0")
+      background.setAttributeNS(null, "width", opts.track.points.length)
+      background.setAttributeNS(null, "height", "10")
+      background.setAttributeNS(null, "style", "fill:#222;")
+
+      markers.appendChild(background)
+
+      for(let i = 0; i < length; i += 100){
+        let element = document.createElementNS(ns, "rect")
+
+        element.setAttributeNS(null, "x", i)
+        element.setAttributeNS(null, "width", 2)
+
+        element.setAttributeNS(null, "style", "fill: white;")
+
+        if(i % 1000 == 0){
+          element.setAttributeNS(null, "y", "0")
+          element.setAttributeNS(null, "height", "10")
+        }
+        else {
+          element.setAttributeNS(null, "y", "7.5")
+          element.setAttributeNS(null, "height", "2.5")
+        }
+
+        markers.appendChild(element)
+      }
+    }
+
+    removeAllChildren (element) {
+      while(element.firstChild){
+        element.removeChild(element.firstChild)
+      }
+    }
   </script>
 
   <style scoped>
@@ -153,25 +232,20 @@
       right: 20px;
     }
     svg {
-      background: white;
       height: 100%;
       width: 100%;
     }
     .grab-handle {
-      fill: #808080;
-      stroke: #000000;
-      stroke-width: 3;
+      fill: #c0c0c0;
+      stroke: #5e5e5e;
+      stroke-width: 1;
       cursor: pointer;
       cursor: -webkit-grab;
     }
-    #start {
-      fill: #4f4;
-    }
-    #end {
-      fill: #f44;
-    }
     #slider {
-      fill: #0000ff;
+      fill: url(#linearGradient5453);
+      stroke: #5e5e5e;
+      stroke-width: 1;
       cursor: pointer;
       cursor: -webkit-grab;
     }
