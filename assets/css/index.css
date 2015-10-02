@@ -105,25 +105,6 @@ body {
 .sub-tracks {
   min-height: 20px;
 }
-#summary {
-  bottom: 20px;
-  box-sizing: border-box;
-  height: 250px;
-  overflow-y: auto;
-  padding: 10px 20px;
-  position: absolute;
-  width: 350px;
-  left: 40px;
-}
-#details {
-  cursor: pointer;
-  display: none;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 90%;
-  z-index: 1000;
-}
 #super-breakdown {
   color: white;
   display: none;

@@ -1,23 +1,21 @@
 <track-detail>
 
-  <div id="summary" class="panel" show={ opts.track }>
-    <input type="text" class="track-title" onkeyup="{ editName }" value="{ opts.track.name }" />
-    <output id="gps">
-      Distance (km): { GPSTools.Util.convertToKm( opts.track.distance ).toFixed(3) }<br>
-      Distance (mi): { GPSTools.Util.convertToMiles( opts.track.distance ).toFixed(3) }<br>
-      <span show="{ opts.track.duration }">
-        Start: { opts.track.start }<br>
-        End: { opts.track.end }<br>
-        Duration: { GPSTools.Util.duration( opts.track.duration ) }<br>
-        Average Speed (km/h): { GPSTools.Util.convertToKPH( opts.track.averageSpeed ).toFixed(3) }<br>
-        Maximum Speed (km/h): { GPSTools.Util.convertToKPH( opts.track.maximumSpeed ).toFixed(3) }<br>
-        Maximum Speed (mph): { GPSTools.Util.convertToMPH( opts.track.maximumSpeed ).toFixed(3) }
-      </span>
-      <span show="{ opts.track.heightGain }">
-        Height Gain (m): { opts.track.heightGain }
-      </span>
-    </output>
-  </div>
+  <input type="text" class="track-title" onkeyup="{ editName }" value="{ opts.track.name }" />
+  <output id="gps">
+    Distance (km): { GPSTools.Util.convertToKm( opts.track.distance ).toFixed(3) }<br>
+    Distance (mi): { GPSTools.Util.convertToMiles( opts.track.distance ).toFixed(3) }<br>
+    <span show="{ opts.track.duration }">
+      Start: { opts.track.start }<br>
+      End: { opts.track.end }<br>
+      Duration: { GPSTools.Util.duration( opts.track.duration ) }<br>
+      Average Speed (km/h): { GPSTools.Util.convertToKPH( opts.track.averageSpeed ).toFixed(3) }<br>
+      Maximum Speed (km/h): { GPSTools.Util.convertToKPH( opts.track.maximumSpeed ).toFixed(3) }<br>
+      Maximum Speed (mph): { GPSTools.Util.convertToMPH( opts.track.maximumSpeed ).toFixed(3) }
+    </span>
+    <span show="{ opts.track.heightGain }">
+      Height Gain (m): { opts.track.heightGain }
+    </span>
+  </output>
 
   <div id="track-detail" style="display: none;">
     <div id="details">

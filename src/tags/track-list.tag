@@ -31,14 +31,9 @@
 
   <style scoped>
     ul {
-      top: 4em;
-      box-sizing: border-box;
-      bottom: 280px;
+      height: 100%;
       overflow-y: auto;
       padding: 5px;
-      position: absolute;
-      width: 350px;
-      left: 40px;
       user-select: none;
       -moz-user-select: none;
       -webkit-user-select: none;

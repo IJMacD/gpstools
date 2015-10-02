@@ -1,9 +1,8 @@
 <track-map>
 
-  <div class="{ panel: isPanel, min: opts.tracks.length }"></div>
+  <div></div>
 
   <script>
-    this.isPanel = true
 
     this.on('mount', () => {
         GPSTools.Map.create(this.root.querySelector('div'));
@@ -11,7 +10,8 @@
     });
 
     switchPanel() {
-      this.update({isPanel : !this.isPanel})
+      this.parent.mapIsPanel = !this.parent.mapIsPanel
+      this.parent.update()
       GPSTools.Map.updateSize()
     })
 
@@ -67,24 +67,8 @@
 
   <style scoped>
     :scope > div {
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      position: fixed;
-    }
-    :scope > div.panel {
-      top: 4em;
-      bottom: 20px;
-      box-sizing: border-box;
-      overflow: hidden;
-      position: absolute;
-      left: 400px;
-      right: 20px;
-      transform: translate3d(0,0,0);
-    }
-    :scope > div.panel.min {
-      bottom: 220px;
+      height: 100%
     }
   </style>
+
 </track-map>
