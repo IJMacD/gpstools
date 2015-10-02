@@ -14,22 +14,20 @@ GPSTools.Point.prototype.getTime = function(){
   return this.getDate().getTime();
 }
 /**
+ * Compute distance between two points
+ * @static
  * @return Distance in m
  */
-GPSTools.Point.prototype.distanceTo = function(){
+GPSTools.Point.distance = (function(){
   var R = 6371000, // m
       toRad = function(n) {
         return n * Math.PI / 180;
       };
-  return function(point) {
-    if(!point){
-      console.log(point);
-      return 0;
-    }
-    var dLat = toRad(point.lat-this.lat),
-        dLon = toRad(point.lon-this.lon),
-        lat1 = toRad(this.lat),
-        lat2 = toRad(point.lat),
+  return function(p1, p2) {
+    var dLat = toRad(p2.lat-p1.lat),
+        dLon = toRad(p2.lon-p1.lon),
+        lat1 = toRad(p1.lat),
+        lat2 = toRad(p2.lat),
 
         a = Math.sin(dLat/2) * Math.sin(dLat/2) +
             Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2),
@@ -37,7 +35,21 @@ GPSTools.Point.prototype.distanceTo = function(){
         d = R * c;
     return d;
   };
-}();
+}());
+/**
+ * @return Distance in m
+ */
+GPSTools.Point.prototype.distanceTo = function(point) {
+  return GPSTools.Point.distance(this, point)
+}
+/**
+ * Get time difference between two points
+ * @static
+ * @return Time difference in seconds
+ */
+GPSTools.Point.duration = function (p1, p2) {
+  return (new Date(p2.time) - new Date(p1.time)) / 1000
+}
 /**
  * @return Speed in (m s^-1)
  */

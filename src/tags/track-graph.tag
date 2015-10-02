@@ -39,7 +39,7 @@
           id="elevation-graph"
           viewBox="{ getViewBox(opts.track) }"
           preserveAspectRatio="none">
-        <g transform="translate(0,5)" id="markers"></g>
+        <g transform="translate(0,10)" id="markers"></g>
         <g transform="{ getGraphTransform(opts.track) }">
           <path d="{ getPath(opts.track) }" fill="#f33" />
         </g>
@@ -82,6 +82,7 @@
     let markers
 
     const VIEW_BAR_WIDTH = 1000
+    const DISTANCE_SCALE = 1 / 10
 
     let viewStart = 0
     let viewEnd = VIEW_BAR_WIDTH
@@ -111,7 +112,7 @@
       if(!track.points)
         return
 
-      let numPoints = track.points.length
+      let numPoints = track.distance * DISTANCE_SCALE
       let cropStart = viewStart / VIEW_BAR_WIDTH * numPoints
       let cropEnd = (viewEnd - viewStart) / VIEW_BAR_WIDTH * numPoints
       let maximumElevation = this.getMaximumElevation(track)
@@ -124,7 +125,42 @@
       return track.points.map(point => point.ele).reduce((a,b) => Math.max(a,b), 0)
     }
     getPath (track) {
-      return "M 0 0 L " + track.points.map((point, i) =>  i + " " + (point.ele || 0)).join(" L ") + ` L ${ track.points.length } 0`
+      return "M 0 0 L " +
+        this.getDerivedPoints(track).map(dp => {
+          return (dp.cumulativeDistance * DISTANCE_SCALE) + " " + (dp.point.ele || 0)
+        }).join(" L ") +
+        ` L ${ track.points.length } 0`
+    }
+    getDerivedPoints (track) {
+      // TODO: Add possible caching
+      let points = track.points
+      let numPoints = points.length
+      let derivedPoints = new Array(numPoints)
+
+      let cumulativeDistance = 0
+      let cumulativeDuration = 0
+
+      for(let i = 0; i < numPoints; i++) {
+
+        if(i > 0){
+          let previousPoint = points[i-1]
+          let currentPoint = points[i]
+
+          let distance = GPSTools.Point.distance(previousPoint, currentPoint)
+          let duration = GPSTools.Point.duration(previousPoint, currentPoint)
+
+          cumulativeDistance += distance
+          cumulativeDuration += duration
+        }
+
+        derivedPoints[i] = {
+          point: points[i],
+          cumulativeDistance,
+          cumulativeDuration
+        }
+      }
+
+      return derivedPoints
     }
 
     let currentHandle;
@@ -192,30 +228,29 @@
     }
 
     createMarkers () {
-      let length = this.opts.track.points.length
+      let length = this.opts.track.distance
       let ns = "http://www.w3.org/2000/svg"
 
       this.removeAllChildren(markers)
 
-      for(let i = 0; i < length; i += 100){
+      for(let i = 0; i < length; i += 1000){
         let line = document.createElementNS(ns, "rect")
 
-        line.setAttributeNS(null, "x", i)
+        line.setAttributeNS(null, "x", i * DISTANCE_SCALE)
         line.setAttributeNS(null, "width", 2)
 
         line.setAttributeNS(null, "style", "fill: white;")
 
-        if(i % 1000 == 0){
+        if(i % 10000 == 0){
           line.setAttributeNS(null, "y", "0")
           line.setAttributeNS(null, "height", "10")
 
           let label = document.createElementNS(ns, "text")
-          let scale = 10
-          label.setAttributeNS(null, "x", (i + 30)/scale)
+          label.setAttributeNS(null, "x", (i + 30) * DISTANCE_SCALE * DISTANCE_SCALE)
           label.setAttributeNS(null, "y", "20")
           label.setAttributeNS(null, "style", "fill: white; fill-opacity: 0.5; font-size: 10px")
-          label.setAttributeNS(null, "transform", "scale(" + scale + ",1)")
-          label.appendChild(document.createTextNode((i/100) + " km"))
+          label.setAttributeNS(null, "transform", "scale(" + (1/DISTANCE_SCALE) + ",1)")
+          label.appendChild(document.createTextNode((i/1000) + " km"))
 
           markers.appendChild(label)
 
