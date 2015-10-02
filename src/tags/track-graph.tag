@@ -8,10 +8,7 @@
     </div>
     <svg xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
-        viewBox="0 0 1000 200"
-        onmousemove="{ moveHandle }"
-        onmouseup="{ unselectHandle }"
-        onmouseleave="{ unselectHandle }">
+        viewBox="0 0 1000 200">
     <defs
        id="defs4864">
       <linearGradient
@@ -42,8 +39,8 @@
           id="elevation-graph"
           viewBox="{ getViewBox(opts.track) }"
           preserveAspectRatio="none">
-        <g transform="translate(0,-80)" id="markers"></g>
-        <g transform="scale(1,-1)">
+        <g transform="translate(0,5)" id="markers"></g>
+        <g transform="{ getGraphTransform(opts.track) }">
           <path d="{ getPath(opts.track) }" fill="#f33" />
         </g>
       </svg>
@@ -77,6 +74,7 @@
 
     let lastTrack
 
+    let svgElement
     let elevationGraph
     let sliderElement
     let startHandle
@@ -89,6 +87,7 @@
     let viewEnd = VIEW_BAR_WIDTH
 
     this.on("mount", () => {
+      svgElement = this.root.querySelector('svg')
       elevationGraph = this.root.querySelector('#elevation-graph')
       sliderElement = this.root.querySelector('#slider')
       startHandle = this.root.querySelector('#start')
@@ -116,7 +115,10 @@
       let cropStart = viewStart / VIEW_BAR_WIDTH * numPoints
       let cropEnd = (viewEnd - viewStart) / VIEW_BAR_WIDTH * numPoints
       let maximumElevation = this.getMaximumElevation(track)
-      return cropStart + " -" + maximumElevation + " " + cropEnd + " " + maximumElevation
+      return cropStart + " 0 " + cropEnd + " " + maximumElevation
+    }
+    getGraphTransform (track) {
+      return "translate(0," + this.getMaximumElevation(track) + ") scale(1,-1)"
     }
     getMaximumElevation (track) {
       return track.points.map(point => point.ele).reduce((a,b) => Math.max(a,b), 0)
@@ -134,7 +136,12 @@
 
       currentHandle = e.target
       currentX = e.clientX
+
       currentTransform = parseFloat(currentHandle.getAttributeNS(null, "transform").slice(10,-1).split(' ')[0])
+
+      document.body.addEventListener('mousemove', this.moveHandle)
+      document.body.addEventListener('mouseup', this.unselectHandle)
+      document.body.className = "grabbing"
     }
 
     moveHandle (e) {
@@ -142,7 +149,8 @@
 
       if(currentHandle){
 
-        let dx = e.clientX - currentX
+        let svgScale = VIEW_BAR_WIDTH / svgElement.clientWidth
+        let dx = (e.clientX - currentX) * svgScale
 
         if(currentHandle == sliderElement){
           let viewWidth = viewEnd - viewStart
@@ -176,6 +184,11 @@
     unselectHandle (e) {
       e.preventUpdate = true
       currentHandle = null
+
+
+      document.body.removeEventListener('mousemove', this.moveHandle)
+      document.body.removeEventListener('mouseup', this.unselectHandle)
+      document.body.className = ""
     }
 
     createMarkers () {
@@ -184,33 +197,35 @@
 
       this.removeAllChildren(markers)
 
-      let background = document.createElementNS(ns, "rect")
-      background.setAttributeNS(null, "x", "0")
-      background.setAttributeNS(null, "y", "0")
-      background.setAttributeNS(null, "width", opts.track.points.length)
-      background.setAttributeNS(null, "height", "10")
-      background.setAttributeNS(null, "style", "fill:#222;")
-
-      markers.appendChild(background)
-
       for(let i = 0; i < length; i += 100){
-        let element = document.createElementNS(ns, "rect")
+        let line = document.createElementNS(ns, "rect")
 
-        element.setAttributeNS(null, "x", i)
-        element.setAttributeNS(null, "width", 2)
+        line.setAttributeNS(null, "x", i)
+        line.setAttributeNS(null, "width", 2)
 
-        element.setAttributeNS(null, "style", "fill: white;")
+        line.setAttributeNS(null, "style", "fill: white;")
 
         if(i % 1000 == 0){
-          element.setAttributeNS(null, "y", "0")
-          element.setAttributeNS(null, "height", "10")
+          line.setAttributeNS(null, "y", "0")
+          line.setAttributeNS(null, "height", "10")
+
+          let label = document.createElementNS(ns, "text")
+          let scale = 10
+          label.setAttributeNS(null, "x", (i + 30)/scale)
+          label.setAttributeNS(null, "y", "20")
+          label.setAttributeNS(null, "style", "fill: white; fill-opacity: 0.5; font-size: 10px")
+          label.setAttributeNS(null, "transform", "scale(" + scale + ",1)")
+          label.appendChild(document.createTextNode((i/100) + " km"))
+
+          markers.appendChild(label)
+
         }
         else {
-          element.setAttributeNS(null, "y", "7.5")
-          element.setAttributeNS(null, "height", "2.5")
+          line.setAttributeNS(null, "y", "0")
+          line.setAttributeNS(null, "height", "2.5")
         }
 
-        markers.appendChild(element)
+        markers.appendChild(line)
       }
     }
 
@@ -248,6 +263,11 @@
       stroke-width: 1;
       cursor: pointer;
       cursor: -webkit-grab;
+    }
+  </style>
+  <style>
+    body.grabbing {
+      cursor: -webkit-grabbing !important;
     }
   </style>
 </track-graph>
