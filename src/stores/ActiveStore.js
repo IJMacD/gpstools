@@ -3,6 +3,8 @@ var ActiveStore = (function() {
 
   var _active = []
 
+  var _selection = null;
+
   var ActiveStore = new Store();
 
   ActiveStore.getActive = function () {
@@ -59,6 +61,10 @@ var ActiveStore = (function() {
     return _active.indexOf(track) !== -1
   }
 
+  ActiveStore.getSelection = function () {
+    return _selection;
+  }
+
   ActiveStore.on('active_set', function(tracks) {
     // Can be called with 'null' as the track which is intended to clear the
     // current selection
@@ -97,6 +103,12 @@ var ActiveStore = (function() {
 
     this.emitChange()
 
+  }.bind(ActiveStore))
+
+  ActiveStore.on('selection_set', function(selection){
+    _selection = selection;
+
+    this.emitChange()
   }.bind(ActiveStore))
 
   return ActiveStore

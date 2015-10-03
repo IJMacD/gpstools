@@ -7,5 +7,8 @@ var ActiveActions = {
   },
   clear () {
     RiotControl.trigger('active_set', null)
+  },
+  setSelection(start, end){
+    RiotControl.trigger('selection_set', {start, end})
   }
 }
