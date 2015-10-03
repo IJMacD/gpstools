@@ -59,20 +59,41 @@ var ActiveStore = (function() {
     return _active.indexOf(track) !== -1
   }
 
-  ActiveStore.on('active_set', function(track) {
+  ActiveStore.on('active_set', function(tracks) {
     // Can be called with 'null' as the track which is intended to clear the
     // current selection
 
-    if(track){
+    _active = tracks || []
+
+    this.emitChange()
+
+  }.bind(ActiveStore))
+
+  ActiveStore.on('active_add', function(tracks) {
+
+    tracks = tracks || []
+
+    tracks.forEach(track => {
       let index = _active.indexOf(track)
 
       if(index == -1)
         _active.push(track)
-      else
+    })
+
+    this.emitChange()
+
+  }.bind(ActiveStore))
+
+  ActiveStore.on('active_remove', function(tracks) {
+
+    tracks = tracks || []
+
+    tracks.forEach(track => {
+      let index = _active.indexOf(track)
+
+      if(index == -1)
         _active.splice(index, 1)
-    }
-    else
-      _active.length = 0
+    })
 
     this.emitChange()
 

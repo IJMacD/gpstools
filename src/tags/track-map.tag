@@ -10,6 +10,9 @@
     });
 
     switchPanel() {
+      // TODO: this should be in a parent callback
+      // p.s. but if I know about the callback won't I know about the bool anyway?
+      // p.p.s yer i know the callback is supposed to be a contract written by the child
       this.parent.mapIsPanel = !this.parent.mapIsPanel
       this.parent.update()
       GPSTools.Map.updateSize()

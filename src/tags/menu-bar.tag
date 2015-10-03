@@ -23,10 +23,10 @@
         <i class="icon-facetime-video"></i>
       </button>
       <span class="btn-group" id="export-grp">
-        <a id="gen-fmt-btn" class="btn btn-small" title="Export">
+        <button id="gen-fmt-btn" class="btn btn-small" title="Export">
           <i class="icon-download-alt"></i>
           <span>GPX</span>
-        </a>
+        </button>
         <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
           <span class="caret"></span>
         </button>

@@ -158,7 +158,7 @@
       },
       // Used to be function (Points[] points, bool highlight)
       drawLine: function (points, options) {
-        var olCoordinates = points.map(point => ol.proj.transform([point.lon, point.lat], 'EPSG:4326', 'EPSG:3857')),
+        var olCoordinates = points.map(point => ol.proj.fromLonLat([point.lon, point.lat])),
             olLineString = new ol.geom.LineString(olCoordinates),
             olFeature = new ol.Feature(olLineString)
         lineSource.addFeature(olFeature)

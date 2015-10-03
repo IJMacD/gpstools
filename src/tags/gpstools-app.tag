@@ -35,12 +35,12 @@
       TrackActions.edit(track);
     }
 
-    setActive (track, isOnlyActive) {
+    setActive (tracks) {
+      ActiveActions.set(tracks)
+    }
 
-      if(isOnlyActive)
-        ActiveActions.clear()
-
-      ActiveActions.set(track)
+    addActive (tracks) {
+      ActiveActions.add(tracks)
     }
 
     removeTrack (track) {

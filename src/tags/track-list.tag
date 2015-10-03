@@ -1,5 +1,5 @@
 <track-list>
-  <ul id="tracks-list" class="panel" onclick="{ this.parent.pickFile }">
+  <ul id="tracks-list" class="panel">
     <li each={ track in opts.tracks } class="track { selected: this.parent.parent.isActive(track) }"
         draggable="true" onclick="{ setCurrent }"
         style="background-image: url({ this.parent.getTrackThumb(track, 64) })">
@@ -12,17 +12,32 @@
   </ul>
 
   <script>
+    "use strict"
+
+    var firstActiveIndex = null;
 
     setCurrent(e) {
-      // Need to stop propagation because the list below also listens for click events
-      e.stopPropagation()
 
-      this.parent.setActive(e.item.track, !e.ctrlKey)
+      let track = e.item.track
+      let index = this.opts.tracks.indexOf(track)
+
+      if(e.shiftKey){
+        const startActiveIndex = Math.min(firstActiveIndex, index)
+        const endActiveIndex = Math.max(firstActiveIndex, index)
+        let newActive = this.opts.tracks.slice(startActiveIndex, endActiveIndex + 1)
+        this.parent.setActive(newActive)
+      }
+      else if (e.ctrlKey) {
+        firstActiveIndex = index
+        this.parent.addActive([track])
+      }
+      else {
+        firstActiveIndex = index
+        this.parent.setActive([track])
+      }
     }
 
     removeTrack(e) {
-      // Need to stop propagation because the list below also listens for click events
-      e.stopPropagation()
 
       this.parent.removeTrack(e.item.track)
     }

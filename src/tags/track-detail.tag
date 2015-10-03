@@ -1,6 +1,6 @@
 <track-detail>
 
-  <input type="text" class="track-title" onkeyup="{ editName }" value="{ opts.track.name }" />
+  <input type="text" class="track-title" onchange="{ editName }" value="{ opts.track.name }" />
   <output id="gps">
     Distance (km): { GPSTools.Util.convertToKm( opts.track.distance ).toFixed(3) }<br>
     Distance (mi): { GPSTools.Util.convertToMiles( opts.track.distance ).toFixed(3) }<br>
