@@ -1,3 +1,5 @@
+import RiotControl from '../../lib/RiotControl'
+
 var ActiveActions = {
   set (tracks) {
     RiotControl.trigger('active_set', tracks)
@@ -12,3 +14,5 @@ var ActiveActions = {
     RiotControl.trigger('selection_set', {start, end})
   }
 }
+
+export default ActiveActions

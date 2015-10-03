@@ -30,6 +30,8 @@ var TrackStore = new Store({
     this.on('track_edit', this.emitChange)
 
     // Is this allowed? listening to our own change event?
+    // RE: no
+    // TODO: make stores purer
     this.on('change', () => {
       localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(this.tracks))
     })
@@ -39,3 +41,5 @@ var TrackStore = new Store({
         .map(jsonTrack => new GPSTools.Track(jsonTrack))
     }
   })
+
+export default TrackStore

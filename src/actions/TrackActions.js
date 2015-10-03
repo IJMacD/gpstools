@@ -1,3 +1,5 @@
+import RiotControl from '../../lib/RiotControl.js'
+
 var TrackActions = {
   init () {
     RiotControl.trigger('track_init')
@@ -12,3 +14,5 @@ var TrackActions = {
     RiotControl.trigger('track_edit', track)
   }
 }
+
+export default TrackActions
