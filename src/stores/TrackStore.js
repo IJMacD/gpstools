@@ -1,3 +1,5 @@
+import Store from './Store'
+
 var TrackStore = new Store({
     tracks: [],
     getTracks: function(){ return this.tracks }

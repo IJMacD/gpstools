@@ -1,22 +1,22 @@
-<track-map>
+riot.tag('track-map', '<div></div>',
+  `track-map > div {
+    height: 100%
+  }`,
 
-  <div></div>
-
-  <script>
-
+  function (opts){
     this.on('mount', () => {
         GPSTools.Map.create(this.root.querySelector('div'));
         GPSTools.Map.getMap().addControl(new PanelControl({tag: this}));
     });
 
-    switchPanel() {
+    this.switchPanel = () => {
       // TODO: this should be in a parent callback
       // p.s. but if I know about the callback won't I know about the bool anyway?
       // p.p.s yer i know the callback is supposed to be a contract written by the child
       this.parent.mapIsPanel = !this.parent.mapIsPanel
       this.parent.update()
       GPSTools.Map.updateSize()
-    })
+    }
 
     this.on("update", () => {
       GPSTools.Map.updateSize()
@@ -66,12 +66,4 @@
 
     };
     ol.inherits(PanelControl, ol.control.Control);
-  </script>
-
-  <style scoped>
-    :scope > div {
-      height: 100%
-    }
-  </style>
-
-</track-map>
+  })

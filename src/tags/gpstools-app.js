@@ -1,6 +1,13 @@
 import TrackActions from '../actions/TrackActions'
 import ActiveActions from '../actions/ActiveActions'
 import TrackStore from '../stores/TrackStore'
+import ActiveStore from '../stores/ActiveStore'
+
+import './gpstools-menu'
+import './track-map'
+import './track-list'
+import './track-detail'
+import './track-graph'
 
 riot.tag("gpstools-app", `
   <gpstools-menu tracks="{ tracks.filter(isActive) }" track="{ currentTrack }"></gpstools-menu>
@@ -92,6 +99,10 @@ riot.tag("gpstools-app", `
 
     this.addActive = (tracks) => {
       ActiveActions.add(tracks)
+    }
+
+    this.toggleActive = (tracks) => {
+      ActiveActions.toggle(tracks)
     }
 
     this.removeTrack = (track) => {

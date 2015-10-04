@@ -1,4 +1,4 @@
-<track-detail>
+riot.tag('track-detail', `
 
   <input type="text" class="track-title" onchange="{ editName }" value="{ opts.track.name }" />
   <output id="gps">
@@ -38,33 +38,30 @@
         </table>
       </div>
     </div>
-  </div>
+  </div>`, `
 
-  <script>
-    editName(e){
+  track-detail .track-title {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2em;
+    height: initial;
+    padding: 0;
+    width: 100%;
+  }
+  track-detail .track-title:focus {
+    outline: none;
+    border: 0;
+    box-shadow: none;
+  }
+  `,
+
+  function(opts){
+    this.editName = (e) => {
       e.preventUpdate = true
 
       opts.track.name = e.target.value
 
       this.parent.editTrack(opts.track)
     }
-  </script>
-
-  <style scoped>
-    .track-title {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 2em;
-      height: initial;
-      padding: 0;
-      width: 100%;
-    }
-    .track-title:focus {
-      outline: none;
-      border: 0;
-      box-shadow: none;
-    }
-  </style>
-
-</track-detail>
+  })

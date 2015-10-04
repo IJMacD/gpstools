@@ -1,4 +1,6 @@
-<track-graph>
+import util from '../util'
+
+riot.tag('track-graph', `
   <div id="slt-btns">
     <button id="crp-slt-btn" class="btn">Crop Track</button>
     <button id="clr-slt-btn" class="btn">Clear Selection</button>
@@ -65,9 +67,31 @@
         transform="translate(1000 0)"
         onmousedown="{ selectHandle }" />
     </g>
-  </svg>
+  </svg>`, `
 
-  <script>
+  track-graph svg {
+    height: 100%;
+    width: 100%;
+  }
+  track-graph .grab-handle {
+    fill: #c0c0c0;
+    stroke: #5e5e5e;
+    stroke-width: 1;
+    cursor: pointer;
+    cursor: -webkit-grab;
+  }
+  track-graph #slider {
+    fill: url(#linearGradient5453);
+    stroke: #5e5e5e;
+    stroke-width: 1;
+    cursor: pointer;
+    cursor: -webkit-grab;
+  }
+  body.grabbing {
+    cursor: -webkit-grabbing !important;
+  }`,
+
+  function(opts){
     "use strict"
 
     let lastTrack
@@ -97,6 +121,7 @@
     this.on("update", () => {
       // Check if we've been mounted yet and have a track
       if(this.isMounted &&
+          this.opts.track &&
           this.opts.track != lastTrack){
 
         this.setCrop(0, VIEW_BAR_WIDTH)
@@ -106,9 +131,9 @@
        }
     })
 
-    getViewBox (track) {
-      if(!track.points)
-        return
+    this.getViewBox = (track) => {
+      if(!track || !track.points)
+        return ""
 
       let numPoints = track.distance * DISTANCE_SCALE
       let cropStart = viewStart / VIEW_BAR_WIDTH * numPoints
@@ -116,20 +141,24 @@
       let maximumElevation = this.getMaximumElevation(track)
       return cropStart + " 0 " + cropEnd + " " + maximumElevation
     }
-    getGraphTransform (track) {
+
+    this.getGraphTransform = (track) => {
       return "translate(0," + this.getMaximumElevation(track) + ") scale(1,-1)"
     }
-    getMaximumElevation (track) {
+
+    this.getMaximumElevation = (track) => {
       return track.points.map(point => point.ele).reduce((a,b) => Math.max(a,b), 0)
     }
-    getPath (track) {
+
+    this.getPath = (track) => {
       return "M 0 0 L " +
         this.getDerivedPoints(track).map(dp => {
           return (dp.cumulativeDistance * DISTANCE_SCALE) + " " + (dp.point.ele || 0)
         }).join(" L ") +
         ` L ${ track.points.length } 0`
     }
-    getDerivedPoints (track) {
+
+    this.getDerivedPoints = (track) => {
       // TODO: Add possible caching
       let points = track.points
       let numPoints = points.length
@@ -165,7 +194,7 @@
     let currentX;
     let currentTransform;
 
-    selectHandle (e) {
+    this.selectHandle = (e) => {
       e.preventUpdate = true
 
       currentHandle = e.target
@@ -178,7 +207,7 @@
       document.body.className = "grabbing"
     }
 
-    moveHandle (e) {
+    this.moveHandle = (e) => {
       e.preventUpdate = true
 
       if(currentHandle){
@@ -201,7 +230,7 @@
       }
     }
 
-    setCrop(start, end) {
+    this.setCrop = (start, end) => {
       viewStart = util.bound(start, 0, viewEnd)
       viewEnd = util.bound(end, viewStart, VIEW_BAR_WIDTH)
 
@@ -215,7 +244,7 @@
       elevationGraph.setAttributeNS(null, "viewBox", this.getViewBox(this.opts.track))
     }
 
-    unselectHandle (e) {
+    this.unselectHandle = (e) => {
       e.preventUpdate = true
       currentHandle = null
 
@@ -225,11 +254,11 @@
       document.body.className = ""
     }
 
-    createMarkers () {
+    this.createMarkers = () => {
       let length = this.opts.track.distance
       let ns = "http://www.w3.org/2000/svg"
 
-      this.removeAllChildren(markers)
+      removeAllChildren(markers)
 
       for(let i = 0; i < length; i += 1000){
         let line = document.createElementNS(ns, "rect")
@@ -262,36 +291,9 @@
       }
     }
 
-    removeAllChildren (element) {
+    function removeAllChildren (element) {
       while(element.firstChild){
         element.removeChild(element.firstChild)
       }
     }
-  </script>
-
-  <style scoped>
-    svg {
-      height: 100%;
-      width: 100%;
-    }
-    .grab-handle {
-      fill: #c0c0c0;
-      stroke: #5e5e5e;
-      stroke-width: 1;
-      cursor: pointer;
-      cursor: -webkit-grab;
-    }
-    #slider {
-      fill: url(#linearGradient5453);
-      stroke: #5e5e5e;
-      stroke-width: 1;
-      cursor: pointer;
-      cursor: -webkit-grab;
-    }
-  </style>
-  <style>
-    body.grabbing {
-      cursor: -webkit-grabbing !important;
-    }
-  </style>
-</track-graph>
+  })

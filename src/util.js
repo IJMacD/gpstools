@@ -1,6 +1,6 @@
 var util = {
   extend (object, properties){
-      for(prop in properties){
+      for(let prop in properties){
         if(properties.hasOwnProperty(prop)){
           object[prop] = properties[prop]
         }
@@ -10,3 +10,5 @@ var util = {
     return Math.min(Math.max(x, min), max)
   }
 }
+
+export default util

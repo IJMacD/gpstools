@@ -7,6 +7,9 @@ var ActiveActions = {
   add (tracks) {
     RiotControl.trigger('active_add', tracks)
   },
+  toggle (tracks) {
+    RiotControl.trigger('active_toggle', tracks)
+  },
   clear () {
     RiotControl.trigger('active_set', null)
   },

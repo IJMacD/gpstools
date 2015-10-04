@@ -1,3 +1,5 @@
+import TrackActions from './TrackActions'
+
 var FileActions = {
   _fileInput: null,
   pick () {
@@ -25,3 +27,5 @@ var FileActions = {
       .catch(e => { console.error(e) })
   }
 }
+
+export default FileActions

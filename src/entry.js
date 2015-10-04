@@ -1,5 +1,6 @@
 import RiotControl from '../lib/RiotControl'
 import TrackStore from './stores/TrackStore'
+import ActiveStore from './stores/ActiveStore'
 import './tags/gpstools-app'
 
 RiotControl.addStore(TrackStore);

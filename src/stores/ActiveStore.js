@@ -1,3 +1,5 @@
+import Store from './Store'
+
 var ActiveStore = (function() {
   'use strict'
 
@@ -90,6 +92,23 @@ var ActiveStore = (function() {
 
   }.bind(ActiveStore))
 
+    ActiveStore.on('active_toggle', function(tracks) {
+
+      tracks = tracks || []
+
+      tracks.forEach(track => {
+        let index = _active.indexOf(track)
+
+        if(index == -1)
+          _active.push(track)
+        else
+          _active.splice(index, 1)
+      })
+
+      this.emitChange()
+
+  }.bind(ActiveStore))
+
   ActiveStore.on('active_remove', function(tracks) {
 
     tracks = tracks || []
@@ -114,3 +133,5 @@ var ActiveStore = (function() {
   return ActiveStore
 
 }())
+
+export default ActiveStore

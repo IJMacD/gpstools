@@ -1,4 +1,6 @@
-function Store(opts, init){
+import util from '../util'
+
+export default function Store(opts, init){
 
   riot.observable(this)
 
