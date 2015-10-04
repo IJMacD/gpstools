@@ -12,13 +12,13 @@ require('./track-graph.tag')
 <gpstools-app>
   <gpstools-menu tracks={ tracks.filter(isActive) } track={ currentTrack }  />
 
-  <track-map id="map" tracks={ tracks.filter(isActive) } class="{ panel: mapIsPanel, min: shouldMapMinimise() }" />
+  <track-map id="map" tracks={ tracks.filter(isActive) } class="{ panel: mapIsPanel, min: showGraph() }" />
 
   <track-list id="list" tracks={ tracks }/>
 
   <track-detail id="detail" track={ currentTrack } class="panel" show={ currentTrack } />
 
-  <track-graph id="graph" track={ currentTrack } class="panel" show={ currentTrack.hasElevation() } />
+  <track-graph id="graph" track={ currentTrack } class="panel" show={ showGraph() } />
 
   <div id="status-msg"><p id="status-msg-text"></p></div>
 
@@ -54,6 +54,10 @@ require('./track-graph.tag')
       ActiveActions.add(tracks)
     }
 
+    this.toggleActive = (tracks) => {
+      ActiveActions.toggle(tracks)
+    }
+
     this.removeTrack = (track) => {
       TrackActions.remove(track)
 
@@ -66,9 +70,9 @@ require('./track-graph.tag')
       return ActiveStore.isActive(track)
     }
 
-    this.shouldMapMinimise = () => {
-      let active = this.tracks.filter(this.isActive)
-      return active.length && active[0].hasElevation()
+    this.showGraph = () => {
+      const current = this.currentTrack
+      return current && current.points && current.hasElevation()
     }
 
   </script>

@@ -99,7 +99,8 @@ var util = require('../util')
     this.on("update", () => {
       // Check if we've been mounted yet and have a track
       if(this.isMounted &&
-          this.opts.track != lastTrack){
+          opts.track &&
+          opts.track != lastTrack){
 
         this.setCrop(0, VIEW_BAR_WIDTH)
         lastTrack = this.opts.track
@@ -110,7 +111,7 @@ var util = require('../util')
 
     this.getViewBox = (track) => {
       if(!track.points)
-        return
+        return ""
 
       let numPoints = track.distance * DISTANCE_SCALE
       let cropStart = viewStart / VIEW_BAR_WIDTH * numPoints
