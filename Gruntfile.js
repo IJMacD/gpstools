@@ -1,4 +1,8 @@
 module.exports = function(grunt) {
+
+  var webpack = require("webpack")
+  var webpackConfig = require("./webpack.config.js")
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     copy: {
@@ -24,25 +28,43 @@ module.exports = function(grunt) {
         dest: 'dist/js/<%= pkg.name %>.js'
       }
     },
-    riot: {
-      options: {
-        concat: true
-      },
+    webpack: {
       dist: {
-        src: 'src/tags/*.tag',
-        dest: 'dist/js/tags.js'
-      }
-    },
-    concat: {
-      dist: {
-        src: ['src/stores/*.js', '<%= riot.dist.dest %>'],
-        dest: 'dist/js/index.js'
+        options: webpackConfig,
+        entry: "./src/entry.js",
+        output: {
+          path: 'dist/js/',
+          filename: "index.js"
+        },
+        plugins: [
+          new webpack.ProvidePlugin({
+            riot: 'riot'
+          })
+        ],
+        module: {
+            preLoaders: [
+              {
+                test: /\.tag$/,
+                exclude: /node_modules/,
+                loader: 'riotjs-loader',
+                query: { type: 'none' }
+              }
+            ],
+            loaders: [
+              {
+                test: /(\.js$|\.tag$)/,
+                exclude: /node_modules/,
+                loader: "babel"
+              }
+            ]
+        }
       }
     },
     uglify: {
       dist: {
         files: {
-          'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+          'dist/js/<%= pkg.name %>.min.js': ['<%= smash.dist.dest %>'],
+          'dist/js/index.min.js': ['dist/js/index.js']
         }
       }
     },
@@ -85,13 +107,12 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-smash')
   grunt.loadNpmTasks('grunt-contrib-uglify')
-  grunt.loadNpmTasks('grunt-contrib-concat')
-  grunt.loadNpmTasks('grunt-riot')
   grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-processhtml')
   grunt.loadNpmTasks('grunt-contrib-jshint')
   grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.loadNpmTasks('grunt-notify')
+  grunt.loadNpmTasks('grunt-webpack')
 
-  grunt.registerTask('default', ['jshint', 'copy', 'smash', 'riot', 'concat', 'processhtml', 'clean', 'notify'])
+  grunt.registerTask('default', ['jshint', 'copy', 'smash', 'webpack', 'uglify', 'processhtml', 'clean', 'notify'])
 };

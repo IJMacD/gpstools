@@ -4,7 +4,7 @@ GPSTools.Track = function (points, name) {
   if(arguments.length == 1 && arguments[0].points){
     // Called with the format new GPSTools.Track(track)
     // something trackish was passed in
-    let track = arguments[0]
+    var track = arguments[0]
     this.points = track.points
     this.name = track.name
     this.distance = track.distance

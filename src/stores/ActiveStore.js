@@ -21,7 +21,7 @@ var ActiveStore = (function() {
    * Get a single instance which represents all of the currently active tracks
    */
   ActiveStore.getCurrent = function(){
-    if(_active.length == 0)
+    if(_active.length === 0)
       return null
     if(_active.length == 1)
       return _active[0]

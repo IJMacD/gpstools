@@ -158,7 +158,7 @@
       },
       // Used to be function (Points[] points, bool highlight)
       drawLine: function (points, options) {
-        var olCoordinates = points.map(point => ol.proj.fromLonLat([point.lon, point.lat])),
+        var olCoordinates = points.map(function(point) { return ol.proj.fromLonLat([point.lon, point.lat])}),
             olLineString = new ol.geom.LineString(olCoordinates),
             olFeature = new ol.Feature(olLineString)
         lineSource.addFeature(olFeature)
@@ -242,7 +242,7 @@
         return map;
       },
       updateSize: function(){
-        map && map.updateSize();
+        if(map) map.updateSize();
       }
     }
   }()
