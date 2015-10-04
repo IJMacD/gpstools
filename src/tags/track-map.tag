@@ -1,9 +1,9 @@
-riot.tag('track-map', '<div></div>',
-  `track-map > div {
-    height: 100%
-  }`,
+<track-map>
 
-  function (opts){
+  <div></div>
+
+  <script>
+
     this.on('mount', () => {
         GPSTools.Map.create(this.root.querySelector('div'));
         GPSTools.Map.getMap().addControl(new PanelControl({tag: this}));
@@ -66,4 +66,12 @@ riot.tag('track-map', '<div></div>',
 
     };
     ol.inherits(PanelControl, ol.control.Control);
-  })
+  </script>
+
+  <style scoped>
+    :scope > div {
+      height: 100%
+    }
+  </style>
+
+</track-map>

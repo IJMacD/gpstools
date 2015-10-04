@@ -1,4 +1,4 @@
-riot.tag('gpstools-menu', `
+<gpstools-menu>
   <div id="action-bar">
     <h1>GPSTools</h1>
     <div id="cab" show="{ opts.track }">
@@ -61,4 +61,6 @@ riot.tag('gpstools-menu', `
       <i class="icon-fullscreen"></i>
     </button>
     <progress value="0"></progress>
-  </div>`)
+  </div>
+
+</gpstools-menu>

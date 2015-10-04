@@ -1,6 +1,6 @@
-import util from '../util'
+var util = require('../util')
 
-riot.tag('track-graph', `
+<track-graph>
   <div id="slt-btns">
     <button id="crp-slt-btn" class="btn">Crop Track</button>
     <button id="clr-slt-btn" class="btn">Clear Selection</button>
@@ -67,31 +67,9 @@ riot.tag('track-graph', `
         transform="translate(1000 0)"
         onmousedown="{ selectHandle }" />
     </g>
-  </svg>`, `
+  </svg>
 
-  track-graph svg {
-    height: 100%;
-    width: 100%;
-  }
-  track-graph .grab-handle {
-    fill: #c0c0c0;
-    stroke: #5e5e5e;
-    stroke-width: 1;
-    cursor: pointer;
-    cursor: -webkit-grab;
-  }
-  track-graph #slider {
-    fill: url(#linearGradient5453);
-    stroke: #5e5e5e;
-    stroke-width: 1;
-    cursor: pointer;
-    cursor: -webkit-grab;
-  }
-  body.grabbing {
-    cursor: -webkit-grabbing !important;
-  }`,
-
-  function(opts){
+  <script>
     "use strict"
 
     let lastTrack
@@ -121,7 +99,6 @@ riot.tag('track-graph', `
     this.on("update", () => {
       // Check if we've been mounted yet and have a track
       if(this.isMounted &&
-          this.opts.track &&
           this.opts.track != lastTrack){
 
         this.setCrop(0, VIEW_BAR_WIDTH)
@@ -132,8 +109,8 @@ riot.tag('track-graph', `
     })
 
     this.getViewBox = (track) => {
-      if(!track || !track.points)
-        return ""
+      if(!track.points)
+        return
 
       let numPoints = track.distance * DISTANCE_SCALE
       let cropStart = viewStart / VIEW_BAR_WIDTH * numPoints
@@ -141,15 +118,12 @@ riot.tag('track-graph', `
       let maximumElevation = this.getMaximumElevation(track)
       return cropStart + " 0 " + cropEnd + " " + maximumElevation
     }
-
     this.getGraphTransform = (track) => {
       return "translate(0," + this.getMaximumElevation(track) + ") scale(1,-1)"
     }
-
     this.getMaximumElevation = (track) => {
       return track.points.map(point => point.ele).reduce((a,b) => Math.max(a,b), 0)
     }
-
     this.getPath = (track) => {
       return "M 0 0 L " +
         this.getDerivedPoints(track).map(dp => {
@@ -157,7 +131,6 @@ riot.tag('track-graph', `
         }).join(" L ") +
         ` L ${ track.points.length } 0`
     }
-
     this.getDerivedPoints = (track) => {
       // TODO: Add possible caching
       let points = track.points
@@ -296,4 +269,31 @@ riot.tag('track-graph', `
         element.removeChild(element.firstChild)
       }
     }
-  })
+  </script>
+
+  <style scoped>
+    svg {
+      height: 100%;
+      width: 100%;
+    }
+    .grab-handle {
+      fill: #c0c0c0;
+      stroke: #5e5e5e;
+      stroke-width: 1;
+      cursor: pointer;
+      cursor: -webkit-grab;
+    }
+    #slider {
+      fill: url(#linearGradient5453);
+      stroke: #5e5e5e;
+      stroke-width: 1;
+      cursor: pointer;
+      cursor: -webkit-grab;
+    }
+  </style>
+  <style>
+    body.grabbing {
+      cursor: -webkit-grabbing !important;
+    }
+  </style>
+</track-graph>
