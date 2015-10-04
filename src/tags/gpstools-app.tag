@@ -10,15 +10,15 @@ require('./track-detail.tag')
 require('./track-graph.tag')
 
 <gpstools-app>
-  <gpstools-menu tracks={ tracks.filter(isActive) } track={ currentTrack }  />
+  <gpstools-menu tracks="{ tracks.filter(isActive) }" track="{ currentTrack }"  />
 
-  <track-map id="map" tracks={ tracks.filter(isActive) } class="{ panel: mapIsPanel, min: showGraph() }" />
+  <track-map id="map" tracks="{ tracks.filter(isActive) }" class="{ panel: mapIsPanel, min: showGraph() }" />
 
-  <track-list id="list" tracks={ tracks }/>
+  <track-list id="list" tracks="{ tracks }"/>
 
-  <track-detail id="detail" track={ currentTrack } class="panel" show={ currentTrack } />
+  <track-detail id="detail" track="{ currentTrack }" class="panel" show="{ currentTrack }" />
 
-  <track-graph id="graph" track={ currentTrack } class="panel" show={ showGraph() } />
+  <track-graph id="graph" track="{ currentTrack }" class="panel" show="{ showGraph() }" />
 
   <div id="status-msg"><p id="status-msg-text"></p></div>
 

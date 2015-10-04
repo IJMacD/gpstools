@@ -3,6 +3,7 @@
   <div></div>
 
   <script>
+    "use strict"
 
     this.on('mount', () => {
         GPSTools.Map.create(this.root.querySelector('div'));
@@ -19,7 +20,11 @@
     }
 
     this.on("update", () => {
-      GPSTools.Map.updateSize()
+      // For some this update function seems to be being called before the parent
+      // tag has run its update frunction and updated its attributes, which can
+      // potentially resize this tag
+      setTimeout(() => GPSTools.Map.updateSize(), 0)
+
       GPSTools.Map.clearLine()
       opts.tracks.forEach(drawTrack)
     })
