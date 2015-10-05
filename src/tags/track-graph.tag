@@ -229,37 +229,55 @@ var util = require('../util')
     }
 
     this.createMarkers = () => {
-      let length = this.opts.track.distance
-      let ns = "http://www.w3.org/2000/svg"
+      const totalDistance = opts.track.distance
+      const ns = "http://www.w3.org/2000/svg"
 
+      // TODO: Don't destry all markers; store how many have already been added
+      // and add more as necessary
       removeAllChildren(markers)
 
-      for(let i = 0; i < length; i += 1000){
-        let line = document.createElementNS(ns, "rect")
+      // Vertical distance markers
+      for(let i = 0; i < totalDistance; i += 1000){
+        const line = document.createElementNS(ns, "line")
 
-        line.setAttributeNS(null, "x", i * DISTANCE_SCALE)
-        line.setAttributeNS(null, "width", 2)
+        line.setAttributeNS(null, "x1", i * DISTANCE_SCALE)
+        line.setAttributeNS(null, "x2", i * DISTANCE_SCALE)
+        line.setAttributeNS(null, "vector-effect", "non-scaling-stroke")
 
-        line.setAttributeNS(null, "style", "fill: white;")
+        line.setAttributeNS(null, "style", "stroke: white; stroke-opacity: 0.5;")
+        line.setAttributeNS(null, "y1", "0")
 
         if(i % 10000 == 0){
-          line.setAttributeNS(null, "y", "0")
-          line.setAttributeNS(null, "height", "10")
+          line.setAttributeNS(null, "y2", "500")
 
-          let label = document.createElementNS(ns, "text")
-          label.setAttributeNS(null, "x", (i + 30) * DISTANCE_SCALE * DISTANCE_SCALE)
-          label.setAttributeNS(null, "y", "20")
-          label.setAttributeNS(null, "style", "fill: white; fill-opacity: 0.5; font-size: 10px")
+          const label = document.createElementNS(ns, "text")
+          label.setAttributeNS(null, "x", i * DISTANCE_SCALE * DISTANCE_SCALE + 5)
+          label.setAttributeNS(null, "y", "15")
+          label.setAttributeNS(null, "style", "fill: white; fill-opacity: 0.3; font-size: 10px")
           label.setAttributeNS(null, "transform", "scale(" + (1/DISTANCE_SCALE) + ",1)")
           label.appendChild(document.createTextNode((i/1000) + " km"))
 
           markers.appendChild(label)
 
         }
-        else {
-          line.setAttributeNS(null, "y", "0")
-          line.setAttributeNS(null, "height", "2.5")
-        }
+        else
+          line.setAttributeNS(null, "y2", "2.5")
+
+        markers.appendChild(line)
+      }
+
+      // Horizontal elevation markers
+      const maximumElevation = this.getMaximumElevation(opts.track)
+
+      for(let i = maximumElevation; i >= 0; i -= 50){
+        const line = document.createElementNS(ns, "line")
+
+        line.setAttributeNS(null, "x1", 0)
+        line.setAttributeNS(null, "y1", i)
+        line.setAttributeNS(null, "x2", totalDistance * DISTANCE_SCALE)
+        line.setAttributeNS(null, "y2", i)
+        line.setAttributeNS(null, "style", "stroke: white; stroke-opacity: 0.5; stroke-width: 0.5;")
+        line.setAttributeNS(null, "vector-effect", "non-scaling-stroke")
 
         markers.appendChild(line)
       }
