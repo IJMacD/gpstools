@@ -6,6 +6,7 @@ module.exports = {
         path: __dirname,
         filename: "index.js"
     },
+    devtool: "source-map",
     plugins: [
       new webpack.ProvidePlugin({
         riot: 'riot'
