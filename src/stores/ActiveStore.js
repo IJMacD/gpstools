@@ -54,7 +54,8 @@ var ActiveStore = (function() {
         start: null,
         end: null,
         averageSpeed: 0,
-        maximumSpeed: 0
+        maximumSpeed: 0,
+        points: []
       })
     }
   }

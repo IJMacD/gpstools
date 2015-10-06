@@ -229,6 +229,9 @@ var util = require('../util')
     }
 
     this.createMarkers = () => {
+      if(!opts.track || !opts.track.points)
+        return
+
       const totalDistance = opts.track.distance
       const ns = "http://www.w3.org/2000/svg"
 
