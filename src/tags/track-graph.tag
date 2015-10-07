@@ -130,7 +130,7 @@ var util = require('../util')
         this.getDerivedPoints(track).map(dp => {
           return (dp.cumulativeDistance * DISTANCE_SCALE) + " " + (dp.point.ele || 0)
         }).join(" L ") +
-        ` L ${ track.points.length } 0`
+        ` L ${ track.distance } 0`
     }
     this.getDerivedPoints = (track) => {
       // TODO: Add possible caching
