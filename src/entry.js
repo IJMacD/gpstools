@@ -1,14 +1,13 @@
-import riot from 'riot'
+import React from 'react'
+import { render } from 'react-dom'
+import { Provider } from 'react-redux'
+import { createStore } from 'redux'
 
-import RiotControl from '../lib/RiotControl'
-import TrackStore from './stores/TrackStore'
-import ActiveStore from './stores/ActiveStore'
+const store = createStore()
 
-import './tags/gpstools-app.tag'
-
-RiotControl.addStore(TrackStore);
-RiotControl.addStore(ActiveStore);
-riot.mount('gpstools-app');
-var logging = msg => { console.log((Date.now() - _startTime) + ": " + msg) },
-    _startTime = 0,
-    timerStart = () => { _startTime = Date.now() }
+render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+)
