@@ -4,7 +4,14 @@ import { createStore } from 'redux'
 import rootReducer from './reducers'
 import App from './containers/App'
 
-const store = createStore(rootReducer)
+const store = createStore(rootReducer, {
+  tracks: [
+    {
+      name: "Test Track",
+      distance: 12094
+    }
+  ]
+})
 
 React.render(
   <Provider store={store}>

@@ -12,17 +12,55 @@ import Graph from '../components/Graph'
 class App extends Component {
   render () {
     const { tracks } = this.props
+
+    const mapStyle = {
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      position: 'fixed'
+    }
+
+    const listStyle = {
+      top: '4em',
+      bottom: '290px',
+      position: 'absolute',
+      width: '350px',
+      left: '40px'
+    }
+
+    const detailStyle = {
+      bottom: '20px',
+      boxSizing: 'border-box',
+      height: '250px',
+      overflowY: 'auto',
+      padding: '10px 20px',
+      position: 'absolute',
+      width: '350px',
+      left: '40px'
+    }
+
+    const graphStyle = {
+      bottom: '20px',
+      boxSizing: 'border-box',
+      height: '180px',
+      overflow: 'hidden',
+      position: 'absolute',
+      left: '400px',
+      right: '20px'
+    }
+
     return (
-      <div>
+      <div className="gpstools-app">
         <Menu tracks={tracks} />
 
-        <Map tracks={tracks} />
+        <Map tracks={tracks} style={mapStyle} />
 
-        <List tracks={tracks}/>
+        <List tracks={tracks} style={listStyle} />
 
-        <Detail tracks={tracks} />
+        <Detail tracks={tracks} style={detailStyle} />
 
-        <Graph tracks={tracks} />
+        <Graph tracks={tracks} style={graphStyle} />
       </div>
     )
   }
