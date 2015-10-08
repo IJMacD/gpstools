@@ -5,7 +5,7 @@ import { combineReducers } from 'redux'
 function tracks(state = [], action){
   switch (action.type) {
     case TrackActionTypes.TRACK_ADD:
-      return [..state, action.track]
+      return [...state, action.track]
     case TrackActionTypes.TRACK_EDIT:
       return [].concat(state.slice(0,action.id), action.track, state.slice(action.id + 1))
     case TrackActionTypes.TRACK_REMOVE:
